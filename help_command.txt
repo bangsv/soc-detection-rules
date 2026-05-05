@@ -6,3 +6,19 @@ suricata -r file.pcap -S file.rules -l outpath
 
 ./Sysmon64.exe -i sysmon-eternalblue.xml
 ./Sysmon64.exe -i sysmonconfig.xml
+
+
+
+
+Sigma:
+Sigma_correlation
+https://sigmahq.io/sigma-specification/specification/sigma-correlation-rules-specification.html#introduction
+
+Sigma documantation
+https://github.com/SigmaHQ/sigma-specification/blob/main/specification/sigma-rules-specification.md#summary
+
+Generator UUID/id sigma
+https://www.uuidgenerator.net/version4
+
+Convert sigma rule
+https://sigconverter.io/
