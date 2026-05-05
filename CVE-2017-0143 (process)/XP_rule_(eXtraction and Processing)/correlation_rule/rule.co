@@ -20,7 +20,7 @@ event Anonymous_login:
         and subject.account.id == "S-1-5-7"
     }
 
-rule CVE_2017_0143: (Anonymous_login[0,1] and Possible_connected[1]) timer  30s
+rule CVE_2017_0143: (Anonymous_login? and Possible_connected+) timer  30s
 
 on Anonymous_login {
     $datafield1 = "true"
