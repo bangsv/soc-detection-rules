@@ -1,0 +1,8 @@
+Command for test suricata rule on pcap file
+suricata -r file.pcap -S file.rules -l outpath
+
+
+./Sysmon64.exe -u force
+
+./Sysmon64.exe -i sysmon-eternalblue.xml
+./Sysmon64.exe -i sysmonconfig.xml

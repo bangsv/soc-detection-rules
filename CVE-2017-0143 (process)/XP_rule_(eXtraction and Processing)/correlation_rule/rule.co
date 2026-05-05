@@ -1,0 +1,80 @@
+event Possible_connected:
+    key:
+        event_src.hostname
+    filter {
+        msgid == "3"
+        and status == "success"
+        and protocol == "tcp"
+        and object.process.path == "c:\\windows\\system32\\"
+        and (object.account.name == "система" or object.account.name == "system")
+        and subject.name == "Possible ETERNALBLUE Probe MS17-010"
+    }
+
+event Anonymous_login:
+    key:
+        event_src.hostname
+    filter{
+        msgid == "4624"
+        and logon_type == 3
+        and status == "success"
+        and subject.account.id == "S-1-5-7"
+    }
+
+rule CVE_2017_0143: (Anonymous_login[0,1] and Possible_connected[1]) timer  30s
+
+on Anonymous_login {
+    $datafield1 = "true"
+    
+    $datafield2 = logon_type
+    $datafield3 = subject.account.id
+    $datafield4 = subject.account.name
+}
+
+
+on Possible_connected {
+    $object.process.fullpath = object.process.fullpath
+    $object.process.name = object.process.name
+    $object.process.path = object.process.path
+    $object.process.id = object.process.id
+    $object.process.guid = object.process.guid
+
+    $subject.account.id = subject.account.id
+
+    $event_src.hostname = event_src.hostname
+    $event_src.fqdn = event_src.fqdn
+
+    $dst.ip = dst.ip
+    $dst.port = dst.port
+    $dst.hostname = dst.hostname
+
+    $src.ip = src.ip
+    $src.port = src.port
+    $src.hostname = src.hostname
+    $src.fqdn = src.fqdn
+
+    $protocol = protocol
+    $action = "connect"
+    $status = "success"
+    
+    $alert.key = join([$subject.account.id, $object.process.name, $dst.ip, $dst.port], "|")
+
+    if $datafield1 == "true" then 
+         $importance = "high"
+        $incident.description = "Probably a successful EternalBlue"
+    else
+        $importance = "medium"
+        $incident.description = "Probably a successful EternalBlue without anonymous login"
+    endif
+
+}
+
+emit {
+    $correlation_type = "incident"
+
+    $action = "detect"
+    $object = "connection"
+    $status = "success"
+
+    $category.generic = "Attack"
+    $correlation_name = "EternalBlue"
+}
