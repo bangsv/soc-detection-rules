@@ -5,8 +5,8 @@ event Possible_connected:
         msgid == "3"
         and status == "success"
         and protocol == "tcp"
-        and object.process.path == "c:\\windows\\system32\\"
-        and (object.account.name == "система" or object.account.name == "system")
+        and lower(object.process.path) == "c:\\windows\\system32\\"
+        and (lower(object.account.name) == "система" or lower(object.account.name) == "system")
         and subject.name == "Possible ETERNALBLUE Probe MS17-010"
     }
 
@@ -24,12 +24,10 @@ rule CVE_2017_0143: (Anonymous_login? and Possible_connected+) timer  30s
 
 on Anonymous_login {
     $datafield1 = "true"
-    
     $datafield2 = logon_type
     $datafield3 = subject.account.id
     $datafield4 = subject.account.name
 }
-
 
 on Possible_connected {
     $object.process.fullpath = object.process.fullpath
