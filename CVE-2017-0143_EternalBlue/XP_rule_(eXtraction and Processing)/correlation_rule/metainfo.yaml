@@ -1,0 +1,8 @@
+ContentAutoName: CVE_2017_0143
+ExpertContext:
+  Created: 05.05.2026
+  Updated: 05.05.2026
+ObjectId: SEC-CR-902843580
+EventDescriptions:
+  - Criteria: correlation_name = "CVE_2017_0143"
+    LocalizationId: corrname_CVE_2017_0143
