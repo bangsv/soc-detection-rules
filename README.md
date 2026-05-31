@@ -1,5 +1,13 @@
 # Описание
 
+CVE + IOC
+
+| CVE | Описание | IOC Network Traffic |IOC Windows / Linux host |
+|:---------:|:---------:|:---------:|:---------:|
+| CVE-2017-0143 | [Ссылка](https://nvd.nist.gov/vuln/detail/CVE-2017-0143) | Trans2 Response: NT Status: STATUS_INVALID_PARAMETER (0xc000000d) | Sysmon ID: 3. M.Security ID: 4624 |
+| CVE-2021-36942 | [Ссылка](https://nvd.nist.gov/vuln/detail/CVE-2021-36942) | EFS Response: ERROR_BAD_NETPATH  | Sysmon ID: 3, 18,  |
+| CVE-2026-27944 | [Ссылка](https://nvd.nist.gov/vuln/detail/CVE-2026-27944) | GET "/api/backup" |  GET "/api/backup" |
+| Plug | Plug | Plug |Plug |
 
 
 Стенд
