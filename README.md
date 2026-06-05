@@ -1,24 +1,20 @@
-# Описание
+# 🛡️ SOC Detection Rules
 
-CVE + IOC
+[![License: MIT](https://img.shields.io/badge/License-Educational-blue.svg)]()
+[![Last Update](https://img.shields.io/badge/Last%20Update-June%202026-green.svg)]()
+[![Rules Count](https://img.shields.io/badge/Rules-3%20CVE-orange.svg)]()
 
-| CVE | Описание | IOC Network Traffic |IOC Windows / Linux host |
-|:---------:|:---------:|:---------:|:---------:|
-| CVE-2017-0143 | [Ссылка](https://nvd.nist.gov/vuln/detail/CVE-2017-0143) | Trans2 Response: NT Status: STATUS_INVALID_PARAMETER (0xc000000d) | Sysmon ID: 3. M.Security ID: 4624 |
-| CVE-2021-36942 | [Ссылка](https://nvd.nist.gov/vuln/detail/CVE-2021-36942) | EFS Response: ERROR_BAD_NETPATH  | Sysmon ID: 3, 18,  |
-| CVE-2026-27944 | [Ссылка](https://nvd.nist.gov/vuln/detail/CVE-2026-27944) | GET "/api/backup" |  GET "/api/backup" |
-| Plug | Plug | Plug |Plug |
+Репозиторий содержит базу знаний и правил детектирования для аналитиков SOC. Здесь собраны Sigma/XP/Suricata,Sysmon/Auditd-правила, PoC-скрипты и материалы для триажа инцидентов.
 
+---
 
-Стенд
+## 📊 Матрица детектирования (CVE + IOC)
 
+> 💡 *Используйте `Ctrl + F` для поиска.*
 
-![alt text](image.png)
-
-
-Для проведения имитационного моделирования была развёрнута полноценная лабораторная инфраструктура, точно воспроизводящая реальную корпоративную сеть. Схема стенда включает несколько изолированных зон, соединённых маршрутизаторами и межсетевыми экранами, что позволяет безопасно генерировать как легитимный пользовательский трафик, так и сложные многоэтапные атаки.
-В красной зоне Internet расположены источники угроз и нормальной активности: рабочая станция Kali Linux (Attacker) с полным набором инструментов пентеста, автоматизированный C2-сервер MITRE Caldera для эмуляции реальных TTP по матрице ATT&CK, а также генератор легитимного трафика, имитирующий почту, веб-серфинг и работу с файлами. Трафик проходит через Router 1 и первый межсетевой экран FW 1 в DMZ, где размещены почтовый сервер E Mail и веб-сервер OWASP с уязвимыми приложениями (bWAPP, DVWA). Далее через второй firewall FW 2 трафик попадает во внутреннюю сеть.
-Внутренняя инфраструктура разделена на три подсети. Subnet 2 содержит серверы предприятия: AD Server (Windows Server с Active Directory), File Server и DB server. Subnet 1 представляет рабочие станции пользователей — Windows 10 и Ubuntu. Subnet 3 — это зона SOC, где работают ELK Stack (Elasticsearch + Logstash + Kibana) для централизованного сбора и анализа логов, сетевой IDS/IPS Suricata и рабочая станция Host SOC Analyst. 
-
-
-⚠️ Дисклеймер: Все материалы предназначены исключительно для образовательных целей и тестирования в авторизованных средах. Автор не несёт ответственности за неправомерное использование информации.
+| CVE (Название) | Описание / NVD | 🌐 IOC Network Traffic | 💻 IOC Windows / Linux Host |
+| :--- | :--- | :--- | :--- |
+| **CVE-2017-0143**<br>*(EternalBlue)* | [NVD](https://nvd.nist.gov/vuln/detail/CVE-2017-0143) \| [📁 Папка](./CVE-2017-0143_EternalBlue) | `Trans2 Response: NT Status: STATUS_INVALID_PARAMETER (0xc000000d)` | `Sysmon ID: 3`<br>`Security ID: 4624` |
+| **CVE-2021-36942**<br>*(PetitPotam)* | [NVD](https://nvd.nist.gov/vuln/detail/CVE-2021-36942) \| [📁 Папка](./CVE-2021-36942_PetitPotam) |  `EFS Response: ERROR_BAD_NETPATH` | `Sysmon ID: 3, 18` |
+| **CVE-2026-27944**<br>*(Nginx UI)* | [NVD](https://nvd.nist.gov/vuln/detail/CVE-2026-27944) \| [📁 Папка](./CVE-2026-27944_Nginx%20UI) |  `GET "/api/backup"` | `GET "/api/backup"` |
+| *
