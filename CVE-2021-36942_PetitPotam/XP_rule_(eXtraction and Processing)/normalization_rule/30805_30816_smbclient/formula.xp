@@ -1,0 +1,88 @@
+EVENTLOG = '' 
+
+COND = lower($Provider["Name"])==lower("Microsoft-Windows-SMBClient") 
+       and lower($Channel)==lower("Microsoft-Windows-SmbClient/Connectivity") 
+       and ($EventID=="30805" or $EventID == "30816")
+
+subject = "host"
+object = "node"
+
+action = switch $EventID
+    case "30805" "disconnect"
+    case "30816" "negotiate"
+endswitch
+
+status = switch $Level
+    case "1" "failure"
+    case "2" "failure"
+    case "3" "failure"
+    case "4" "success"
+endswitch
+
+subject.account.domain =  substr($Computer,find_substr($Computer,".") + 1, length($Computer))
+src.hostname =  substr($Computer,0, find_substr($Computer,"."))
+dst.port = 445
+dst.host = substr($Data["ServerName"],1, length($Data["ServerName"]))
+
+if $Data["Address"] == null then 
+    dst.ip = dst.host
+else 
+    dst.ip = $Data["Address"]
+endif
+
+protocol = "SMB"
+
+time = $TimeCreated["SystemTime"]
+msgid = $EventID
+
+importance = switch $Level
+    case "1" "critical"
+    case "2" "high"
+    case "3" "medium"
+    case "4" "low"
+endswitch
+
+if $Data["SessionId"] != null then
+    datafield1 = $Data["SessionId"]
+endif
+
+datafield2 = $EventRecordID
+if $Data["Reason"] != null then
+    datafield3 = switch $Data["Reason"]
+        case "0" "The reason is not specified"
+        case "1" "The server name cannot be resolved"
+        case "3" "IPSec error when attempting to connect"
+        case "4" "Network error"
+        case "5" "Negotiate validation error"
+        case "12" "The server rejected the request to connect to the share"
+        case "13" "Error when requesting Validate Negotiate"
+    endswitch
+endif
+
+
+datafield4 = $Data["Status"]
+datafield5= switch $Data["Status"]
+    case "3221225667" "0xC00000C3"  # STATUS_INVALID_NETWORK_RESPONSE
+    case "3221225676" "0xC00000CC"  # STATUS_NETWORK_NAME_DELETED
+    case "3221225506" "0xC0000022"  # STATUS_ACCESS_DENIED
+    case "3221225996" "0xC000020C"  # STATUS_CONNECTION_DISCONNECTED
+    case "3221225803" "0xC000014B"  # STATUS_PIPE_BROKEN
+    case "3221226038" "0xC0000236"  # STATUS_NETWORK_SESSION_EXPIRED
+endswitch
+
+if $Data["TreeId"] != null then
+    datafield6 = $Data["TreeId"]
+endif
+
+if $Data["Address"] != null then
+    datafield7 = $Data["Address"]
+endif
+
+event_src.host = substr($Computer,0, find_substr($Computer,"."))
+event_src.hostname = substr($Computer,0, find_substr($Computer,"."))
+event_src.fqdn = $Computer
+event_src.category = "File service"
+event_src.title = "windows"
+event_src.vendor = "microsoft"
+
+id = "ID_Microsoft_Windows_SMBClient_Connectivity_30805_30816"

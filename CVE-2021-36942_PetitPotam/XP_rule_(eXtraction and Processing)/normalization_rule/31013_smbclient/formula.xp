@@ -1,0 +1,83 @@
+EVENTLOG = 'EventID="31013"'
+
+COND = lower($Provider["Name"])==lower("Microsoft-Windows-SMBClient") 
+       and lower($Channel)==lower("Microsoft-Windows-SmbClient/Security") 
+
+subject = "host"
+object = "node"
+action = "validate"
+
+src.hostname = substr($Computer,0, find_substr($Computer,"."))
+dst.ip = substr($Data["ServerName"], 1 ,length($Data["ServerName"])) 
+
+protocol = "smb"
+
+time = $TimeCreated["SystemTime"]
+msgid = $EventID
+
+datafield1 = $Level
+datafield2 = switch $Level
+    case "1" "critical"
+    case "2" "error"
+    case "3" "warning"
+    case "4" "information"
+endswitch
+
+datafield3 = $Provider["Name"]
+datafield4 = substr($Computer,find_substr($Computer,".") + 1, length($Computer))
+
+# Порядковый номер в журнале
+datafield5 = $EventRecordID
+    
+datafield7 = $Data["MessageId"]
+
+datafield8 = $Data["SessionId"]
+
+datafield9 = $Data["TreeId"]
+
+datafield10 = switch $Data["Smb2Command"]
+    case "0" "SMB2_NEGOTIATE"
+    case "1" "SMB2_SESSION_SETUP"
+    case "2" "SMB2_LOGOFF"
+    case "3" "SMB2_TREE_CONNECT"
+    case "4" "SMB2_TREE_DISCONNECT"
+    case "5" "SMB2_CREATE"
+    case "6" "SMB2_CLOSE"
+    case "7" "SMB2_FLUSH"
+    case "8" "SMB2_READ"
+    case "9" "SMB2_WRITE"
+    case "10" "SMB2_LOCK"
+    case "11" "SMB2_IOCTL"
+    case "12" "SMB2_CANCEL"
+    case "13" "SMB2_ECHO"
+    case "14" "SMB2_QUERY_DIRECTORY"
+    case "15" "SMB2_CHANGE_NOTIFY"
+    case "16" "SMB2_QUERY_INFO"
+    case "17" "SMB2_SET_INFO"
+    case "18" "SMB2_OPLOCK_BREAK"
+endswitch
+
+datafield11 = $Data["Status"]
+datafield12 = switch $Data["Status"]
+    case "3221266432" "0xC000A000"  # Специфичный IOCTL
+    case "3221225506" "0xC0000022"  # STATUS_ACCESS_DENIED
+    case "3221225667" "0xC00000C3"  # STATUS_INVALID_NETWORK_RESPONSE
+    case "3221225676" "0xC00000CC"  # STATUS_NETWORK_NAME_DELETED
+    case "3221225996" "0xC000020C"  # STATUS_CONNECTION_DISCONNECTED
+endswitch
+
+if $Level=="1"  or $Level=="2" or $Level=="3" then
+    importance = "high"
+else 
+    importance = "info"
+endif
+
+event_src.host = substr($Computer,0, find_substr($Computer,"."))
+event_src.hostname = substr($Computer,0, find_substr($Computer,"."))
+event_src.fqdn = $Computer
+event_src.category = "File service"
+event_src.title = "windows"
+event_src.vendor = "microsoft"
+
+id = "ID_Microsoft_Windows_SMBClient_Security_31013"
+

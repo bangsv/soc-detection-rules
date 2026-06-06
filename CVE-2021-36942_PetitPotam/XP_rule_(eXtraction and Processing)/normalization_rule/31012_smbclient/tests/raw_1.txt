@@ -1,0 +1,65 @@
+{
+    "Event": {
+        "System": {
+            "Provider": {
+                "Name": "Microsoft-Windows-SMBClient",
+                "Guid": "{988c59c5-0a1c-45b6-a555-0c62276e327d}"
+            },
+            "EventID": "31012",
+            "Version": "0",
+            "Level": "2",
+            "Task": "0",
+            "Opcode": "0",
+            "Keywords": "0x200000000000200",
+            "TimeCreated": {
+                "SystemTime": "2026-05-29T20:23:51.6900210Z"
+            },
+            "EventRecordID": "614",
+            "Correlation": "",
+            "Execution": {
+                "ProcessID": "0",
+                "ThreadID": "0"
+            },
+            "Channel": "Microsoft-Windows-SmbClient/Security",
+            "Computer": "dc01.work.local",
+            "Security": ""
+        },
+        "EventData": {
+            "Data": [
+                {
+                    "text": "514",
+                    "Name": "Dialect"
+                },
+                {
+                    "text": "1",
+                    "Name": "SecurityMode"
+                },
+                {
+                    "text": "0",
+                    "Name": "Capabilities"
+                },
+                {
+                    "text": "{4b624565-5849-7159-4651-724e6d4f4a5a}",
+                    "Name": "Guid"
+                },
+                {
+                    "text": "514",
+                    "Name": "Dialect2"
+                },
+                {
+                    "text": "1",
+                    "Name": "SecurityMode2"
+                },
+                {
+                    "text": "0",
+                    "Name": "Capabilities2"
+                },
+                {
+                    "text": "{41414141-4141-4141-4141-414141414141}",
+                    "Name": "Guid2"
+                }
+            ]
+        },
+        "xmlns": "http://schemas.microsoft.com/win/2004/08/events/event"
+    }
+}

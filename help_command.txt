@@ -22,3 +22,6 @@ https://www.uuidgenerator.net/version4
 
 Convert sigma rule
 https://sigconverter.io/
+
+
+Convert XML -> json: https://rtcd.io/ru/xml-to-json/

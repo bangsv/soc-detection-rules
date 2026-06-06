@@ -1,0 +1,60 @@
+{
+    "Event": {
+        "System": {
+            "Provider": {
+                "Name": "Microsoft-Windows-SMBClient",
+                "Guid": "{988c59c5-0a1c-45b6-a555-0c62276e327d}"
+            },
+            "EventID": "30805",
+            "Version": "2",
+            "Level": "3",
+            "Task": "0",
+            "Opcode": "0",
+            "Keywords": "0x400000000000040",
+            "TimeCreated": {
+                "SystemTime": "2026-05-29T20:23:51.6900210Z"
+            },
+            "EventRecordID": "235",
+            "Correlation": "",
+            "Execution": {
+                "ProcessID": "0",
+                "ThreadID": "0"
+            },
+            "Channel": "Microsoft-Windows-SmbClient/Connectivity",
+            "Computer": "dc01.work.local",
+            "Security": ""
+        },
+        "EventData": {
+            "Data": [
+                {
+                    "text": "3221225667",
+                    "Name": "Status"
+                },
+                {
+                    "text": "1474693005",
+                    "Name": "SessionId"
+                },
+                {
+                    "text": "0",
+                    "Name": "TreeId"
+                },
+                {
+                    "text": "13",
+                    "Name": "ServerNameLength"
+                },
+                {
+                    "text": "\\192.168.0.30",
+                    "Name": "ServerName"
+                },
+                {
+                    "text": "0",
+                    "Name": "AddressLength"
+                },
+                {
+                    "Name": "Address"
+                }
+            ]
+        },
+        "xmlns": "http://schemas.microsoft.com/win/2004/08/events/event"
+    }
+}

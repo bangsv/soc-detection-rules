@@ -1,0 +1,7 @@
+EventDescriptions:
+  - Criteria: id = "30805_30816_smbclient"
+    LocalizationId: 30805_30816_smbclient_1
+ObjectId: SEC-NF-297864294
+ExpertContext:
+  Created: 05.06.2026
+  Updated: 05.06.2026
