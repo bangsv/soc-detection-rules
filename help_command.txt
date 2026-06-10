@@ -25,3 +25,17 @@ https://sigconverter.io/
 
 
 Convert XML -> json: https://rtcd.io/ru/xml-to-json/
+
+
+
+xp test table list
+path windows_open_packeg
+table_list default
+table_list {
+    "Script_Extensions": [
+        {
+            "extension": "\\.cmd\\b"
+        }
+    ]
+}
+expect 1 {"correlation_name": "CVE_2023_38831_WinRar"}

@@ -1,0 +1,82 @@
+query Check_Server ($ip) from Server_List {
+    column::ip == $ip
+}
+
+event Attacker_host_connected_DC:
+    key:
+        src.ip
+    filter {
+        filter::NotFromCorrelator()
+        and msgid == "3"
+        and status == "success"
+        and event_src.title == "sysmon"
+        and direction == "ingress"
+        and exec_query("Check_Server", [dst.ip])
+        and not exec_query("Check_Server", [src.ip])
+        and dst.port == 445
+    }
+
+event Login_other_host:
+    key:
+        src.ip
+    filter {
+        filter::NotFromCorrelator()
+        and msgid == "4624"
+        and logon_type == 3
+        and status == "success"
+        and logon_service == "NtLmSsp"
+        and event_src.title == "windows"
+        and strip(subject.account.name, "", "$") != event_src.hostname
+        and not in_list(["анонимный вход", "anonymous logon"], lower(subject.account.name))
+    }
+
+rule NTLM_Relay_Lateral_Movement: (Attacker_host_connected_DC[1] and Login_other_host[1]) timer 10s
+
+on Attacker_host_connected_DC {
+    $src.ip = src.ip
+    $src.hostname = src.hostname
+    $src.port = src.port
+    
+    $dst.ip = dst.ip
+    $dst.hostname = dst.hostname
+    $dst.fqdn = dst.fqdn
+    $dst.port = dst.port
+    
+    $protocol = protocol
+    $action = "connect"
+    $status = "success"
+    
+    $event_src.hostname = event_src.hostname
+    $event_src.fqdn = event_src.fqdn
+}
+
+on Login_other_host {
+    $subject.account.name = subject.account.name
+    $subject.account.id = subject.account.id
+    $subject.account.domain = subject.account.domain
+    
+    $logon_type = logon_type
+    $logon_service = logon_service
+    
+    $event_src.hostname = event_src.hostname
+    $event_src.fqdn = event_src.fqdn
+    
+    $datafield12 = strip(subject.account.name, "", "$")
+    
+    $alert.key = join([$src.ip, $dst.hostname], "|")
+    
+    $importance = "high"
+    $incident.description = "Обнаружена цепочка событий, характерная для перемещения по сети: хост подключился к контроллеру домена по SMB (порт 445), после чего с этого же IP-адреса была успешно выполнена сетевая аутентификация (Logon Type 3, NTLM) на другой узел сети. Возможна компрометация учетных данных или NTLM-релей атака."
+}
+
+emit {
+    $correlation_type = "incident"
+    $incident.aggregation.timeout = 30s
+
+    $action = "detect"
+    $object = "account"
+    $status = "success"
+    
+    $category.generic = "Attack"
+    $correlation_name = "CVE_2021_36942"
+}
