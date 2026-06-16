@@ -16,6 +16,7 @@ event Attacker_host_connected_DC:
         and dst.port == 445
     }
 
+# Добавил проверку Check_Server на тот случай если sysmon массово не используется и ориентироваться только на 4624 при различных атаках PetitPotam PrinterBug DFSCoerce ShadowCoerce
 event Login_other_host:
     key:
         src.ip
@@ -26,11 +27,12 @@ event Login_other_host:
         and status == "success"
         and logon_service == "NtLmSsp"
         and event_src.title == "windows"
+        and not exec_query("Check_Server", [src.ip])
+        and find_substr(subject.account.name, "$") != null
         and strip(subject.account.name, "", "$") != event_src.hostname
-        and not in_list(["анонимный вход", "anonymous logon"], lower(subject.account.name))
     }
 
-rule NTLM_Relay_Lateral_Movement: (Attacker_host_connected_DC[1] and Login_other_host[1]) timer 10s
+rule NTLM_Relay_Lateral_Movement: (Attacker_host_connected_DC -> Login_other_host) timer 1m
 
 on Attacker_host_connected_DC {
     $src.ip = src.ip
