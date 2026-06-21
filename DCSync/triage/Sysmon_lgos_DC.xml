@@ -1,0 +1,163 @@
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+<System>
+  <Provider Name="Microsoft-Windows-Sysmon" Guid="{5770385F-C22A-43E0-BF4C-06F5698FFBD9}" /> 
+  <EventID>3</EventID> 
+  <Version>5</Version> 
+  <Level>4</Level> 
+  <Task>3</Task> 
+  <Opcode>0</Opcode> 
+  <Keywords>0x8000000000000000</Keywords> 
+  <TimeCreated SystemTime="2026-06-20T14:21:15.011935100Z" /> 
+  <EventRecordID>235587</EventRecordID> 
+  <Correlation /> 
+  <Execution ProcessID="1632" ThreadID="3916" /> 
+  <Channel>Microsoft-Windows-Sysmon/Operational</Channel> 
+  <Computer>dc01.work.local</Computer> 
+  <Security UserID="S-1-5-18" /> 
+  </System>
+<EventData>
+  <Data Name="RuleName">-</Data> 
+  <Data Name="UtcTime">2026-06-20 14:21:13.936</Data> 
+  <Data Name="ProcessGuid">{0D1D3B46-9E5A-6A36-EB03-000000000000}</Data> 
+  <Data Name="ProcessId">4</Data> 
+  <Data Name="Image">System</Data> 
+  <Data Name="User">NT AUTHORITY\СИСТЕМА</Data> 
+  <Data Name="Protocol">tcp</Data> 
+  <Data Name="Initiated">false</Data> 
+  <Data Name="SourceIsIpv6">false</Data> 
+  <Data Name="SourceIp">192.168.0.30</Data> 
+  <Data Name="SourceHostname">-</Data> 
+  <Data Name="SourcePort">50556</Data> 
+  <Data Name="SourcePortName">-</Data> 
+  <Data Name="DestinationIsIpv6">false</Data> 
+  <Data Name="DestinationIp">192.168.0.10</Data> 
+  <Data Name="DestinationHostname">dc01.work.local</Data> 
+  <Data Name="DestinationPort">445</Data> 
+  <Data Name="DestinationPortName">microsoft-ds</Data> 
+  </EventData>
+  </Event>
+
+
+
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+<System>
+  <Provider Name="Microsoft-Windows-Sysmon" Guid="{5770385F-C22A-43E0-BF4C-06F5698FFBD9}" /> 
+  <EventID>3</EventID> 
+  <Version>5</Version> 
+  <Level>4</Level> 
+  <Task>3</Task> 
+  <Opcode>0</Opcode> 
+  <Keywords>0x8000000000000000</Keywords> 
+  <TimeCreated SystemTime="2026-06-20T14:21:15.011935100Z" /> 
+  <EventRecordID>235588</EventRecordID> 
+  <Correlation /> 
+  <Execution ProcessID="1632" ThreadID="3916" /> 
+  <Channel>Microsoft-Windows-Sysmon/Operational</Channel> 
+  <Computer>dc01.work.local</Computer> 
+  <Security UserID="S-1-5-18" /> 
+  </System>
+<EventData>
+  <Data Name="RuleName">-</Data> 
+  <Data Name="UtcTime">2026-06-20 14:21:13.990</Data> 
+  <Data Name="ProcessGuid">{0D1D3B46-9E66-6A36-4218-010000000000}</Data> 
+  <Data Name="ProcessId">704</Data> 
+  <Data Name="Image">C:\Windows\System32\svchost.exe</Data> 
+  <Data Name="User">NT AUTHORITY\NETWORK SERVICE</Data> 
+  <Data Name="Protocol">tcp</Data> 
+  <Data Name="Initiated">false</Data> 
+  <Data Name="SourceIsIpv6">false</Data> 
+  <Data Name="SourceIp">192.168.0.30</Data> 
+  <Data Name="SourceHostname">-</Data> 
+  <Data Name="SourcePort">44600</Data> 
+  <Data Name="SourcePortName">-</Data> 
+  <Data Name="DestinationIsIpv6">false</Data> 
+  <Data Name="DestinationIp">192.168.0.10</Data> 
+  <Data Name="DestinationHostname">dc01.work.local</Data> 
+  <Data Name="DestinationPort">135</Data> 
+  <Data Name="DestinationPortName">epmap</Data> 
+  </EventData>
+  </Event>
+
+
+
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+<System>
+  <Provider Name="Microsoft-Windows-Sysmon" Guid="{5770385F-C22A-43E0-BF4C-06F5698FFBD9}" /> 
+  <EventID>3</EventID> 
+  <Version>5</Version> 
+  <Level>4</Level> 
+  <Task>3</Task> 
+  <Opcode>0</Opcode> 
+  <Keywords>0x8000000000000000</Keywords> 
+  <TimeCreated SystemTime="2026-06-20T14:21:15.011935100Z" /> 
+  <EventRecordID>235589</EventRecordID> 
+  <Correlation /> 
+  <Execution ProcessID="1632" ThreadID="3916" /> 
+  <Channel>Microsoft-Windows-Sysmon/Operational</Channel> 
+  <Computer>dc01.work.local</Computer> 
+  <Security UserID="S-1-5-18" /> 
+  </System>
+<EventData>
+  <Data Name="RuleName">-</Data> 
+  <Data Name="UtcTime">2026-06-20 14:21:13.993</Data> 
+  <Data Name="ProcessGuid">{0D1D3B46-9E60-6A36-68C0-000000000000}</Data> 
+  <Data Name="ProcessId">524</Data> 
+  <Data Name="Image">C:\Windows\System32\lsass.exe</Data> 
+  <Data Name="User">NT AUTHORITY\СИСТЕМА</Data> 
+  <Data Name="Protocol">tcp</Data> 
+  <Data Name="Initiated">false</Data> 
+  <Data Name="SourceIsIpv6">false</Data> 
+  <Data Name="SourceIp">192.168.0.30</Data> 
+  <Data Name="SourceHostname">-</Data> 
+  <Data Name="SourcePort">57976</Data> 
+  <Data Name="SourcePortName">-</Data> 
+  <Data Name="DestinationIsIpv6">false</Data> 
+  <Data Name="DestinationIp">192.168.0.10</Data> 
+  <Data Name="DestinationHostname">dc01.work.local</Data> 
+  <Data Name="DestinationPort">49155</Data> 
+  <Data Name="DestinationPortName">-</Data> 
+  </EventData>
+  </Event>
+
+
+
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+<System>
+  <Provider Name="Microsoft-Windows-Sysmon" Guid="{5770385F-C22A-43E0-BF4C-06F5698FFBD9}" /> 
+  <EventID>3</EventID> 
+  <Version>5</Version> 
+  <Level>4</Level> 
+  <Task>3</Task> 
+  <Opcode>0</Opcode> 
+  <Keywords>0x8000000000000000</Keywords> 
+  <TimeCreated SystemTime="2026-06-20T14:21:16.048540700Z" /> 
+  <EventRecordID>235593</EventRecordID> 
+  <Correlation /> 
+  <Execution ProcessID="1632" ThreadID="3916" /> 
+  <Channel>Microsoft-Windows-Sysmon/Operational</Channel> 
+  <Computer>dc01.work.local</Computer> 
+  <Security UserID="S-1-5-18" /> 
+  </System>
+<EventData>
+  <Data Name="RuleName">-</Data> 
+  <Data Name="UtcTime">2026-06-20 14:21:14.811</Data> 
+  <Data Name="ProcessGuid">{0D1D3B46-9E5A-6A36-EB03-000000000000}</Data> 
+  <Data Name="ProcessId">4</Data> 
+  <Data Name="Image">System</Data> 
+  <Data Name="User">NT AUTHORITY\СИСТЕМА</Data> 
+  <Data Name="Protocol">udp</Data> 
+  <Data Name="Initiated">true</Data> 
+  <Data Name="SourceIsIpv6">false</Data> 
+  <Data Name="SourceIp">192.168.0.10</Data> 
+  <Data Name="SourceHostname">dc01.work.local</Data> 
+  <Data Name="SourcePort">137</Data> 
+  <Data Name="SourcePortName">netbios-ns</Data> 
+  <Data Name="DestinationIsIpv6">false</Data> 
+  <Data Name="DestinationIp">192.168.0.30</Data> 
+  <Data Name="DestinationHostname">-</Data> 
+  <Data Name="DestinationPort">137</Data> 
+  <Data Name="DestinationPortName">netbios-ns</Data> 
+  </EventData>
+  </Event>
+
+
