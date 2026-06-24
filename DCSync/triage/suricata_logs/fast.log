@@ -1,0 +1,15 @@
+06/20/2026-00:16:09.007130  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:09.011352  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:09.022130  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:09.029772  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:09.039554  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:09.046092  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:09.054496  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:09.063932  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:09.072584  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:09.081774  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:08.910815  [**] [1:2067085:1] ET INFO NTLM Session Setup Request - Negotiate [**] [Classification: Misc activity] [Priority: 3] {TCP} 192.168.0.30:43838 -> 192.168.0.10:445
+06/20/2026-00:16:09.090221  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:08.911101  [**] [1:2067086:1] ET INFO NTLMv1 Session Setup Response - Challenge [**] [Classification: Misc activity] [Priority: 3] {TCP} 192.168.0.10:445 -> 192.168.0.30:43838
+06/20/2026-00:16:09.098849  [**] [1:1000011:1] Mimikatz DRSUAPI DsGetNCChanges Request [**] [Classification: Potential Corporate Privacy Violation] [Priority: 1] {TCP} 192.168.0.30:51420 -> 192.168.0.10:49158
+06/20/2026-00:16:08.914527  [**] [1:2067087:1] ET INFO NTLM Session Setup Request - Auth [**] [Classification: Misc activity] [Priority: 3] {TCP} 192.168.0.30:43838 -> 192.168.0.10:445

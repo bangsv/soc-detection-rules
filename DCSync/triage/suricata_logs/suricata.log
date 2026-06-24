@@ -1,0 +1,20 @@
+[6620 - Suricata-Main] 2026-06-22 17:21:04 Notice: suricata: This is Suricata version 7.0.3 RELEASE running in USER mode
+[6620 - Suricata-Main] 2026-06-22 17:21:04 Info: cpu: CPUs/cores online: 4
+[6620 - Suricata-Main] 2026-06-22 17:21:04 Info: suricata: Setting engine mode to IDS mode by default
+[6620 - Suricata-Main] 2026-06-22 17:21:04 Info: exception-policy: master exception-policy set to: auto
+[6620 - Suricata-Main] 2026-06-22 17:21:04 Info: logopenfile: fast output device (regular) initialized: fast.log
+[6620 - Suricata-Main] 2026-06-22 17:21:04 Info: logopenfile: eve-log output device (regular) initialized: eve.json
+[6620 - Suricata-Main] 2026-06-22 17:21:04 Info: logopenfile: stats output device (regular) initialized: stats.log
+[6620 - Suricata-Main] 2026-06-22 17:21:15 Info: detect: 1 rule files processed. 49406 rules successfully loaded, 0 rules failed, 0
+[6620 - Suricata-Main] 2026-06-22 17:21:15 Info: threshold-config: Threshold config parsed: 0 rule(s) found
+[6620 - Suricata-Main] 2026-06-22 17:21:15 Info: detect: 49411 signatures processed. 1275 are IP-only rules, 4487 are inspecting packet payload, 43417 inspect application layer, 108 are decoder event only
+[6620 - Suricata-Main] 2026-06-22 17:21:25 Info: unix-manager: unix socket '/var/run/suricata-command.socket'
+[6620 - Suricata-Main] 2026-06-22 17:21:25 Warning: unix-manager: Unix socket: UNIX socket bind(/var/run/suricata-command.socket) error: Address already in use
+[6620 - Suricata-Main] 2026-06-22 17:21:25 Warning: unix-manager: Unable to create unix command socket
+[6623 - RX#01] 2026-06-22 17:21:25 Info: pcap: Starting file run for dcsync.pcapng
+[6623 - RX#01] 2026-06-22 17:21:25 Info: pcap: pcap file dcsync.pcapng end of file reached (pcap err code 0)
+[6620 - Suricata-Main] 2026-06-22 17:21:25 Notice: threads: Threads created -> RX: 1 W: 4 FM: 1 FR: 1   Engine started.
+[6620 - Suricata-Main] 2026-06-22 17:21:25 Notice: suricata: Signal Received.  Stopping engine.
+[6620 - Suricata-Main] 2026-06-22 17:21:25 Info: suricata: time elapsed 0.045s
+[6623 - RX#01] 2026-06-22 17:21:25 Notice: pcap: read 1 file, 168 packets, 77952 bytes
+[6620 - Suricata-Main] 2026-06-22 17:21:25 Info: counters: Alerts: 15
