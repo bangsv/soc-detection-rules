@@ -1,0 +1,85 @@
+EVENTLOG = 'EventID="4742"'
+COND = lower($Channel)=="security" and $Provider["Name"]=="Microsoft-Windows-Security-Auditing"
+
+subject = "account"
+action = "modify"
+object = "account"
+status = "success"
+
+subject.account.id = $Data["SubjectUserSid"]
+subject.account.name = lower($Data["SubjectUserName"])
+subject.account.domain = lower($Data["SubjectDomainName"])
+subject.account.session_id = maybe_number16($Data["SubjectLogonId"])
+
+object.account.name = lower($Data["TargetUserName"])
+object.account.domain = lower($Data["TargetDomainName"])
+object.account.id = $Data["TargetSid"]
+object.property = "modified attributes"
+
+datafield2 = lower($Data["ServicePrincipalNames"])  
+
+time = $TimeCreated["SystemTime"]
+msgid = $EventID
+importance = "low"
+
+if $Data["PrivilegeList"] != "-" then
+    object.new_value = "_PrivilegeList:" + replace($Data["PrivilegeList"], "_", " ") + ";"
+elif $Data["SamAccountName"] != "-" then
+    object.new_value = "_SamAccountName:" + replace($Data["SamAccountName"], "_", " ") + ";"
+elif $Data["DisplayName"] != "-" then
+    object.new_value = "_DisplayName:" + replace($Data["DisplayName"], "_", " ") + ";"
+elif $Data["UserPrincipalName"] != "-" then
+    object.new_value = "_UserPrincipalName:" + replace($Data["UserPrincipalName"], "_", " ") + ";"
+elif $Data["HomeDirectory"] != "-" then
+    object.new_value = "_HomeDirectory:" + replace($Data["HomeDirectory"], "_", " ") + ";"
+elif $Data["HomePath"] != "-" then
+    object.new_value = "_HomePath:" + replace($Data["HomePath"], "_", " ") + ";"
+elif $Data["ScriptPath"] != "-" then
+    object.new_value = "_ScriptPath:" + replace($Data["ScriptPath"], "_", " ") + ";"
+elif $Data["ProfilePath"] != "-" then
+    object.new_value = "_ProfilePath:" + replace($Data["ProfilePath"], "_", " ") + ";"
+elif $Data["UserWorkstations"] != "-" then
+    object.new_value = "_UserWorkstations:" + replace($Data["UserWorkstations"], "_", " ") + ";"
+elif $Data["PasswordLastSet"] != "-" then
+    object.new_value = "_PasswordLastSet:" + replace($Data["PasswordLastSet"], "_", " ") + ";"
+elif $Data["AccountExpires"] != "-" then
+    object.new_value = "_AccountExpires:" + replace($Data["AccountExpires"], "_", " ") + ";"
+elif $Data["PrimaryGroupId"] != "-" then
+    object.new_value = "_PrimaryGroupId:" + replace($Data["PrimaryGroupId"], "_", " ") + ";"
+elif $Data["AllowedToDelegateTo"] != "-" then
+    object.new_value = "_AllowedToDelegateTo:" + replace($Data["AllowedToDelegateTo"], "_", " ") + ";"
+elif $Data["OldUacValue"] != "-" then
+    object.new_value = "_OldUacValue:" + replace($Data["OldUacValue"], "_", " ") + ";"
+elif $Data["NewUacValue"] != "-" then
+    object.new_value = "_NewUacValue:" + replace($Data["NewUacValue"], "_", " ") + ";"
+elif $Data["UserAccountControl"] != "-" then
+    object.new_value = "_UserAccountControl:" + replace($Data["UserAccountControl"], "_", " ") + ";"
+elif $Data["UserParameters"] != "-" then
+    object.new_value = "_UserParameters:" + replace($Data["UserParameters"], "_", " ") + ";"
+elif $Data["SidHistory"] != "-" then
+    object.new_value = "_SidHistory:" + replace($Data["SidHistory"], "_", " ") + ";"
+elif $Data["LogonHours"] != "-" then
+    object.new_value = "_LogonHours:" + replace($Data["LogonHours"], "_", " ") + ";"
+elif $Data["DnsHostName"] != "-" then
+    object.new_value = "_DnsHostName:" + replace($Data["DnsHostName"], "_", " ") + ";"
+elif $Data["ServicePrincipalNames"] != "-" then
+    object.new_value = "_ServicePrincipalNames:" + replace($Data["ServicePrincipalNames"], "_", " ") + ";"
+endif
+
+category.generic = "Account"
+category.high = "Users And Rights Management"
+category.low = "Manipulation"
+
+event_src.vendor = "microsoft"
+event_src.title = "windows"
+event_src.subsys = $Channel
+if find_substr($Computer, '.') != null then
+    event_src.fqdn = lower($Computer)
+    event_src.hostname = lower(substr($Computer, 0, find_substr($Computer, '.')))
+else
+    event_src.hostname = lower($Computer)
+endif
+event_src.category = "Directory service"
+
+id = "PT_Microsoft_Windows_eventlog_4742_A_computer_account_was_changed"
+

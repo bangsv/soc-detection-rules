@@ -28,3 +28,103 @@ Microsoft-Windows-Security-Auditing 4662
     "subject.account.session_id": "3358641",
     "time": "2026-06-19T21:15:36.645Z"
 }
+
+------------------------------------------------------------------
+Microsoft-Windows-Security-Auditing 4776 
+
+{
+    "action": "login",
+    "category.generic": "Operating System",
+    "category.high": "Access Management",
+    "category.low": "Communication",
+    "datafield1": "status OK",
+    "event_src.category": "AAA",
+    "event_src.fqdn": "dc01.work.local",
+    "event_src.hostname": "dc01",
+    "event_src.subsys": "Security",
+    "event_src.title": "windows",
+    "event_src.vendor": "microsoft",
+    "id": "PT_Microsoft_Windows_eventlog_4776_Account_used_for_logon",
+    "importance": "low",
+    "msgid": "4776",
+    "object": "system",
+    "reason": "0x0",
+    "status": "success",
+    "subject": "account",
+    "subject.account.name": "svc_replicator",
+    "time": "2026-06-19T21:15:36.550Z"
+}
+
+------------------------------------------------------------------
+Microsoft-Windows-Security-Auditing 4624
+
+{
+    "action": "login",
+    "category.generic": "Operating System",
+    "category.high": "Access Management",
+    "category.low": "Communication",
+    "datafield6": "Network",
+    "datafield9": "NTLM",
+    "dst.fqdn": "dc01.work.local",
+    "dst.hostname": "dc01",
+    "event_src.category": "AAA",
+    "event_src.fqdn": "dc01.work.local",
+    "event_src.hostname": "dc01",
+    "event_src.subsys": "Security",
+    "event_src.title": "windows",
+    "event_src.vendor": "microsoft",
+    "id": "PT_Microsoft_Windows_eventlog_4624_An_account_was_successfully_logged_on",
+    "importance": "info",
+    "logon_auth_method": "remote",
+    "logon_service": "NtLmSsp",
+    "logon_type": 3,
+    "msgid": "4624",
+    "object": "system",
+    "src.ip": "192.168.0.30",
+    "src.port": 43838,
+    "status": "success",
+    "subject": "account",
+    "subject.account.domain": "work",
+    "subject.account.id": "S-1-5-21-2790878447-3455683389-983535108-1116",
+    "subject.account.name": "svc_replicator",
+    "subject.account.session_id": "3358584",
+    "time": "2026-06-19T21:15:36.550Z"
+}
+
+------------------------------------------------------------------
+Microsoft-Windows-Security-Auditing 5140
+
+{
+    "action": "access",
+    "category.generic": "File System Object",
+    "category.high": "System Management",
+    "category.low": "Manipulation",
+    "datafield3": "0x1",
+    "dst.fqdn": "dc01.work.local",
+    "dst.hostname": "dc01",
+    "event_src.category": "Operating system",
+    "event_src.fqdn": "dc01.work.local",
+    "event_src.hostname": "dc01",
+    "event_src.subsys": "Security",
+    "event_src.title": "windows",
+    "event_src.vendor": "microsoft",
+    "id": "PT_Microsoft_Windows_eventlog_5140_A_network_share_object_was_accessed",
+    "importance": "medium",
+    "msgid": "5140",
+    "object": "file_object",
+    "object.fullpath": "\\ipc$",
+    "object.name": "ipc$",
+    "object.path": "\\",
+    "object.storage.id": "\\\\*\\IPC$",
+    "object.type": "File",
+    "src.ip": "192.168.0.30",
+    "src.port": 43838,
+    "status": "success",
+    "subject": "account",
+    "subject.account.domain": "work",
+    "subject.account.id": "S-1-5-21-2790878447-3455683389-983535108-1116",
+    "subject.account.name": "svc_replicator",
+    "subject.account.privileges": "%%4416",
+    "subject.account.session_id": "3358584",
+    "time": "2026-06-19T21:15:36.550Z"
+}
