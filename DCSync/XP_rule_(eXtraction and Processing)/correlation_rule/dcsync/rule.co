@@ -1,0 +1,59 @@
+query Check_Server ($fqdn) from Server_List {
+    column::fqdn == $fqdn
+}
+
+event Success_login:
+    key:
+        event_src.hostname, subject.account.name
+    filter {
+        msgid == "4624"
+        and logon_type == 3
+        and status == "success"
+        and event_src.title == "windows"
+        and exec_query("Check_Server", [event_src.fqdn])
+    }
+        
+event Suspicion_performed_object:
+    key:
+        event_src.hostname, subject.account.name
+    filter {
+        msgid == "4662"
+        and datafield5 == "0x100"
+        and match(lower(datafield2), "{19195a5b-6da0-11d0-afd3-00c04fd930c9}") != null
+        and object.type == "19195a5b-6da0-11d0-afd3-00c04fd930c9"
+        and status == "success"
+        and event_src.title == "windows"
+    }
+
+rule DCSync: (Success_login -> Suspicion_performed_object) timer 1m
+
+on Success_login {
+
+    $src.ip = src.ip 
+    $src.port = src.port
+    $dst.hostname = dst.hostname 
+
+    $subject.account.name = subject.account.name
+    $logon_type = logon_type
+
+    $datafield9 = datafield9
+}
+
+on Suspicion_performed_object{
+    
+    $object.type = object.type
+    $subject.account.domain = subject.account.domain
+    $datafield2 = datafield2
+    $datafield5 = datafield5
+}
+
+emit { 
+    
+    $correlation_type = "incident"
+
+    $object = "ds_object"
+    $action = "copy"
+    $status = "success"
+    $importance = "high"
+
+}
