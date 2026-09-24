@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SOC Atlas — Detection Rules</title><link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/enhancements.css"><link rel="stylesheet" href="/static/final-tweaks.css"><link rel="stylesheet" href="/static/last.css">
+</head>
+<body>
+  <div class="grid"></div>
+  <header><a class="brand" href="#top"><span class="brand-mark">◈</span> SOC <b>ATLAS</b></a><nav><a href="#explorer">Поиск</a><a href="#attacks-map">Атаки</a><a href="#knowledge">Документация</a><a href="https://github.com/bangsv" target="_blank" rel="noreferrer">GitHub ↗</a></nav><button id="reindex" title="Обновить индекс">↻</button></header>
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy"><p class="eyebrow">DETECTION ENGINEERING / KNOWLEDGE BASE</p><h1>Детектирование<br><i>с полным контекстом.</i></h1><p class="lede">Централизованная база правил, индикаторов компрометации и сценариев атак для анализа, расследований и повышения зрелости SOC.</p><div class="hero-actions"><a href="#explorer" class="button">Открыть атлас <span>→</span></a><a href="#knowledge" class="quiet-link">Читать документацию ↓</a></div><div class="metrics" id="metrics"></div></div>
+      <a class="author-card" href="/about"><span class="author-kicker">АВТОР ПРОЕКТА</span><img class="author-photo" src="/static/assets/yury-zakharchuk.jpg" alt="Захарчук Юрий Александрович"><h2>Захарчук Юрий<br>Александрович</h2><p>Аналитик SOC L2/L3</p><span class="author-more">Профиль специалиста <b>→</b></span></a>
+    </section>
+    <section id="explorer" class="section"><div class="section-head"><div><p class="eyebrow">IOC EXPLORER</p><h2>Точный поиск</h2></div><p>CVE · IOC · название угрозы · хеш · IP · домен</p></div><div class="searchbox"><span>⌕</span><input id="ioc-search" autocomplete="off" placeholder="Например: CVE-2021-36942, EfsRpcOpenFileRaw, 0xc000000d"><kbd>ESC</kbd></div><div id="search-state" class="search-state">Поиск по CVE, IOC, хешам и названиям угроз.</div><div id="results" class="results"></div></section>
+    <section id="attacks-map" class="section attacks-section"><div class="section-head"><div><p class="eyebrow">ATTACK CATALOG</p><h2>Карта сценариев</h2></div><p>Выберите сценарий, чтобы посмотреть полный, структурированный список IOC.</p></div><div id="attacks" class="attack-grid"></div><section id="attack-detail" class="attack-detail" hidden></section></section>
+    <section id="knowledge" class="section knowledge"><div class="section-head"><div><p class="eyebrow">DOCUMENTATION</p><h2>База знаний</h2></div><p>README из репозитория с корректным Markdown-оформлением.</p></div><div class="knowledge-layout"><aside id="readme-nav" class="readme-nav"></aside><article id="document" class="document"><div class="document-empty"><span>▱</span><h3>Выберите документ</h3><p>Откройте README из навигации слева.</p></div></article></div></section>
+  </main><footer><span>◈ SOC ATLAS</span><span>Автор: Захарчук Юрий Александрович</span></footer><script src="/static/app.js"></script>
+</body></html>

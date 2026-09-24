@@ -1,0 +1,2 @@
+/* Raise the former 11px utility text to the requested readable 13px baseline. */
+.metrics span,.author-card a,.found-in>span,.attack-badge,.result-open,.open-doc,.card-arrow,.ioc-list code,.file-name,.author-more,.eyebrow,.focus-grid span{font-size:13px}.result-open,.open-doc{font-size:13px}.author-photo{display:block;width:68px;height:68px;object-fit:cover;object-position:50% 72%;border-radius:50%;border:1px solid var(--lime);margin:20px 0 16px;filter:saturate(.88) contrast(1.04)}

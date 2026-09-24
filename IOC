@@ -1,0 +1,77 @@
+### EternalBlue
+
+**Windows Host IOC**
+
+1. `4624` — `LogonType=3`, учетная запись `ANONYMOUS LOGON` / `АНОНИМНЫЙ ВХОД`. Некритичный IOC.
+2. ❗ **Sysmon Event ID 3** — исходящее соединение от подозрительного процесса, например `spoolsv.exe`, к хосту злоумышленника.
+
+**Network IOC**
+
+1. `SMB Negotiate Protocol Request` — `NT LM 0.12` (SMBv1).
+2. `STATUS_INSUFF_SERVER_RESOURCES` — `0xC0000205`.
+3. `NT Trans Request` с аномальным `Bytes remaining until TDC` — например `61111`.
+4. ❗ **Ошибка `INVALID_PARAMETER` / `0xC000000D`.**
+
+### Zerologon
+
+**Windows Host IOC**
+
+1. ❗ **`4742`** — `SubjectUserName=ANONYMOUS LOGON` / `АНОНИМНЫЙ ВХОД`, `SubjectUserSid=S-1-5-7`.
+2. `5805` — ошибка установления защищенного канала с контроллером домена.
+
+**Network IOC**
+
+1. `NetrServerReqChallenge` — `Opnum 4`.
+2. `NetrServerAuthenticate3` — `Opnum 26`.
+3. Многократное повторение `NetrServerReqChallenge` → `NetrServerAuthenticate3`.
+4. `ClientChallenge` — `8 байт 0x00`.
+5. `ClientCredential` в `NetrServerAuthenticate3` — `8 байт 0x00`.
+6. ❗ **`NetrServerAuthenticate3` с `0x00000000` (`STATUS_SUCCESS`) при аномальной последовательности запросов.**
+7. ❗ **`NetrServerPasswordSet2` — `Opnum 30`.**
+
+### PetitPotam
+
+**Windows Host IOC**
+
+1. `4624` — `LogonType=3`, учетная запись `ANONYMOUS LOGON` / `АНОНИМНЫЙ ВХОД`. Может использоваться другая учетная запись.
+2. `Sysmon Event ID 3` — сетевое соединение с `Initiated=true` и `Initiated=false`.
+3. ❗ **На другом хосте `4624` с IP злоумышленника и учетной записью ранее атакованного устройства.**
+
+**Network IOC**
+
+1. ❗ **RPC-вызовы EFSRPC с UNC-путем к машине злоумышленника:**
+
+   * `EfsRpcOpenFileRaw`
+   * `EfsRpcEncryptFileSrv`
+   * `EfsRpcDecryptFileSrv`
+   * `EfsRpcQueryUsersOnFile`
+   * `EfsRpcQueryRecoveryAgents`
+   * `EfsRpcRemoveUsersFromFile`
+   * `EfsRpcAddUsersToFile`
+   * `EfsRpcFileKeyInfo`
+   * `EfsRpcDuplicateEncryptionInfoFile`
+   * `EfsRpcAddUsersToFileEx`
+   * `EfsRpcFileKeyInfoEx`
+   * `EfsRpcGetEncryptedFileMetadata`
+   * `EfsRpcSetEncryptedFileMetadata`
+   * `EfsRpcEncryptFileExSrv`
+   * `EfsRpcQueryProtectors`
+2. ❗ **RPC Response с ошибкой `WERR_BAD_NETPATH`.**
+
+### DCSync
+
+**Windows Host IOC**
+
+1. `4624` — вход под учетной записью с правами репликации AD. Может использоваться машинная учетная запись.
+2. ❗ **`4662` — `AccessMask=0x100` и GUID `{1131f6aa-9c07-11d1-f79f-00c04fc2dcd2}`.**
+
+**Network IOC**
+
+1. Отсутствие `DRSReplicaSync` при выполнении репликационного обмена.
+2. ❗ **`DRSGetNCChanges` Request → Response с TCP-пакетом размером более ~1200 байт.**
+
+### Nginx UI
+
+**Network / HTTP IOC**
+
+1. ❗ **`GET /api/backup` → HTTP `200 OK`.**

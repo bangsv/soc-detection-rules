@@ -1,0 +1,11 @@
+services:
+  soc-rules:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Правила остаются на хосте: изменения видны после обновления страницы.
+      - ./:/app
+    environment:
+      - RULES_DIR=/app
+
