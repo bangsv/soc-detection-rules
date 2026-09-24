@@ -9,7 +9,17 @@
 
 Репозиторий содержит базу знаний и правила детектирования для аналитиков SOC. Здесь собраны Sigma/XP/Suricata, Sysmon/Auditd-правила, PoC-скрипты и материалы для триажа инцидентов.
 
+## 🕵️ Threat Intelligence Reports
+
+Полезные площадки с аналитическими отчётами, исследованиями APT-группировок и Threat Intelligence-фидами от ведущих российских ИБ-вендоров:
+
+- 🟢 **[Kaspersky Threat Intelligence](https://www.kaspersky.ru/enterprise-security/threat-intelligence)** — сервисы и отчёты Kaspersky по анализу угроз, APT-репорты, TI-фиды
+- 🔴 **[PT ESC Threat Intelligence](https://ptsecurity.com/research/pt-esc-threat-intelligence/)** — исследования Positive Technologies Expert Security Center
+- 🟣 **[F6 Research Hub](https://www.f6.ru/resources/research-hub/)** — база исследований и отчётов F6 (ex. F.A.C.C.T. / Group-IB)
+- 🔵 **[BI.ZONE Research](https://bi.zone/expertise/research/)** — аналитические материалы и отчёты BI.ZONE
+
 ---
+
 
 ## 🖥️ Hosts (Lab Environment)
 
@@ -75,7 +85,7 @@
 | **DCSync**                  | [Habr — DCSync](https://habr.com/ru/companies/rvision/articles/709866/)<br>[Habr — DCSync](https://habr.com/ru/companies/rvision/articles/709942/)      |
 | **EternalBlue (MS17-010)**  | [Habr — EternalBlue / MS17-010](https://habr.com/ru/companies/k2tech/articles/892202/)                                                                  |
 
-
+---
 
 **© 2026 Захарчук Юрий Александрович** — Все права защищены.  
 Данный материал подготовлен для внутреннего использования в SOC и образовательных целях.
