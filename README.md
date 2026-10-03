@@ -1,9 +1,5 @@
 # 🛡️ SOC Detection Rules
 
-[![License: MIT](https://img.shields.io/badge/License-Educational-blue.svg)]()
-[![Last Update](https://img.shields.io/badge/Last%20Update-June%202026-green.svg)]()
-[![Rules Count](https://img.shields.io/badge/Rules-3%20CVE-orange.svg)]()
-
 **Автор:** Захарчук Юрий Александрович  
 **Роль:** Аналитик SOC 
 

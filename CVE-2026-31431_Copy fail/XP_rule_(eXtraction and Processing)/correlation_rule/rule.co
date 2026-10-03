@@ -1,0 +1,178 @@
+event Create_Socket:
+    key:
+        subject.account.session_id
+    filter {
+        action == "create"
+        and event_src.rule == "af_alg"
+        and event_src.subsys == "auditd"
+        and object == "socket"
+        and status == "success"
+        and subject == "process"
+        and subject.account.privileges != "root"
+    }
+
+event Bind_Socket:
+    key:
+        subject.account.session_id
+    filter {
+        object == "socket"
+        and msgid == "bind"
+        and status == "success"
+        and event_src.rule == "af_alg"
+        and event_src.subsys == "auditd"
+        and subject.account.privileges != "root"
+    }
+
+event Modify_Socket:
+    key:
+        subject.account.session_id
+    filter {
+        action == "modify"
+        and event_src.rule == "af_alg"
+        and event_src.subsys == "auditd"
+        and object == "socket"
+        and object.property == "socket_option"
+        and (object.value == "SOL_ALG:0x5" or object.value == "SOL_ALG:0x1")
+        and status == "success"
+        and subject.account.privileges != "root"
+    }
+
+event Start_Shell:
+    key:
+        subject.account.session_id
+    filter {
+        action == "start"
+        and object == "process"
+        and msgid == "execve"
+        and status == "success"
+        and object.account.id == "user"
+        and in_list(["sh", "bash", "dash", "zsh", "ksh"], object.process.name)
+    }
+
+event Escalate_Privileges:
+    key:
+        subject.account.session_id
+    filter {
+        action == "start"
+        and object == "process"
+        and status == "success"
+        and subject == "account"
+        and subject.account.privileges == "root"
+        and in_list(["sh", "bash", "dash", "zsh", "ksh"], object.process.name)
+    }
+
+event User_Auth:
+    key:
+        subject.account.session_id
+    filter {
+        action == "elevate"
+        and object == "account"
+        and msgid == "USER_AUTH"
+        and object.account.name == "root"
+    }
+
+
+rule CVE_2026_31431_Copy_fail: (
+                                (Create_Socket and Bind_Socket 
+                                and Modify_Socket and Start_Shell 
+                                and Escalate_Privileges) 
+                                and not User_Auth 
+                                ) timer 5s
+
+    init {
+        $correlation_type = "incident"
+        $object = "account"
+        $status = "success"
+        $importance = "high"
+        $labels = "cve_2026_31431|copy_fail|privilege_escalation"
+    }
+
+    on Create_Socket {
+        $time = time
+        $action = action
+        $event_src.title = event_src.title
+        $event_src.subsys = event_src.subsys
+        $event_src.ip = event_src.ip
+
+        $subject.process.id = subject.process.id
+        $subject.process.name = subject.process.name
+        $subject.process.fullpath = subject.process.fullpath
+        $subject.process.meta = subject.process.meta
+        $subject.process.parent.id = subject.process.parent.id
+
+        $subject.account.id = subject.account.id
+        $subject.account.name = subject.account.name
+        $subject.account.privileges = subject.account.privileges
+        $subject.account.session_id = subject.account.session_id
+
+        $logon_service = logon_service
+    }
+
+    on Bind_Socket {
+        $time = time
+        $action = action
+        $event_src.ip = event_src.ip
+
+        $subject.process.id = subject.process.id
+        $subject.process.name = subject.process.name
+        $subject.account.session_id = subject.account.session_id
+    }
+
+    on Modify_Socket {
+        $time = time
+        $action = action
+        $event_src.ip = event_src.ip
+
+        $subject.process.id = subject.process.id
+        $subject.process.name = subject.process.name
+        $subject.account.session_id = subject.account.session_id
+
+        $datafield1 = object.value
+    }
+
+    on Start_Shell {
+        $time = time
+        $action = action
+        $event_src.ip = event_src.ip
+
+        $subject.process.id = subject.process.id
+        $subject.process.name = subject.process.name
+        $subject.account.session_id = subject.account.session_id
+
+        $object.process.id = object.process.id
+        $object.process.name = object.process.name
+        $object.process.fullpath = object.process.fullpath
+        $object.process.cmdline = object.process.cmdline
+        $object.process.cwd = object.process.cwd
+        $object.process.parent.id = object.process.parent.id
+
+        $object.account.id = object.account.id
+        $object.account.name = object.account.name
+    }
+
+    on Escalate_Privileges {
+        $time = time
+        $action = action
+        $event_src.ip = event_src.ip
+
+        $object.process.id = object.process.id
+        $object.process.name = object.process.name
+        $object.process.fullpath = object.process.fullpath
+        $object.process.cmdline = object.process.cmdline
+        $object.process.parent.id = object.process.parent.id
+
+        $subject.account.id = subject.account.id
+        $subject.account.name = subject.account.name
+        $subject.account.privileges = subject.account.privileges
+        $subject.account.session_id = subject.account.session_id
+
+        $logon_service = logon_service
+    }
+
+    emit {
+        $incident.description = "Попытка эксплуатации уязвимости CVE-2026-31431 (Copy Fail). Процесс создал сокет AF_ALG, привязал его, изменил параметры шифрования, запустил оболочку и повысил привилегии до root без прохождения PAM-аутентификации."
+        $category.generic = "Attack"
+        $category.high = "Privilege Escalation"
+        $incident.aggregation.timeout = 1h
+        $id = "PT_CVE_2026_31431_Copy_fail"
+    }
