@@ -1,0 +1,11 @@
+{
+    "eventid": "5446",
+    "items": {
+        "USER_AUTH": [
+            "pid=3445 uid=1000 auid=1000 ses=3 subj=unconfined UID=75736572 ID=75736572 msg='op=PAM:authentication grantors=pam_permit,pam_cap acct=726F6F74 exe=2F7573722F62696E2F7375 hostname=? addr=? terminal=/dev/pts/1 res=success'"
+        ]
+    },
+    "node": "ubnuser",
+    "timestamp": "1791069648",
+    "timestampfractional": "322"
+}
