@@ -1,0 +1,17 @@
+{
+  "eventid": "26823",
+  "items": {
+    "EOE": [
+      ""
+    ],
+    "PROCTITLE": [
+      "proctitle=6E6574636174002D6C0031323334"
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=50 success=yes exit=0 a0=3 a1=1 a2=f a3=1d8 items=0 ppid=2096 pid=2182 auid=1000 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=pts1 ses=180 comm=\"netcat\" exe=\"/bin/nc.traditional\" key=\"pt_siem_api_listen\""
+    ]
+  },
+  "node": "debian-test",
+  "timestamp": "1556553968",
+  "timestampfractional": "532"
+}

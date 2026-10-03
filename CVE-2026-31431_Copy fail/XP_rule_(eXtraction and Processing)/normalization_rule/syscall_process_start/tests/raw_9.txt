@@ -1,0 +1,26 @@
+{
+    "node": "10.10.10.7",
+    "timestamp": "1651771913",
+    "timestampfractional": "155",
+    "eventid": "1984362269",
+    "items": {
+        "BPRM_FCAPS": [
+            "fver=0 fp=0 fi=0 fe=0 old_pp=00000000a80425fb old_pi=00000000a80425fb old_pe=00000000a80425fb old_pa=0 pp=00000000a80425fb pi=00000000a80425fb pe=00000000a80425fb pa=0 frootid=0"
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=yes exit=0 a0=7f2141a86150 a1=7f2141e13970 a2=55ecb6205290 a3=0 items=1 ppid=11669 pid=37208 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"kubectl\" exe=\"/usr/bin/kubectl\" key=\"pt_siem_execve\" ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/\""
+        ],
+        "EXECVE": [
+            "argc=7 a0=\"kubectl\" a1=\"-o\" a2=\"json\" a3=\"get\" a4=\"ConfigMap\" a5=\"management.av-engines\" a6=\"--ignore-not-found\""
+        ],
+        "PATH": [
+            "item=0 name=\"/usr/bin/kubectl\" inode=12455361 dev=00:7ae mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\""
+        ],
+        "PROCTITLE": [
+            "proctitle=2F7573722F6C6F63616C2F62696E2F707974686F6E002F7573722F6C6F63616C2F62696E2F70746D7300757064617465720072756E"
+        ]
+    }
+}

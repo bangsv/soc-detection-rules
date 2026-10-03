@@ -1,0 +1,25 @@
+{
+    "eventid": "1123546",
+    "timestampfractional": "664",
+    "timestamp": "1683307436",
+    "node": "127.0.1.1",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=2F7573722F62696E2F64706B67002D2D666F7263652D636F6E66646566002D2D666F7263652D636F6E666F6C64002D2D7374617475732D6664003139002D2D6E6F2D7472696767657273002D2D756E7061636B002D2D6175746F2D6465636F6E666967757265002D2D726563757273697665002F746D702F6170742D64706B67"
+        ],
+        "CWD": [
+            "cwd=\"/\""
+        ],
+        "EOE": [
+            ""
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=88 success=yes exit=0 a0=55b7a3c3ce10 a1=55b7a5cf04c0 a2=55b7a211a30c a3=55b7a21358c0 items=3 ppid=453905 pid=454482 auid=0 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=pts0 ses=1761 comm=\"dpkg\" exe=\"/usr/bin/dpkg\" subj=unconfined key=\"pt_siem_lib_modify\" ARCH=x86_64 SYSCALL=symlink AUID=\"root\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "PATH": [
+            "item=0 name=\"/usr/lib/x86_64-linux-gnu/\" inode=1969990 dev=08:01 mode=040755 ouid=0 ogid=0 rdev=00:00 nametype=PARENT cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=1 name=\"libQt5Xml.so.5.15.8\" nametype=UNKNOWN cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0",
+            "item=2 name=\"/usr/lib/x86_64-linux-gnu/libQt5Xml.so.5.dpkg-new\" inode=1967916 dev=08:01 mode=0120777 ouid=0 ogid=0 rdev=00:00 nametype=CREATE cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\""
+        ]
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "eventid": "156375916",
+    "timestampfractional": "559",
+    "timestamp": "1651771877",
+    "node": "10.0.0.12",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=616972666C6F77207363686564756C6572202D2044616746696C6550726F636573736F72202F7573722F6C6F63616C2F616972666C6F772F646167732F6D69677261746F725F65786368616E67652E7079"
+        ],
+        "PATH": [
+            "item=0 name=\"/usr/local/sbin/git\" nametype=UNKNOWN"
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=no exit=-2 a0=7f535786e410 a1=7f535786e3f0 a2=55df5f5c2a90 a3=18 items=1 ppid=30753 pid=30761 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=616972666C6F77207363686564756C exe=\"/usr/local/bin/python3.7\" key=\"pt_siem_execve\" ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/usr/local/airflow\""
+        ]
+    }
+}

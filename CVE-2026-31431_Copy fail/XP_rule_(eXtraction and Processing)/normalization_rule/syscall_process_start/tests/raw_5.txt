@@ -1,0 +1,24 @@
+{
+  "eventid": "122424",
+  "items": {
+    "CWD": [
+      "cwd=\"/home/mpuser\""
+    ],
+    "EXECVE": [
+      "argc=2 a0=2F746D702F2062617368 a1=\"--version\""
+    ],
+    "PATH": [
+      "item=0 name=2F746D702F2062617368 inode=662243 dev=08:01 mode=0100755 ouid=1000 ogid=1000 rdev=00:00 nametype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"mpuser\" OGID=\"mpuser\"",
+      "item=1 name=\"/lib64/ld-linux-x86-64.so.2\" inode=917520 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"root\" OGID=\"root\""
+    ],
+    "PROCTITLE": [
+      "proctitle=2F746D702F2062617368002D2D76657273696F6E"
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=59 success=yes exit=0 a0=7f1e4046eaf8 a1=7f1e4046eb58 a2=559aa648a7f0 a3=8 items=2 ppid=19927 pid=21194 auid=1000 uid=1000 gid=1000 euid=1000 suid=1000 fsuid=1000 egid=1000 sgid=1000 fsgid=1000 tty=pts0 ses=5 comm=2062617368 exe=2F746D702F2062617368 subj==unconfined key=(null) ARCH=x86_64 SYSCALL=execve AUID=\"mpuser\" UID=\"mpuser\" GID=\"mpuser\" EUID=\"mpuser\" SUID=\"mpuser\" FSUID=\"mpuser\" EGID=\"mpuser\" SGID=\"mpuser\" FSGID=\"mpuser\""
+    ]
+  },
+  "node": "192.168.137.192",
+  "timestamp": "1584617965",
+  "timestampfractional": "644"
+}

@@ -1,0 +1,27 @@
+{
+  "eventid": "28483",
+  "items": {
+    "CWD": [
+      "cwd=\"/home/odmin\""
+    ],
+    "EOE": [
+      ""
+    ],
+    "EXECVE": [
+      "argc=4 a0=\"tail\" a1=\"-n\" a2=\"10\" a3=\"/var/log/debug\""
+    ],
+    "PATH": [
+      "item=0 name=\"/usr/bin/tail\" inode=1049546 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL",
+      "item=1 name=\"/lib64/ld-linux-x86-64.so.2\" inode=1179651 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL"
+    ],
+    "PROCTITLE": [
+      "proctitle=7461696C002D6E003130002F7661722F6C6F672F6465627567"
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=59 success=yes exit=0 a0=2323048 a1=23fa608 a2=23f8008 a3=59a items=2 ppid=1790 pid=2436 auid=1000 uid=1000 gid=1000 euid=1000 suid=1000 fsuid=1000 egid=1000 sgid=1000 fsgid=1000 tty=pts0 ses=178 comm=\"tail\" exe=\"/usr/bin/tail\" key=\"pt_siem_execve\""
+    ]
+  },
+  "node": "debian-test",
+  "timestamp": "1556556285",
+  "timestampfractional": "500"
+}

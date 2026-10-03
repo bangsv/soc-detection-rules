@@ -1,0 +1,20 @@
+{
+    "node": "10.10.10.10",
+    "timestamp": "1664812932",
+    "timestampfractional": "916",
+    "eventid": "97030775",
+    "items": {
+        "SOCKADDR": [
+            "saddr=020001BB0A0AC0E80000000000000000 SADDR={ saddr_fam=inet laddr=10.10.192.232 lport=443 }"
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=42 success=no exit=-115 a0=2e a1=7f21587596e0 a2=10 a3=27de2231bb14 items=0 ppid=1 pid=2886783 auid=4294967295 uid=1702639807 gid=1702600513 euid=1702639807 suid=1702639807 fsuid=1702639807 egid=1702600513 sgid=1702600513 fsgid=1702600513 tty=(none) ses=4294967295 comm=536F636B657420546872656164 exe=\"/usr/lib/firefox-esr/firefox-esr\" subj==unconfined key=\"pt_siem_api_connect\" ARCH=x86_64 SYSCALL=connect AUID=\"unset\" UID=\"userrch@psec\" GID=646F6D61696E207573657273407074736563 EUID=\"userrch@psec\" SUID=\"userrch@psec\" FSUID=\"userrch@psec\" EGID=646F6D61696E207573657273407074736563 SGID=646F6D61696E207573657273407074736563 FSGID=646F6D61696E207573657273407074736563"
+        ],
+        "PROCTITLE": [
+            "proctitle=\"/usr/bin/x-www-browser\""
+        ],
+        "EOE": [
+            ""
+        ]
+    }
+}

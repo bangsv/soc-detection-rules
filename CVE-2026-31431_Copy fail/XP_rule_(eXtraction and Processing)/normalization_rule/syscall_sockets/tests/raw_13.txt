@@ -1,0 +1,14 @@
+{
+    "eventid": "165097350",
+    "timestampfractional": "674",
+    "timestamp": "1653134379",
+    "node": "127.0.1.1",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=5B53656E7472795D20755753474920687474702031"
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=41 success=yes exit=8 a0=2 a1=801 a2=0 a3=7fb6969bbae0 items=0 ppid=9982 pid=10919 auid=4294967295 uid=999 gid=999 euid=999 suid=999 fsuid=999 egid=999 sgid=999 fsgid=999 tty=(none) ses=4294967295 comm=\"uwsgi\" exe=\"/usr/local/bin/uwsgi\" subj==docker-default (enforce) key=\"pt_siem_api_socket\" ARCH=x86_64 SYSCALL=socket AUID=\"unset\" UID=\"systemd-coredump\" GID=\"systemd-coredump\" EUID=\"systemd-coredump\" SUID=\"systemd-coredump\" FSUID=\"systemd-coredump\" EGID=\"systemd-coredump\" SGID=\"systemd-coredump\" FSGID=\"systemd-coredump\""
+        ]
+    }
+}

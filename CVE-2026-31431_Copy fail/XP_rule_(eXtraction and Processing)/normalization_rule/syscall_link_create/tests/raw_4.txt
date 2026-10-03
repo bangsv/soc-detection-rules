@@ -1,0 +1,22 @@
+{
+    "eventid": "10460",
+    "timestampfractional": "173",
+    "timestamp": "1653290421",
+    "node": "10.0.176.129",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=2F7573722F6C69622F696E73736572762F696E737365727600646F636B6572"
+        ],
+        "CWD": [
+            "cwd=\"/etc/rc3.d\""
+        ],
+        "PATH": [
+            "item=0 name=\"../init.d/docker\" nametype=UNKNOWN",
+            "item=1 name=\"/etc/rc3.d\" inode=259997 dev=fc:00 mode=040755 ouid=0 ogid=0 rdev=00:00 nametype=PARENT OUID=\"root\" OGID=\"root\"",
+            "item=2 name=\"S02docker\" inode=263706 dev=fc:00 mode=0120777 ouid=0 ogid=0 rdev=00:00 nametype=CREATE OUID=\"root\" OGID=\"root\""
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=266 success=yes exit=0 a0=7fff31409e00 a1=3 a2=7fff31408df0 a3=1462218 items=3 ppid=10517 pid=10518 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=pts0 ses=4294967295 comm=\"insserv\" exe=\"/usr/lib/insserv/insserv\" key=\"pt_siem_etc_modify\" ARCH=x86_64 SYSCALL=symlinkat AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ]
+    }
+}

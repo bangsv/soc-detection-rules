@@ -1,0 +1,17 @@
+{
+    "eventid": "55804695",
+    "timestampfractional": "857",
+    "timestamp": "1654262029",
+    "node": "10.0.176.77",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=2F7573722F62696E2F646275732D6461656D6F6E002D2D73797374656D002D2D616464726573733D73797374656D643A002D2D6E6F666F726B002D2D6E6F70696466696C65002D2D73797374656D642D61637469766174696F6E002D2D7379736C6F672D6F6E6C79"
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=288 success=yes exit=12 a0=3 a1=7ffdfa7fc760 a2=7ffdfa7fc75c a3=80000 items=0 ppid=1 pid=526 auid=4294967295 uid=104 gid=110 euid=104 suid=104 fsuid=104 egid=110 sgid=110 fsgid=110 tty=(none) ses=4294967295 comm=\"dbus-daemon\" exe=\"/usr/bin/dbus-daemon\" subj==unconfined key=\"pt_siem_api_accept\" ARCH=x86_64 SYSCALL=accept4 AUID=\"unset\" UID=\"messagebus\" GID=\"messagebus\" EUID=\"messagebus\" SUID=\"messagebus\" FSUID=\"messagebus\" EGID=\"messagebus\" SGID=\"messagebus\" FSGID=\"messagebus\""
+        ],
+        "SOCKADDR": [
+            "saddr=0100 SADDR={ fam=local path=0 }"
+        ]
+    }
+}

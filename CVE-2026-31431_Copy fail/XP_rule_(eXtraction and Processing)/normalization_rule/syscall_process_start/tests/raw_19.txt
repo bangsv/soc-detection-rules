@@ -1,0 +1,17 @@
+{
+    "node": "::1",
+    "timestamp": "1651194984",
+    "timestampfractional": "274",
+    "eventid": "529656",
+    "items": {
+        "AVC": [
+            "avc:  denied  { execute_no_trans } for  pid=10931 comm=\"check_infra_acl\" path=\"/usr/bin/ping\" dev=\"dm-0\" ino=314375 scontext=system_u:system_r:zabbix_agent_t:s0 tcontext=system_u:object_r:ping_exec_t:s0 tclass=file permissive=1"
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=yes exit=0 a0=117c030 a1=116d050 a2=117ba30 a3=7ffd8439d3a0 items=0 ppid=10922 pid=10931 auid=4294967295 uid=998 gid=994 euid=998 suid=998 fsuid=998 egid=994 sgid=994 fsgid=994 tty=(none) ses=4294967295 comm=\"ping\" exe=\"/usr/bin/ping\" subj=system_u:system_r:zabbix_agent_t:s0 key=(null) ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"zabbix\" GID=\"zabbix\" EUID=\"zabbix\" SUID=\"zabbix\" FSUID=\"zabbix\" EGID=\"zabbix\" SGID=\"zabbix\" FSGID=\"zabbix\""
+        ],
+        "PROCTITLE": [
+            "proctitle=70696E67002D630031002D7700310031302E3136332E3136382E313239"
+        ]
+    }
+}

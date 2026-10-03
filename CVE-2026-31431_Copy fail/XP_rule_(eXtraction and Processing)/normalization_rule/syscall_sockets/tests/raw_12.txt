@@ -1,0 +1,13 @@
+{
+    "node": "10.156.26.71",
+    "timestamp": "1652777784",
+    "timestampfractional": "794",
+    "eventid": "169355",
+    "items":
+    {
+        "SYSCALL":
+        [
+            "arch=c000003e syscall=43 success=yes exit=17 a0=b a1=7f781b70c360 a2=7f781b70c358 a3=0 items=0 ppid=2118 pid=2140 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"http-nio-80-Acc\" exe=\"/opt/openjdk-17/bin/java\" key=\"pt_siem_api_accept\" ARCH=x86_64 SYSCALL=accept AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ]
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "eventid": "18900216",
+    "timestampfractional": "454",
+    "timestamp": "1683980003",
+    "node": "10.10.52.199",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=6B7562652D636F6E74726F6C6C65722D6D616E61676572002D2D616C6C6F636174652D6E6F64652D63696472733D74727565002D2D61757468656E7469636174696F6E2D6B756265636F6E6669673D2F6574632F6B756265726E657465732F636F6E74726F6C6C65722D6D616E616765722E636F6E66002D2D617574686F7269"
+        ],
+        "EOE": [
+            ""
+        ],
+        "PATH": [
+            "item=0 name=\"/usr/libexec/kubernetes/kubelet-plugins/volume/exec/nodeagent~uds/uds\" inode=654119 dev=fe:00 mode=0100550 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=1 name=\"/usr/libexec/kubernetes/kubelet-plugins/volume/exec/nodeagent~uds/uds\" inode=654119 dev=fe:00 mode=0100550 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=2 name=\"/lib64/ld-linux-x86-64.so.2\" nametype=UNKNOWN cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0"
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=no exit=-2 a0=c0012a1270 a1=c001ad56f8 a2=c002a00280 a3=0 items=3 ppid=2868169 pid=2883485 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"kube-controller\" exe=\"/usr/local/bin/kube-controller-manager\" subj=cri-containerd.apparmor.d (enforce) key=\"pt_siem_execve\" ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/\""
+        ]
+    }
+}

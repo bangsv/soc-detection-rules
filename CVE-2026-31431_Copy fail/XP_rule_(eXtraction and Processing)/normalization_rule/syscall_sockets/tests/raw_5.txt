@@ -1,0 +1,17 @@
+{
+  "eventid": "37542",
+  "items": {
+    "EOE": [
+      ""
+    ],
+    "PROCTITLE": [
+      "proctitle=74637064756D7000756470002D7000353134"
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=41 success=yes exit=3 a0=11 a1=3 a2=300 a3=309 items=0 ppid=2445 pid=2649 auid=1000 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=pts0 ses=178 comm=\"tcpdump\" exe=\"/usr/sbin/tcpdump\" key=\"pt_siem_api_socket\""
+    ]
+  },
+  "node": "debian-test",
+  "timestamp": "1556557144",
+  "timestampfractional": "072"
+}

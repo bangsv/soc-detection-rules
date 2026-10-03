@@ -1,0 +1,21 @@
+{
+    "eventid": "12894111",
+    "timestampfractional": "336",
+    "timestamp": "1653278695",
+    "node": "10.10.52.70",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=6C6E002D7366002F6F70742F6769746C61622F62696E2F6769746C61622D72656469732D636C69002F7573722F62696E"
+        ],
+        "PATH": [
+            "item=0 name=\"/opt/gitlab/bin/gitlab-redis-cli\" nametype=UNKNOWN cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0",
+            "item=1 name=\"/usr/bin/\" inode=524293 dev=fe:00 mode=040755 ouid=0 ogid=0 rdev=00:00 nametype=PARENT cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"root\" OGID=\"root\""
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=266 success=no exit=-17 a0=7ffc12477c73 a1=ffffff9c a2=55de877a52b0 a3=0 items=2 ppid=568 pid=574 auid=1012 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=pts2 ses=7397 comm=\"ln\" exe=\"/usr/bin/ln\" subj==unconfined key=\"pt_siem_bin_modify\" ARCH=x86_64 SYSCALL=symlinkat AUID=\"agolubkin\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/\""
+        ]
+    }
+}

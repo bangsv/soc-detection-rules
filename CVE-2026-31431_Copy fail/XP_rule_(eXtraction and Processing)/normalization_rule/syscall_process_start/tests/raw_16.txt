@@ -1,0 +1,24 @@
+{
+    "node": "10.156.26.71",
+    "timestamp": "1652959920",
+    "timestampfractional": "105",
+    "eventid": "473605",
+    "items": {
+        "BPRM_FCAPS": [
+            "fver=0 fp=0 fi=0 fe=0 old_pp=00000000a80425fb old_pi=0 old_pe=00000000a80425fb old_pa=0 pp=00000000a80425fb pi=0 pe=00000000a80425fb pa=0 frootid=0"
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=no exit=-2 a0=7ff988cf5440 a1=7ff988cf5490 a2=7ff988cf54a8 a3=0 items=2 ppid=109580 pid=115333 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"sh\" exe=\"/bin/busybox\" key=\"pt_siem_execve\" ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/\""
+        ],
+        "PATH": [
+            "item=0 name=\"/tmp/client\" inode=1442854 dev=00:34 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=1 name=\"/lib64/ld-linux-x86-64.so.2\" nametype=UNKNOWN cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0"
+        ],
+        "PROCTITLE": [
+            "proctitle=\"149:152\""
+        ]
+    }
+}

@@ -1,0 +1,25 @@
+{
+   "node":"192.168.137.201",
+   "timestamp":"1572323367",
+   "timestampfractional":"534",
+   "eventid":"111980",
+   "items":{
+      "CWD":[
+         "cwd=\"/tmp\""
+      ],
+      "EXECVE":[
+         "argc=2 a0=\"/bin/sh\" a1=\"/var/www/evil_1.sh\""
+      ],
+      "PATH":[
+         "item=0 name=\"/var/www/evil_1.sh\" inode=786549 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"root\" OGID=\"root\"",
+         "item=1 name=\"/bin/sh\" inode=919209 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"root\" OGID=\"root\"",
+         "item=2 name=\"/lib64/ld-linux-x86-64.so.2\" inode=917520 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"root\" OGID=\"root\""
+      ],
+      "PROCTITLE":[
+         "proctitle=2F62696E2F7368002F7661722F7777772F6576696C5F312E7368"
+      ],
+      "SYSCALL":[
+         "arch=c000003e syscall=59 success=yes exit=0 a0=556dbe5fa8f8 a1=556dbe5fb448 a2=556dbe5f3490 a3=fffffffffffff000 items=3 ppid=21899 pid=21900 auid=0 uid=33 gid=33 euid=33 suid=33 fsuid=33 egid=33 sgid=33 fsgid=33 tty=pts1 ses=7 comm=\"evil_1.sh\" exe=\"/usr/bin/dash\" subj==unconfined key=\"pt_siem_execve_daemon\" ARCH=x86_64 SYSCALL=execve AUID=\"root\" UID=\"www-data\" GID=\"www-data\" EUID=\"www-data\" SUID=\"www-data\" FSUID=\"www-data\" EGID=\"www-data\" SGID=\"www-data\" FSGID=\"www-data\""
+      ]
+   }
+}

@@ -1,0 +1,24 @@
+{
+    "node": "10.10.192.146",
+    "timestamp": "1652287237",
+    "timestampfractional": "653",
+    "eventid": "2067919677",
+    "items": {
+        "SYSCALL": [
+            "arch=c000003e syscall=322 success=yes exit=0 a0=4 a1=7fdf830fbbf9 a2=55e0609aa2c0 a3=55e0609aa2e0 items=2 ppid=14120 pid=14139 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"4\" exe=2F6D656D66643A72756E635F636C6F6E65643A2F70726F632F73656C662F657865202864656C6574656429 key=\"pt_siem_execve\" ARCH=x86_64 SYSCALL=execveat AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/var/lib/docker/overlay2/d47cd34fae76f9cec891da11f01f42c58f1fae1c2abf8d14d8f13a5efc33279c/merged\""
+        ],
+        "EXECVE": [
+            "argc=2 a0=\"docker-runc\" a1=\"init\""
+        ],
+        "PATH": [
+            "item=0 name=\"\" inode=1301664301 dev=00:01 mode=0100777 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=1 name=\"/lib64/ld-linux-x86-64.so.2\" inode=31069143 dev=fd:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\""
+        ],
+        "PROCTITLE": [
+            "proctitle=646F636B65722D72756E6300696E6974"
+        ]
+    }
+}

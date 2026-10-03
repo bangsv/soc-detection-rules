@@ -1,0 +1,22 @@
+{
+    "eventid": "367254866",
+    "timestampfractional": "743",
+    "timestamp": "1652775600",
+    "node": "10.0.177.221",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=2F7573722F7362696E2F617464002D66"
+        ],
+        "CWD": [
+            "cwd=\"/var/spool/cron/atjobs\""
+        ],
+        "PATH": [
+            "item=0 name=\"a1358f01a45294\" inode=260976 dev=fc:00 mode=0100700 ouid=2001 ogid=1 rdev=00:00 nametype=NORMAL OUID=\"teamcity\" OGID=\"daemon\"",
+            "item=1 name=\"/var/spool/cron/atjobs\" inode=276030 dev=fc:00 mode=041770 ouid=1 ogid=1 rdev=00:00 nametype=PARENT OUID=\"daemon\" OGID=\"daemon\"",
+            "item=2 name=\"=1358f01a45294\" inode=260976 dev=fc:00 mode=0100700 ouid=2001 ogid=1 rdev=00:00 nametype=CREATE OUID=\"teamcity\" OGID=\"daemon\""
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=86 success=yes exit=0 a0=55ac8b8b10e3 a1=55ac8b8b8f00 a2=0 a3=7fe6fa00e2d0 items=3 ppid=1 pid=1174 auid=4294967295 uid=1 gid=1 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"atd\" exe=\"/usr/sbin/atd\" key=\"pt_siem_cron_modify\" ARCH=x86_64 SYSCALL=link AUID=\"unset\" UID=\"daemon\" GID=\"daemon\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ]
+    }
+}

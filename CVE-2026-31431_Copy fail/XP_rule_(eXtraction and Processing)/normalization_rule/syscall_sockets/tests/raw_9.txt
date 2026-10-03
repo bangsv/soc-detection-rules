@@ -1,0 +1,14 @@
+{
+"node": "::1",
+"timestamp": "1597237913",
+"timestampfractional": "698",
+"eventid": "7817970",
+"items": {
+"SOCKADDR": [
+"saddr=0A0000BE0000000000000000000000000000FFFF000AE0DF00000000 SADDR={ fam=inet6 laddr=::ffff:3.100.200.200 lport=38000 }"
+],
+"SYSCALL": [
+"arch=c000003e syscall=288 success=yes exit=16 a0=4 a1=7ffcb47d65e0 a2=7ffcb47d65c0 a3=80000 items=0 ppid=1594 pid=7030 auid=4294967295 uid=1000 gid=1001 euid=1000 suid=1000 fsuid=1001 egid=1001 sgid=1001 fsgid=1001 tty=(none) ses=4294967295 comm=\"httpd\" exe=\"/usr/sbin/httpd\" key=\"pt_siem_api_accept\" ARCH=x86_64 SYSCALL=accept4 AUID=\"unset\" UID=\"apache\" GID=\"apache\" EUID=\"apache\" SUID=\"apache\" FSUID=\"apache\" EGID=\"apache\" SGID=\"apache\" FSGID=\"apache\""
+]
+}
+}

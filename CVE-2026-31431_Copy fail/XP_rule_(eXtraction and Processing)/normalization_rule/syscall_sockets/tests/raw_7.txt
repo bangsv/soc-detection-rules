@@ -1,0 +1,20 @@
+{
+  "eventid": "36860",
+  "items": {
+    "EOE": [
+      ""
+    ],
+    "PROCTITLE": [
+      "proctitle=707974686F6E002D6300696D706F727420736F636B65742C73756270726F636573732C6F733B733D736F636B65742E736F636B657428736F636B65742E41465F494E45542C736F636B65742E534F434B5F53545245414D293B732E636F6E6E65637428282231302E302E3231352E3837222C333539393929293B6F732E647570"
+    ],
+    "SOCKADDR": [
+      "saddr=02008C9F0A00D7570000000000000000 SADDR={ fam=inet laddr=10.0.215.87 lport=35999 }"
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=42 success=yes exit=0 a0=3 a1=7ffd0ed83b40 a2=10 a3=109 items=0 ppid=25790 pid=26133 auid=0 uid=33 gid=33 euid=33 suid=33 fsuid=33 egid=33 sgid=33 fsgid=33 tty=pts11 ses=36 comm=\"python\" exe=\"/usr/bin/python2.7\" key=\"pt_siem_api_connect\" ARCH=x86_64 SYSCALL=connect AUID=\"root\" UID=\"www-data\" GID=\"www-data\" EUID=\"www-data\" SUID=\"www-data\" FSUID=\"www-data\" EGID=\"www-data\" SGID=\"www-data\" FSGID=\"www-data\""
+    ]
+  },
+  "node": "",
+  "timestamp": "1564065569",
+  "timestampfractional": "943"
+}

@@ -1,0 +1,20 @@
+{
+  "eventid": "26828",
+  "items": {
+    "EOE": [
+      ""
+    ],
+    "PROCTITLE": [
+      "proctitle=2F7573722F62696E2F707974686F6E002F7573722F62696E2F73616C742D6D696E696F6E"
+    ],
+    "SOCKADDR": [
+      "saddr=020000350A0034650000000000000000"
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=42 success=yes exit=0 a0=d a1=7fd2d55f5a94 a2=10 a3=0 items=0 ppid=449 pid=467 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"salt-minion\" exe=\"/usr/bin/python2.7\" key=\"pt_siem_api_connect\""
+    ]
+  },
+  "node": "debian-test",
+  "timestamp": "1556553995",
+  "timestampfractional": "508"
+}

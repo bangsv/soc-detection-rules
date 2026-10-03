@@ -1,0 +1,28 @@
+{
+    "eventid": "426440568",
+    "timestampfractional": "188",
+    "timestamp": "1652286931",
+    "node": "linx-web-ptaf-02",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=2F6F70742F7761662F707974686F6E2F62696E2F707974686F6E002F6574632F6D6F6E69742F736372697074732F636865636B5F6966735F7669702E70790064756D6D7930"
+        ],
+        "EOE": [
+            ""
+        ],
+        "PATH": [
+            "item=0 name=\"/etc/monit/scripts/check_ifs_vip.py\" inode=1179656 dev=08:01 mode=0100751 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL OUID=\"root\" OGID=\"root\"",
+            "item=1 name=\"/opt/waf/python/bin/python\" inode=5637866 dev=08:01 mode=0100755 ouid=114 ogid=116 rdev=00:00 nametype=NORMAL OUID=\"waf-admin\" OGID=\"waf-admin\"",
+            "item=2 name=\"/lib64/ld-linux-x86-64.so.2\" inode=1441797 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL OUID=\"root\" OGID=\"root\""
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=yes exit=0 a0=5632c2f0fbd0 a1=5632c2eec780 a2=5632c2f195f0 a3=8 items=3 ppid=61591 pid=14985 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"check_ifs_vip.p\" exe=\"/opt/waf/python/bin/python\" key=\"pt_siem_execve\" ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/\""
+        ],
+        "EXECVE": [
+            "argc=3 a0=\"/opt/waf/python/bin/python\" a1=\"/etc/monit/scripts/check_ifs_vip.py\" a2=\"dummy0\""
+        ]
+    }
+}

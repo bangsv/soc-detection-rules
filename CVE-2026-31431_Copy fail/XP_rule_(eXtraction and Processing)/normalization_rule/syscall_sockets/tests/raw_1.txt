@@ -1,0 +1,17 @@
+{
+  "eventid": "24392",
+  "items": {
+    "EOE": [
+      ""
+    ],
+    "PROCTITLE": [
+      "proctitle=\"/sbin/audispd\""
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=41 success=yes exit=5 a0=1 a1=80002 a2=0 a3=1eb items=0 ppid=1877 pid=1881 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"audispd\" exe=\"/sbin/audispd\" key=\"pt_siem_api_socket\""
+    ]
+  },
+  "node": "debian-test",
+  "timestamp": "1556551292",
+  "timestampfractional": "560"
+}

@@ -1,0 +1,20 @@
+{
+    "node": "10.156.26.71",
+    "timestamp": "1652959920",
+    "timestampfractional": "045",
+    "eventid": "473603",
+    "items": {
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=no exit=-26 a0=7f1f5219d440 a1=7f1f5219d490 a2=7f1f5219d4a8 a3=0 items=1 ppid=109580 pid=115329 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"sh\" exe=\"/bin/busybox\" key=\"pt_siem_execve\" ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/\""
+        ],
+        "PATH": [
+            "item=0 name=\"/tmp/client\" inode=1442854 dev=00:34 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\""
+        ],
+        "PROCTITLE": [
+            "proctitle=\"146:149\""
+        ]
+    }
+}

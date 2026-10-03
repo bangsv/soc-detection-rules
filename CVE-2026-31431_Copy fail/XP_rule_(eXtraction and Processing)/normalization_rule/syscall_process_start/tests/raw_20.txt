@@ -1,0 +1,26 @@
+{
+  "eventid": "665060",
+  "timestampfractional": "002",
+  "timestamp": "1664436960",
+  "node": "hostname",
+  "items": {
+    "PROCTITLE": [
+      "proctitle=2F62696E2F7368002D630062696E2F636F6E736F6C6520733A623A72616E6B"
+    ],
+    "PATH": [
+      "item=0 name=\"bin/console\" inode=1671317 dev=00:7ad mode=0100775 ouid=990 ogid=986 rdev=00:00 objtype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"unknown(990)\" OGID=\"unknown(986)\"",
+      "item=1 name=\"/usr/bin/env\" inode=1191856 dev=00:7ad mode=0100555 ouid=0 ogid=0 rdev=00:00 objtype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"root\" OGID=\"root\"",
+      "item=3 name=\"/lib64/ld-linux-x86-64.so.2\" inode=1181003 dev=00:7ad mode=0100755 ouid=0 ogid=0 rdev=00:00 objtype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"root\" OGID=\"root\"",
+      "item=2 name=\"/usr/bin/coreutils\" inode=1191857 dev=00:7ad mode=0100755 ouid=0 ogid=0 rdev=00:00 objtype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0 OUID=\"root\" OGID=\"root\""
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=59 success=yes exit=0 a0=56423fed21e0 a1=56423fed2910 a2=56423fed2300 a3=0 items=4 ppid=58365 pid=1095674 auid=4294967295 uid=990 gid=986 euid=990 suid=990 fsuid=990 egid=986 sgid=986 fsgid=986 tty=(none) ses=4294967295 comm=\"console\" exe=\"/usr/bin/coreutils\" key=\"pt_siem_execve_daemon\" ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"unknown(990)\" GID=\"unknown(986)\" EUID=\"unknown(990)\" SUID=\"unknown(990)\" FSUID=\"unknown(990)\" EGID=\"unknown(986)\" SGID=\"unknown(986)\" FSGID=\"unknown(986)\""
+    ],
+    "CWD": [
+      "cwd=\"/app\""
+    ],
+    "EXECVE": [
+      "argc=6 a0=\"/usr/bin/coreutils\" a1=\"--coreutils-prog-shebang=env\" a2=\"/usr/bin/env\" a3=\"php\" a4=\"bin/console\" a5=\"s:b:rank\""
+    ]
+  }
+}

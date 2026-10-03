@@ -1,0 +1,17 @@
+  {
+    "eventid": "7037",
+    "items": {
+      "PROCTITLE": [
+        "proctitle=python3 copy_fail_exp.py"
+      ],
+      "SOCKADDR": [
+        "saddr={ saddr_fam=alg (unsupported) }"
+      ],
+      "SYSCALL": [
+        "arch=c000003e syscall=49 success=yes exit=0 a0=0x4 a1=0x7fff84ccba30 a2=0x58 a3=0x72cbde60e728 items=0 ppid=4858 pid=4882 auid=user uid=user gid=user euid=user suid=user fsuid=user egid=user sgid=user fsgid=user tty=pts0 ses=3 comm=python3 exe=/usr/bin/python3.12 subj=unconfined key=af_alg ARCH=x86_64 SYSCALL=bind AUID=\"user\" UID=\"user\" GID=\"user\" EUID=\"user\" SUID=\"user\" FSUID=\"user\" EGID=\"user\" SGID=\"user\" FSGID=\"user\""
+      ]
+    },
+    "node": "",
+    "timestamp": "1773153370",
+    "timestampfractional": "589"
+  }

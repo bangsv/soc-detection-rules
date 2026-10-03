@@ -1,0 +1,27 @@
+{
+  "eventid": "29447",
+  "items": {
+    "CWD": [
+      "cwd=\"/\""
+    ],
+    "EOE": [
+      ""
+    ],
+    "EXECVE": [
+      "argc=2 a0=\"/usr/bin/mandb\" a1=\"-pq\""
+    ],
+    "PATH": [
+      "item=0 name=\"/usr/bin/mandb\" inode=1056463 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL",
+      "item=1 name=\"/lib64/ld-linux-x86-64.so.2\" inode=1179651 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL"
+    ],
+    "PROCTITLE": [
+      "proctitle=7065726C002D650040707764203D2067657470776E616D28226D616E22293B202429203D202428203D20247077645B335D3B20243E203D20243C203D20247077645B325D3B0A0920202020206578656320222F7573722F62696E2F6D616E6462222C204041524756002D2D002D7071"
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=59 success=yes exit=0 a0=55e949aefcc0 a1=55e949aeed00 a2=55e949adb070 a3=5b5 items=2 ppid=2570 pid=2571 auid=1000 uid=6 gid=12 euid=6 suid=6 fsuid=6 egid=12 sgid=12 fsgid=12 tty=pts2 ses=178 comm=\"mandb\" exe=\"/usr/bin/mandb\" key=\"pt_siem_execve_daemon\""
+    ]
+  },
+  "node": "debian-test",
+  "timestamp": "1556556666",
+  "timestampfractional": "364"
+}

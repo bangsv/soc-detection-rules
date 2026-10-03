@@ -1,0 +1,14 @@
+{
+    "eventid": "51606254",
+    "timestampfractional": "676",
+    "timestamp": "1653134384",
+    "node": "10.10.52.179",
+    "items": {
+        "SYSCALL": [
+            "arch=c000003e syscall=41 success=yes exit=3 a0=11 a1=80003 a2=300 a3=7ffcfcc74ca0 items=0 ppid=21645 pid=21646 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"dns_client.py\" exe=\"/usr/bin/python3.7\" subj==unconfined key=\"pt_siem_api_socket\" ARCH=x86_64 SYSCALL=socket AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "PROCTITLE": [
+            "proctitle=2F7573722F62696E2F707974686F6E33002F6574632F7A61626269782F736372697074732F646E735F636C69656E742E707900696E74"
+        ]
+    }
+}

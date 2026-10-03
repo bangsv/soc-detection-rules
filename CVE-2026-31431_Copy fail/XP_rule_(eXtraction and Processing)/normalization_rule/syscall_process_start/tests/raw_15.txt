@@ -1,0 +1,29 @@
+{
+    "eventid": "14673989",
+    "timestampfractional": "839",
+    "timestamp": "1652775301",
+    "node": "10.20.48.157",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=2F62696E2F7368002F7573722F6C69622F737973737461742F64656269616E2D73613100310031"
+        ],
+        "EOE": [
+            ""
+        ],
+        "PATH": [
+            "item=0 name=\"/usr/lib/sysstat/debian-sa1\" inode=12856668 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=1 name=\"/usr/lib/sysstat/debian-sa1\" inode=12856668 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=2 name=\"/bin/sh\" inode=12846808 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=3 name=\"/lib64/ld-linux-x86-64.so.2\" inode=12852862 dev=08:01 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\""
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=yes exit=0 a0=55818f277570 a1=55818f277510 a2=55818f277530 a3=8 items=4 ppid=2286095 pid=2286097 auid=0 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=13134 comm=\"debian-sa1\" exe=\"/usr/bin/dash\" subj==unconfined key=\"pt_siem_execve\" ARCH=x86_64 SYSCALL=execve AUID=\"root\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/root\""
+        ],
+        "EXECVE": [
+            "argc=4 a0=\"/bin/sh\" a1=\"/usr/lib/sysstat/debian-sa1\" a2=\"1\" a3=\"1\""
+        ]
+    }
+}

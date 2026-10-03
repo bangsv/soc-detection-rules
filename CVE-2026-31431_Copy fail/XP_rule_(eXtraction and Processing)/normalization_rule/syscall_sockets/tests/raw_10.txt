@@ -1,0 +1,14 @@
+{
+  "eventid": "560",
+  "items": {
+    "SYSCALL": [
+      "arch=c000003e syscall=49 success=yes exit=0 a0=8 a1=9c1ce0 a2=10 a3=7fffd8000050 items=0 ppid=3021 pid=3022 auid=1000 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=pts0 ses=4 comm=\"nginx\" exe=\"/usr/sbin/nginx\" key=(null)"
+    ],
+    "SOCKADDR": [
+      "saddr=02001F90000000000000000000000000"
+    ]
+  },
+  "node": "test",
+  "timestamp": "1556553968",
+  "timestampfractional": "532"
+}

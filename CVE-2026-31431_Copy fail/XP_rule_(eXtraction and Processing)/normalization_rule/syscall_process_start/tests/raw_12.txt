@@ -1,0 +1,24 @@
+{
+    "eventid": "2024906218",
+    "timestampfractional": "294",
+    "timestamp": "1652278978",
+    "node": "10.0.177.9",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=72756E6300696E6974"
+        ],
+        "PATH": [
+            "item=0 name=\"/proc/self/fd/5\" inode=818 dev=fc:00 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL OUID=\"root\" OGID=\"root\"",
+            "item=1 name=\"/lib64/ld-linux-x86-64.so.2\" inode=153209 dev=fc:00 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL OUID=\"root\" OGID=\"root\""
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=yes exit=0 a0=7ffd51dd8080 a1=55dc22a61030 a2=55dc22a61050 a3=0 items=2 ppid=36855 pid=36863 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm=\"5\" exe=\"/\" key=\"pt_siem_execve\" ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"root\" GID=\"root\" EUID=\"root\" SUID=\"root\" FSUID=\"root\" EGID=\"root\" SGID=\"root\" FSGID=\"root\""
+        ],
+        "CWD": [
+            "cwd=\"/var/lib/docker/overlay2/3f822c5e33ae800afc5b4dee254b611b5c0a4e243e4328020819960f356638e7/merged\""
+        ],
+        "EXECVE": [
+            "argc=2 a0=\"runc\" a1=\"init\""
+        ]
+    }
+}

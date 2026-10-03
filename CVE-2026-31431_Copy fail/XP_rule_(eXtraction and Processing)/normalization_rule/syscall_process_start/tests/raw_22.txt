@@ -1,0 +1,25 @@
+{
+    "eventid": "11406459",
+    "timestampfractional": "298",
+    "timestamp": "1683930972",
+    "node": "10.10.188.221",
+    "items": {
+        "PROCTITLE": [
+            "proctitle=\"(null)\""
+        ],
+        "EOE": [
+            ""
+        ],
+        "PATH": [
+            "item=0 name=\"/usr/lib/apt/methods/http\" inode=786079 dev=fe:00 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=1 name=\"/usr/lib/apt/methods/http\" inode=786079 dev=fe:00 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\"",
+            "item=2 name=\"/lib64/ld-linux-x86-64.so.2\" inode=785326 dev=fe:00 mode=0100755 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0 OUID=\"root\" OGID=\"root\""
+        ],
+        "SYSCALL": [
+            "arch=c000003e syscall=59 success=no exit=-14 a0=5568e1c4fc80 a1=7ffef9be1130 a2=7ffef9be2218 a3=7f59b30a2ac0 items=3 ppid=1 pid=3012853 auid=4294967295 uid=109 gid=115 euid=109 suid=109 fsuid=109 egid=115 sgid=115 fsgid=115 tty=(none) ses=4294967295 comm=\"http\" exe=\"/usr/lib/apt/methods/http\" subj=unconfined key=\"pt_siem_execve_daemon\" ARCH=x86_64 SYSCALL=execve AUID=\"unset\" UID=\"zabbix\" GID=\"zabbix\" EUID=\"zabbix\" SUID=\"zabbix\" FSUID=\"zabbix\" EGID=\"zabbix\" SGID=\"zabbix\" FSGID=\"zabbix\""
+        ],
+        "CWD": [
+            "cwd=\"/\""
+        ]
+    }
+}

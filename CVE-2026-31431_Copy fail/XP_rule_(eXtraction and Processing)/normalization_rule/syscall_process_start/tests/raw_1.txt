@@ -1,0 +1,23 @@
+{
+  "eventid": "27436",
+  "items": {
+    "CWD": [
+      "cwd=\"/\""
+    ],
+    "EOE": [
+      ""
+    ],
+    "PATH": [
+      "item=0 name=\"/usr/sbin/rm\" nametype=UNKNOWN"
+    ],
+    "PROCTITLE": [
+      "proctitle=2F7573722F62696E2F64706B67002D2D7374617475732D6664003137002D2D6E6F2D7472696767657273002D2D756E7061636B002D2D6175746F2D6465636F6E666967757265002F7661722F63616368652F6170742F61726368697665732F61636C5F322E322E35322D332B62315F616D6436342E646562"
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=59 success=no exit=-2 a0=7ffc2c5eaca0 a1=7ffc2c5ead70 a2=55a99b56e1a0 a3=7ffc2c5ecf80 items=1 ppid=2243 pid=2253 auid=1000 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=pts2 ses=180 comm=\"dpkg\" exe=\"/usr/bin/dpkg\" key=\"pt_siem_execve\""
+    ]
+  },
+  "node": "debian-test",
+  "timestamp": "1556554561",
+  "timestampfractional": "772"
+}

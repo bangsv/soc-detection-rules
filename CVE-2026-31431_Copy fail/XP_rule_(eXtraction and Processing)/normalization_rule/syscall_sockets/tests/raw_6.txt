@@ -1,0 +1,17 @@
+{
+  "eventid": "380406",
+  "items": {
+    "PROCTITLE": [
+      "proctitle=2F7573722F7362696E2F61706163686532002D6B007374617274"
+    ],
+    "SOCKADDR": [
+      "saddr=0A00A6780000000000000000000000000000FFFF0A7EFF0300000000"
+    ],
+    "SYSCALL": [
+      "arch=c000003e syscall=288 success=yes exit=11 a0=4 a1=7ffca25eb960 a2=7ffca25eb940 a3=80000 items=0 ppid=1352 pid=2270 auid=4294967295 uid=33 gid=33 euid=33 suid=33 fsuid=33 egid=33 sgid=33 fsgid=33 tty=(none) ses=4294967295 comm=\"apache2\" exe=\"/usr/sbin/apache2\" key=\"pt_siem_api_accept\""
+    ]
+  },
+  "node": "ubuntu",
+  "timestamp": "1558449060",
+  "timestampfractional": "900"
+}
