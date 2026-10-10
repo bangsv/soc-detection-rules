@@ -24,6 +24,7 @@ IOC_ATTACK_MAP = {
     "dcsync": "DCSync",
     "nginx ui": "CVE-2026-27944_Nginx UI",
     "cve-2025-33073": "CVE-2025-33073",
+    "copy fail": "CVE-2026-31431_Copy fail",
 }
 IOC_RE = re.compile(
     r"\bCVE-\d{4}-\d{4,7}\b|\bT\d{4}(?:\.\d{3})?\b|"
