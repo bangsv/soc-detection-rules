@@ -1,0 +1,181 @@
+/* ==========================================================================
+   SOC Atlas · core tokens
+   Design language 2026: deep-space surfaces, glass layers, one accent family,
+   fluid type scale, semantic tokens for dark and light themes.
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* --- palette ---------------------------------------------------------- */
+  --hue-teal: oklch(0.82 0.13 178);
+  --c-teal-100: #d5fff6;
+  --c-teal-300: #7ff0dc;
+  --c-teal-400: #4bdfc6;
+  --c-teal-500: #22c3ab;
+  --c-teal-600: #12a08d;
+
+  --c-sand-300: #ffd9a0;
+  --c-sand-400: #ffc46b;
+  --c-sand-500: #f0a13c;
+
+  --c-rose-300: #ffa9b8;
+  --c-rose-400: #ff7a92;
+  --c-rose-500: #ea5a76;
+
+  --c-violet-300: #c3c2ff;
+  --c-violet-400: #9d9bff;
+  --c-violet-500: #7c78f2;
+
+  /* --- dark theme surfaces --------------------------------------------- */
+  --bg-deep: #04080b;
+  --bg: #070d11;
+  --bg-raised: #0c1418;
+  --surface-1: rgba(15, 26, 31, 0.72);
+  --surface-2: rgba(21, 35, 41, 0.68);
+  --surface-3: rgba(28, 45, 52, 0.62);
+  --surface-solid: #0d161a;
+  --surface-hover: rgba(75, 223, 198, 0.07);
+  --surface-active: rgba(75, 223, 198, 0.12);
+
+  --text-1: #eaf4f2;
+  --text-2: #a9bcc0;
+  --text-3: #74888d;
+  --text-inverse: #04100e;
+
+  --border-1: rgba(160, 220, 215, 0.14);
+  --border-2: rgba(160, 220, 215, 0.24);
+  --border-strong: rgba(75, 223, 198, 0.48);
+
+  --accent: var(--c-teal-400);
+  --accent-strong: var(--c-teal-300);
+  --accent-dim: rgba(75, 223, 198, 0.16);
+  --accent-contrast: #04140f;
+
+  --info: #7fc6ff;
+  --info-dim: rgba(127, 198, 255, 0.14);
+  --warn: var(--c-sand-400);
+  --warn-dim: rgba(255, 196, 107, 0.14);
+  --danger: var(--c-rose-400);
+  --danger-dim: rgba(255, 122, 146, 0.14);
+  --violet: var(--c-violet-400);
+  --violet-dim: rgba(157, 155, 255, 0.14);
+
+  --grid-line: rgba(120, 200, 195, 0.045);
+  --grid-size: 56px;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 18px 40px -22px rgba(0, 0, 0, 0.85);
+  --shadow-3: 0 32px 80px -30px rgba(0, 0, 0, 0.9);
+  --glow-accent: 0 0 0 1px rgba(75, 223, 198, 0.28), 0 18px 44px -26px rgba(75, 223, 198, 0.5);
+
+  --aurora-a: rgba(34, 195, 171, 0.24);
+  --aurora-b: rgba(124, 120, 242, 0.18);
+  --aurora-c: rgba(240, 161, 60, 0.12);
+
+  /* --- shape & motion --------------------------------------------------- */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 30px;
+  --r-pill: 999px;
+
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-56: 56px;
+  --space-72: 72px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-fast: 140ms var(--ease-out);
+  --t-base: 240ms var(--ease-out);
+  --t-slow: 520ms var(--ease-out);
+
+  /* --- type ------------------------------------------------------------- */
+  --font-sans: "Manrope", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --fs-2xs: 0.6875rem;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-base: 0.9375rem;
+  --fs-md: 1rem;
+  --fs-lg: clamp(1.0625rem, 0.95vw + 0.8rem, 1.25rem);
+  --fs-xl: clamp(1.25rem, 1.2vw + 0.9rem, 1.6rem);
+  --fs-2xl: clamp(1.5rem, 2vw + 0.9rem, 2.25rem);
+  --fs-3xl: clamp(1.9rem, 3.4vw + 0.8rem, 3.25rem);
+  --fs-4xl: clamp(2.4rem, 6vw + 0.6rem, 5rem);
+
+  --tracking-tight: -0.03em;
+  --tracking-wide: 0.08em;
+  --tracking-wider: 0.16em;
+
+  --container: 1320px;
+  --header-h: 66px;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-deep: #eef2f1;
+  --bg: #f7faf9;
+  --bg-raised: #ffffff;
+  --surface-1: rgba(255, 255, 255, 0.86);
+  --surface-2: rgba(255, 255, 255, 0.94);
+  --surface-3: rgba(240, 246, 245, 0.96);
+  --surface-solid: #ffffff;
+  --surface-hover: rgba(18, 160, 141, 0.07);
+  --surface-active: rgba(18, 160, 141, 0.13);
+
+  --text-1: #0a1a1d;
+  --text-2: #46595e;
+  --text-3: #6d8085;
+  --text-inverse: #f2fffb;
+
+  --border-1: rgba(12, 60, 58, 0.13);
+  --border-2: rgba(12, 60, 58, 0.22);
+  --border-strong: rgba(18, 160, 141, 0.5);
+
+  --accent: var(--c-teal-600);
+  --accent-strong: #0b8574;
+  --accent-dim: rgba(18, 160, 141, 0.12);
+  --accent-contrast: #f4fffc;
+
+  --info: #1f6fb5;
+  --info-dim: rgba(31, 111, 181, 0.1);
+  --warn: #a35f00;
+  --warn-dim: rgba(163, 95, 0, 0.12);
+  --danger: #c02a4c;
+  --danger-dim: rgba(192, 42, 76, 0.1);
+  --violet: #5a55d6;
+  --violet-dim: rgba(90, 85, 214, 0.1);
+
+  --grid-line: rgba(12, 60, 58, 0.05);
+
+  --shadow-1: 0 1px 2px rgba(10, 40, 38, 0.08);
+  --shadow-2: 0 16px 34px -24px rgba(10, 40, 38, 0.4);
+  --shadow-3: 0 30px 70px -34px rgba(10, 40, 38, 0.42);
+  --glow-accent: 0 0 0 1px rgba(18, 160, 141, 0.3), 0 16px 40px -28px rgba(18, 160, 141, 0.5);
+
+  --aurora-a: rgba(34, 195, 171, 0.2);
+  --aurora-b: rgba(124, 120, 242, 0.14);
+  --aurora-c: rgba(240, 161, 60, 0.14);
+}
+
+/* Ambient veil used behind hero and section headers. */
+:root {
+  --aurora-veil:
+    radial-gradient(60% 70% at 12% 0%, var(--aurora-a), transparent 62%),
+    radial-gradient(45% 60% at 88% 12%, var(--aurora-b), transparent 66%),
+    radial-gradient(40% 50% at 55% 100%, var(--aurora-c), transparent 70%);
+}

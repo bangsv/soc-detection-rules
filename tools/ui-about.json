@@ -1,0 +1,15 @@
+[
+  { "check": ["about title", "document.title.includes('SOC Analyst L2')"] },
+  { "check": ["profile sections", "document.querySelectorAll('.profile-section').length"] },
+  { "check": ["photo loaded", "document.querySelector('.profile-hero__photo')?.naturalWidth > 0"] },
+  { "check": ["theme toggle present", "!!document.querySelector('#theme-toggle')"] },
+  { "eval": "document.querySelector('#theme-toggle').click()" },
+  { "wait": 400 },
+  { "check": ["light theme", "document.documentElement.dataset.theme === 'light'"] },
+  { "shot": "ui-about-light.png" },
+  { "eval": "document.querySelector('#theme-toggle').click(); window.scrollTo(0, 700)" },
+  { "wait": 500 },
+  { "shot": "ui-about.png" },
+  { "check": ["no horizontal overflow", "document.documentElement.scrollWidth <= window.innerWidth + 2"] },
+  { "check": ["back link works", "!!document.querySelector('a[href=\"/\"]')"] }
+]

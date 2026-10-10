@@ -5,6 +5,50 @@
 
 Репозиторий содержит базу знаний и правила детектирования для аналитиков SOC. Здесь собраны Sigma/XP/Suricata, Sysmon/Auditd-правила, PoC-скрипты и материалы для триажа инцидентов.
 
+## 🖥️ Веб-атлас (SOC Atlas)
+
+Поверх репозитория работает FastAPI-приложение `app/` — интерактивный атлас правил и индикаторов.
+
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000     # http://127.0.0.1:8000
+```
+
+Возможности интерфейса:
+
+| Раздел | Что делает |
+| :--- | :--- |
+| **Поиск по индикаторам** | Единый индекс: авторские IOC, технические фрагменты из README, названия сценариев и пояснения. Быстрые фильтры и фасеты по типу. |
+| **Карта сценариев** | Шесть сценариев с критичностью, платформой, тактиками ATT&CK и распределением индикаторов. Фильтры по критичности, платформе и тактике. |
+| **Консоль сценария** | Вектор атаки, на что смотреть в логах, стенд воспроизведения, группы Host / Network IOC с пояснениями, экспорт в CSV, ZIP с материалами и открытие README. |
+| **База знаний** | README репозитория: список документов слева, текст по центру, содержание документа — в правой колонке с подсветкой текущего раздела. Листинги копируются, скриншоты открываются в лайтбоксе. |
+| **Командная палитра** | `Ctrl + K` — поиск по сценариям, индикаторам, фрагментам и документам, плюс быстрые действия. |
+| **Набор IOC** | Сбор индикаторов из поиска и сценариев в один список с копированием и выгрузкой в `.txt`. |
+
+Экспорт CSV отдаётся с UTF-8 BOM и CRLF, поэтому Excel открывает кириллицу без «кракозябр».
+
+Горячие клавиши: `Ctrl + K` — палитра, `/` — фокус в поиск, `1…3` — разделы, `T` — тема (тёмная/светлая), `Esc` — закрыть панель или палитру.
+
+### Скриншоты
+
+| | |
+| :--- | :--- |
+| ![Главная страница](docs/screenshots/01-hero-dark.png) | ![Поиск по индикаторам](docs/screenshots/02-ioc-search.png) |
+| ![Карта сценариев](docs/screenshots/03-attack-catalog.png) | ![Консоль сценария](docs/screenshots/04-scenario-detail.png) |
+| ![Командная палитра](docs/screenshots/05-command-palette.png) | ![Набор IOC](docs/screenshots/06-evidence-tray.png) |
+| ![База знаний](docs/screenshots/07-knowledge-base-dark.png) | ![Мобильная версия](docs/screenshots/10-mobile-catalog.png) |
+
+API: `/api/meta`, `/api/summary`, `/api/attacks`, `/api/attacks/{id}`, `/api/attacks/{id}/tray?format=json|text|csv`, `/api/attacks/{id}/bundle` (ZIP), `/api/search`, `/api/readme`, `/api/shortcuts`, `/api/reindex`.
+
+Проверки перед коммитом:
+
+```bash
+python tools/smoke_api.py                       # контракт API
+node tools/check-modules.mjs app/static         # модули и ссылки на ассеты
+node tools/browser-check.mjs http://127.0.0.1:8000/ tools/ui-scenario.json
+node tools/browser-check.mjs http://127.0.0.1:8000/ tools/ui-mobile.json
+```
+
 ## 🕵️ Threat Intelligence Reports
 
 Полезные площадки с аналитическими отчётами, исследованиями APT-группировок и Threat Intelligence-фидами от ведущих российских ИБ-вендоров:

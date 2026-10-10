@@ -1,19 +1,338 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SOC Atlas — Detection Rules</title><link rel="icon" href="/static/assets/icon.ico" sizes="any"><link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/enhancements.css"><link rel="stylesheet" href="/static/final-tweaks.css"><link rel="stylesheet" href="/static/last.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#070d11">
+  <meta name="description" content="SOC Atlas — база правил детектирования, индикаторов компрометации и сценариев атак для аналитиков SOC: Sigma, XP, Suricata, Sysmon, Windows Security и Linux Audit.">
+  <title>SOC Atlas · база правил детектирования и IOC</title>
+  <link rel="icon" href="/static/assets/icon.ico" sizes="any">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/static/css/core.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/utilities.css">
 </head>
 <body>
-  <div class="grid"></div>
-  <header><a class="brand" href="#top"><span class="brand-mark">◈</span> SOC <b>ATLAS</b></a><nav><a href="#explorer">Поиск</a><a href="#attacks-map">Атаки</a><a href="#knowledge">Документация</a><a href="https://github.com/bangsv" target="_blank" rel="noreferrer">GitHub ↗</a></nav><button id="reindex" title="Обновить индекс">↻</button></header>
-  <main id="top">
-    <section class="hero">
-      <div class="hero-copy"><p class="eyebrow">DETECTION ENGINEERING / KNOWLEDGE BASE</p><h1>Детектирование<br><i>с полным контекстом.</i></h1><p class="lede">Централизованная база правил, индикаторов компрометации и сценариев атак для анализа, расследований и повышения зрелости SOC.</p><div class="hero-actions"><a href="#explorer" class="button">Открыть атлас <span>→</span></a><a href="#knowledge" class="quiet-link">Читать документацию ↓</a></div><div class="metrics" id="metrics"></div></div>
-      <a class="author-card" href="/about"><span class="author-kicker">АВТОР ПРОЕКТА</span><img class="author-photo" src="/static/assets/yury-zakharchuk.jpg" alt="Захарчук Юрий Александрович"><h2>Захарчук Юрий<br>Александрович</h2><p>Аналитик SOC L2</p><span class="author-more">Профиль специалиста <b>→</b></span></a>
+  <a class="dsh-skip" href="#main">Перейти к содержимому</a>
+
+  <header class="site-header" id="site-header">
+    <a class="brand" href="/">
+      <span class="brand__mark" aria-hidden="true">◈</span>
+      <span class="brand__word">SOC <b>ATLAS</b></span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Основная навигация">
+      <a href="#explorer" data-nav="explorer">Индикаторы</a>
+      <a href="#attacks-map" data-nav="attacks-map">Атаки</a>
+      <a href="#knowledge" data-nav="knowledge">Документация</a>
+      <a href="/about">Автор</a>
+      <a href="https://github.com/bangsv/soc-detection-rules" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </nav>
+
+    <div class="header-tools">
+      <button class="btn btn--quiet btn--sm" id="palette-open" type="button" aria-haspopup="dialog" aria-label="Командная палитра: поиск любого материала" title="Командная палитра (Ctrl+K)">
+        <span aria-hidden="true">⌕</span>
+        <span class="palette-label">Поиск любого материала</span>
+        <span class="btn__hint">Ctrl K</span>
+      </button>
+      <button class="btn btn--quiet btn--icon" id="theme-toggle" type="button" aria-label="Переключить светлую и тёмную тему" title="Тема (T)">
+        <span data-theme-icon aria-hidden="true">☾</span>
+      </button>
+      <button class="btn btn--quiet btn--icon" id="reindex" type="button" aria-label="Обновить индекс" title="Обновить индекс">
+        <span aria-hidden="true">↻</span>
+      </button>
+      <button class="btn btn--quiet btn--icon nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Открыть меню">
+        <span aria-hidden="true">☰</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============================================================ hero -->
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero__inner">
+        <div class="hero__lead">
+          <p class="eyebrow reveal">Detection engineering · knowledge base</p>
+          <h1 id="hero-title" class="reveal" style="--reveal-delay:60ms">
+            Детектирование
+            <em>с полным контекстом</em>
+          </h1>
+          <p class="hero__lede reveal" style="--reveal-delay:120ms">
+            Атлас правил и индикаторов компрометации, собранных по результатам реальных лабораторных
+            атак: Sigma, XP, Suricata, Sysmon, Windows Security, Linux Audit и сетевые артефакты
+            Wireshark — с пояснением, почему каждый признак работает и где он ломается.
+          </p>
+          <div class="hero__actions reveal" style="--reveal-delay:180ms">
+            <a class="btn btn--primary" href="#explorer">Открыть поиск по IOC <span aria-hidden="true">→</span></a>
+            <a class="btn btn--ghost" href="#attacks-map">Карта сценариев</a>
+            <a class="btn btn--quiet" href="#knowledge">Документация ↓</a>
+          </div>
+          <div class="hero__chips reveal" style="--reveal-delay:240ms" id="hero-chips" aria-label="Типы источников телеметрии">
+            <span class="chip">Sysmon</span>
+            <span class="chip">Windows Security</span>
+            <span class="chip">Suricata</span>
+            <span class="chip">Linux Audit</span>
+            <span class="chip">NTFS / DRSUAPI</span>
+          </div>
+        </div>
+
+        <aside class="hero__side" aria-label="Обзор атласа">
+          <a class="author-card reveal" style="--reveal-delay:140ms" href="/about">
+            <span class="author-card__top">
+              <img class="author-card__photo" src="/static/assets/yury-zakharchuk.jpg" alt="Захарчук Юрий Александрович" width="52" height="52">
+              <span class="author-card__identity">
+                <span class="author-card__name">Захарчук Юрий<br>Александрович</span>
+                <span class="author-card__role">SOC Analyst L2</span>
+              </span>
+            </span>
+            <span class="author-card__note">
+              Собираю базу знаний по детектированию: правила, триаж-материалы и разбор индикаторов
+              из живых лабораторных атак на домен и Linux-хосты.
+            </span>
+            <span class="author-card__cta">Профиль специалиста <span aria-hidden="true">→</span></span>
+          </a>
+
+          <dl class="info-list reveal" style="--reveal-delay:200ms" id="lab-card" aria-label="Лабораторный стенд">
+            <div class="info-list__row"><dt>DC primary</dt><dd>192.168.0.10 · dc01</dd></div>
+            <div class="info-list__row"><dt>DC secondary</dt><dd>192.168.0.100 · dc02</dd></div>
+            <div class="info-list__row"><dt>Workstation</dt><dd>192.168.0.15 · Windows 10</dd></div>
+            <div class="info-list__row"><dt>Attacker</dt><dd>192.168.0.30 · Kali Linux</dd></div>
+          </dl>
+        </aside>
+      </div>
+
+      <div class="metrics-band reveal" id="metrics-band" aria-live="polite">
+        <div class="stat skeleton" style="height:104px"></div>
+        <div class="stat skeleton" style="height:104px"></div>
+        <div class="stat skeleton" style="height:104px"></div>
+        <div class="stat skeleton" style="height:104px"></div>
+      </div>
     </section>
-    <section id="explorer" class="section"><div class="section-head"><div><p class="eyebrow">IOC EXPLORER</p><h2>Точный поиск</h2></div><p>CVE · IOC · название угрозы · хеш · IP · домен</p></div><div class="searchbox"><span>⌕</span><input id="ioc-search" autocomplete="off" placeholder="Например: CVE-2021-36942, EfsRpcOpenFileRaw, 0xc000000d"><kbd>ESC</kbd></div><div id="search-state" class="search-state">Поиск по CVE, IOC, хешам и названиям угроз.</div><div id="results" class="results"></div></section>
-    <section id="attacks-map" class="section attacks-section"><div class="section-head"><div><p class="eyebrow">ATTACK CATALOG</p><h2>Карта сценариев</h2></div><p>Выберите сценарий, чтобы посмотреть полный, структурированный список IOC.</p></div><div id="attacks" class="attack-grid"></div><section id="attack-detail" class="attack-detail" hidden></section></section>
-    <section id="knowledge" class="section knowledge"><div class="section-head"><div><p class="eyebrow">DOCUMENTATION</p><h2>База знаний</h2></div><p>README из репозитория с корректным Markdown-оформлением.</p></div><div class="knowledge-layout"><aside id="readme-nav" class="readme-nav"></aside><article id="document" class="document"><div class="document-empty"><span>▱</span><h3>Выберите документ</h3><p>Откройте README из навигации слева.</p></div></article></div><dialog id="image-viewer" class="image-viewer" aria-label="Просмотр изображения"><button type="button" class="image-viewer-close" aria-label="Закрыть изображение">×</button><img alt=""><p></p></dialog></section>
-  </main><footer><span>◈ SOC ATLAS</span><span>Автор: Захарчук Юрий Александрович</span></footer><script src="/static/app.js"></script>
-</body></html>
+
+    <!-- ======================================================== explorer -->
+    <section class="page-section" id="explorer" aria-labelledby="explorer-title">
+      <div class="shell">
+        <div class="section-head">
+          <div class="section-head__title">
+            <p class="eyebrow">IOC explorer</p>
+            <h2 id="explorer-title">Поиск по индикаторам</h2>
+          </div>
+          <p class="section-head__aside">
+            Единый индекс: 42 авторских IOC из базы, технические фрагменты из README и справочные
+            описания. Поиск идёт по значению, типу и тексту пояснения.
+          </p>
+        </div>
+
+        <div class="stack stack--lg">
+          <div class="field">
+            <span class="field__icon" aria-hidden="true">⌕</span>
+            <label class="visually-hidden" for="ioc-search">Поиск по индикаторам компрометации</label>
+            <input id="ioc-search" type="search" autocomplete="off" spellcheck="false"
+                   placeholder="CVE-2021-36942, EfsRpcOpenFileRaw, 0xc000000d, Replicating Directory Changes">
+            <kbd>/</kbd>
+          </div>
+
+          <div id="search-facets"></div>
+
+          <p class="text-sm muted" id="search-state" role="status" aria-live="polite">
+            Введите минимум один символ: поиск идёт по индексу IOC, фрагментам из README, названиям сценариев и описаниям индикаторов.
+          </p>
+
+          <div class="results" id="results"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= attacks -->
+    <section class="page-section" id="attacks-map" aria-labelledby="attacks-title">
+      <div class="shell">
+        <div class="section-head">
+          <div class="section-head__title">
+            <p class="eyebrow">Attack catalog</p>
+            <h2 id="attacks-title">Карта сценариев</h2>
+          </div>
+          <p class="section-head__aside">
+            Шесть сценариев с полным набором материалов: правила XP и Sigma, конфигурации Sysmon,
+            PCAP, EVTX-дампы и готовый список IOC для передачи в SIEM.
+          </p>
+        </div>
+
+        <div class="workspace">
+          <aside class="workspace__side" aria-label="Фильтры сценариев">
+            <div class="rail">
+              <div class="rail__group">
+                <label class="rail__label" for="attack-search">Поиск сценария</label>
+                <div class="field field--sm">
+                  <span class="field__icon" aria-hidden="true">⌕</span>
+                  <input id="attack-search" type="search" autocomplete="off" placeholder="DCSync, SMB, RPC…">
+                </div>
+              </div>
+              <div class="rail__group">
+                <span class="rail__label">Критичность</span>
+                <div class="rail__options" id="filter-severity" role="group" aria-label="Фильтр по критичности"></div>
+              </div>
+              <details class="rail__group" data-mobile-collapse>
+                <summary class="rail__label">Платформа</summary>
+                <div class="rail__options" id="filter-platform" role="group" aria-label="Фильтр по платформе"></div>
+              </details>
+              <details class="rail__group" data-mobile-collapse>
+                <summary class="rail__label">Тактика ATT&amp;CK</summary>
+                <div class="rail__options" id="filter-tactic" role="group" aria-label="Фильтр по тактике ATT&CK"></div>
+              </details>
+              <div class="rail__foot">
+                <span>Показано <b class="result-count" id="attack-count">0</b> из <span id="attack-total">0</span></span>
+                <button class="btn btn--quiet btn--sm" type="button" id="filter-reset">Сбросить</button>
+              </div>
+            </div>
+
+            <div class="card card--pad stack stack--sm" aria-label="Сводка по индикаторам">
+              <span class="rail__label">Индикаторы по сценариям</span>
+              <div id="ioc-distribution" class="stack stack--sm"></div>
+            </div>
+          </aside>
+
+          <div class="workspace__main">
+            <div class="scenario-grid" id="attacks" aria-live="polite"></div>
+            <section id="attack-detail" class="detail" hidden aria-label="Детали сценария"></section>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= knowledge -->
+    <section class="page-section" id="knowledge" aria-labelledby="knowledge-title">
+      <div class="shell">
+        <div class="section-head">
+          <div class="section-head__title">
+            <p class="eyebrow">Documentation</p>
+            <h2 id="knowledge-title">База знаний</h2>
+          </div>
+          <p class="section-head__aside">
+            README из репозитория с корректной вёрсткой: таблицы, листинги правил и скриншоты
+            триажа открываются прямо в атласе.
+          </p>
+        </div>
+
+        <div class="knowledge">
+          <aside class="knowledge__side knowledge__left" aria-label="Список документов">
+            <div class="doc-shell">
+              <div class="card__head">
+                <span class="card__title">Документы</span>
+                <span class="badge badge--accent" id="doc-count">0</span>
+              </div>
+              <div class="stack stack--sm" style="padding:12px">
+                <div class="field field--sm">
+                  <span class="field__icon" aria-hidden="true">⌕</span>
+                  <input id="doc-search" type="search" autocomplete="off" placeholder="Фильтр документов">
+                </div>
+              </div>
+              <nav class="doc-nav knowledge__nav" id="readme-nav" aria-label="Список документов"></nav>
+            </div>
+          </aside>
+
+          <div class="knowledge__main">
+            <article class="doc-shell">
+              <div class="doc" id="document">
+                <div class="doc-empty">
+                  <span class="badge badge--plain">Шаг 1</span>
+                  <strong>Выберите документ</strong>
+                  <p class="text-sm muted">Слева — список README. Откройте любой: текст, таблицы и изображения читаются прямо здесь, а разделы документа — в содержании справа.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <aside class="knowledge__side knowledge__right" aria-label="Содержание документа">
+            <div class="doc-shell doc-shell--toc">
+              <div class="card__head">
+                <span class="card__title">Содержание</span>
+                <span class="badge badge--plain" id="toc-count">0</span>
+              </div>
+              <nav class="doc__toc knowledge__toc" id="doc-toc" aria-label="Содержание документа"></nav>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell site-footer__inner">
+      <div class="stack stack--sm">
+        <span class="brand brand--footer"><span class="brand__mark" aria-hidden="true">◈</span> <span class="brand__word">SOC <b>ATLAS</b></span></span>
+        <p class="text-xs dim">Материалы подготовлены для внутреннего использования в SOC и в образовательных целях.</p>
+      </div>
+      <div class="site-footer__links">
+        <a href="/about">Захарчук Юрий Александрович · SOC Analyst L2</a>
+        <a href="https://github.com/bangsv/soc-detection-rules" target="_blank" rel="noreferrer">GitHub ↗</a>
+      </div>
+      <div class="site-footer__meta">
+        <span>© 2026</span>
+        <span id="footer-updated">индекс: —</span>
+        <span>Ctrl K — палитра</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================= overlays -->
+  <dialog class="modal" id="palette" aria-label="Командная палитра">
+    <div class="modal__head">
+      <span class="modal__title">Командная палитра</span>
+      <button class="icon-btn" type="button" id="palette-close" aria-label="Закрыть палитру">×</button>
+    </div>
+    <div class="modal__body stack stack--sm">
+      <div class="field">
+        <span class="field__icon" aria-hidden="true">⌕</span>
+        <label class="visually-hidden" for="palette-input">Поиск по атласу</label>
+        <input id="palette-input" type="search" autocomplete="off" spellcheck="false"
+               placeholder="Сценарий, IOC, документ или раздел…" aria-controls="palette-results">
+      </div>
+      <div id="palette-results" role="listbox" aria-label="Результаты палитры"></div>
+    </div>
+    <div class="modal__foot">
+      <div class="modal__hints">
+        <span><kbd>↑</kbd><kbd>↓</kbd> навигация</span>
+        <span><kbd>Enter</kbd> открыть</span>
+        <span><kbd>Esc</kbd> закрыть</span>
+      </div>
+      <span id="palette-status">Готово к поиску</span>
+    </div>
+  </dialog>
+
+  <dialog class="modal lightbox" id="image-viewer" aria-label="Просмотр изображения">
+    <div class="modal__head">
+      <span class="modal__title">Скриншот из документа</span>
+      <button class="icon-btn" type="button" id="lightbox-close" aria-label="Закрыть изображение">×</button>
+    </div>
+    <img alt="">
+    <p class="lightbox__caption"></p>
+  </dialog>
+
+  <aside class="tray" id="tray" hidden aria-label="Набор индикаторов">
+    <button class="tray__pill" type="button" id="tray-toggle" aria-expanded="false" aria-controls="tray-panel">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Набор IOC · <b id="tray-count">0</b></span>
+      <span class="tray__pill-hint" id="tray-preview"></span>
+    </button>
+    <div class="tray__panel" id="tray-panel" hidden>
+      <div class="tray__head">
+        <span class="tray__title">Собранные индикаторы</span>
+        <button class="icon-btn" type="button" id="tray-close" aria-label="Очистить набор">×</button>
+      </div>
+      <div class="tray__list" id="tray-list"></div>
+      <div class="tray__actions">
+        <button class="btn btn--primary btn--sm" type="button" id="tray-copy">Копировать всё</button>
+        <button class="btn btn--ghost btn--sm" type="button" id="tray-download">Скачать .txt</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

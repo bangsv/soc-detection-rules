@@ -1,0 +1,12 @@
+[
+  { "check": ["toc slot exists in right column", "!!document.querySelector('.knowledge__right #doc-toc')"] },
+  { "check": ["toc links rendered", "document.querySelectorAll('#doc-toc [data-toc]').length"] },
+  { "check": ["toc count badge", "document.querySelector('#toc-count').textContent"] },
+  { "check": ["documents panel in left column", "!!document.querySelector('.knowledge__left #readme-nav')"] },
+  { "check": ["toc is not inside article", "!document.querySelector('#document .doc__toc')"] },
+  { "check": ["toc is the right-most column", "document.querySelector('.knowledge__right').getBoundingClientRect().left > document.querySelector('.knowledge__main').getBoundingClientRect().right - 4"] },
+  { "check": ["platform badge capitalised", "[...document.querySelectorAll('#attacks .badge')].some(b => b.textContent.includes('Контейнер'))"] },
+  { "check": ["lab card mentions Windows 10", "document.querySelector('#lab-card').textContent.includes('Windows 10')"] },
+  { "check": ["lab card attacker host", "document.querySelector('#lab-card').textContent.includes('Kali Linux')"] },
+  { "check": ["no horizontal overflow", "document.documentElement.scrollWidth <= window.innerWidth + 2"] }
+]

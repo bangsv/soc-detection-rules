@@ -1,0 +1,183 @@
+/* ==========================================================================
+   SOC Atlas · utilities, reveal animation, print
+   ========================================================================== */
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-12);
+}
+
+.stack--sm {
+  gap: var(--space-8);
+}
+
+.stack--lg {
+  gap: var(--space-20);
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.cluster--between {
+  justify-content: space-between;
+}
+
+.cluster--end {
+  justify-content: flex-end;
+}
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-12);
+}
+
+.text-sm {
+  font-size: var(--fs-sm);
+}
+
+.text-xs {
+  font-size: var(--fs-xs);
+}
+
+.text-2xs {
+  font-size: var(--fs-2xs);
+}
+
+.uppercase {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.break-anywhere {
+  overflow-wrap: anywhere;
+}
+
+.center {
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-1);
+  margin-block: var(--space-20);
+}
+
+.scroll-y {
+  overflow-y: auto;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.dot--live {
+  animation: dot-live 2.4s var(--ease-in-out) infinite;
+}
+
+@keyframes dot-live {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+  50% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+.dot--warn {
+  background: var(--warn);
+  box-shadow: 0 0 0 3px var(--warn-dim);
+}
+
+.dot--danger {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-dim);
+}
+
+/* Entrance animation: opt in per element, respects reduced motion. */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 620ms var(--ease-out), transform 620ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ print */
+
+@media print {
+  :root {
+    --bg: #ffffff;
+    --text-1: #101820;
+    --text-2: #33414a;
+    --text-3: #5a6a72;
+    --border-1: rgba(16, 24, 32, 0.2);
+    --surface-1: #ffffff;
+  }
+
+  body::before,
+  body::after,
+  .site-header,
+  .tray,
+  .toasts,
+  .modal,
+  .workspace__side,
+  .knowledge__side,
+  .detail__actions,
+  .icon-btn {
+    display: none !important;
+  }
+
+  .detail,
+  .card,
+  .scenario,
+  .result,
+  .ioc-row {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .doc img {
+    height: auto;
+  }
+}
