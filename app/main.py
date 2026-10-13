@@ -20,164 +20,12 @@ EXCLUDED_CATALOG_FOLDERS = {"help_file", "Legitimate_Activity"}
 XP_RULE_DIR = "XP_rule_(eXtraction and Processing)"
 ALLOWED_XP_RULE_FILES = {"rule.co", "formula.xp", "normalization_event.txt"}
 IOC_SOURCE = ROOT / "IOC"
-IOC_ATTACK_MAP = {
-    "eternalblue": "CVE-2017-0143_EternalBlue",
-    "zerologon": "CVE-2020-1472_Zerologon",
-    "petitpotam": "CVE-2021-36942_PetitPotam",
-    "dcsync": "DCSync",
-    "nginx ui": "CVE-2026-27944_Nginx UI",
-    "cve-2025-33073": "CVE-2025-33073",
-    "copy fail": "CVE-2026-31431_Copy fail",
-}
-
-# Hand-curated scenario metadata: keeps the catalog readable without touching the rule files.
-ATTACK_META: dict[str, dict] = {
-    "CVE-2017-0143_EternalBlue": {
-        "short": "EternalBlue",
-        "cve": "CVE-2017-0143",
-        "tagline": "SMBv1 remote code execution на устаревших Windows-хостах.",
-        "severity": "Критично",
-        "cvss": 9.8,
-        "platform": "Windows",
-        "surface": "Сеть / SMB",
-        "category": "Удалённое выполнение кода",
-        "attack": ["T1210", "T1569.002", "T1055"],
-        "vector": "Специально сформированные SMB-пакеты в SMBv1 приводят к переполнению и удалённому выполнению кода.",
-        "focus": "Связка аномальной фрагментации NT Transact / Trans2 с последующим необычным исходящим соединением процесса.",
-        "lab": "192.168.0.30 (Kali Linux) → 192.168.0.15 (Windows 10), SMB TCP/445",
-    },
-    "CVE-2020-1472_Zerologon": {
-        "short": "Zerologon",
-        "cve": "CVE-2020-1472",
-        "tagline": "Криптографический дефект Netlogon: сброс пароля компьютерной учётной записи DC.",
-        "severity": "Критично",
-        "cvss": 10.0,
-        "platform": "Windows",
-        "surface": "RPC / MS-NRPC",
-        "category": "Повышение привилегий",
-        "attack": ["T1068", "T1078.002"],
-        "vector": "Перебор NetrServerAuthenticate3 с нулевым ClientCredential и последующий NetrServerPasswordSet2.",
-        "focus": "Цикл Opnum 4 → Opnum 26 с нулевыми challenge/credential и финальным STATUS_SUCCESS перед сменой пароля.",
-        "lab": "192.168.0.30 (Kali Linux) → 192.168.0.10 (dc01), MS-NRPC TCP/135 + динамический RPC",
-    },
-    "CVE-2021-36942_PetitPotam": {
-        "short": "PetitPotam",
-        "cve": "CVE-2021-36942",
-        "tagline": "Принудительная аутентификация через EFSRPC с последующим NTLM Relay.",
-        "severity": "Высоко",
-        "cvss": 8.1,
-        "platform": "Windows",
-        "surface": "RPC / MS-EFSRPC",
-        "category": "Принуждение к аутентификации",
-        "attack": ["T1187", "T1557.001", "T1021.002"],
-        "vector": "EfsRpcOpenFileRaw с UNC-путём на контролируемый узел заставляет DC инициировать NTLM-аутентификацию.",
-        "focus": "Входящий SMB на DC (Initiated=false) и следующий за ним исходящий SMB от DC (Initiated=true) на TCP/445.",
-        "lab": "192.168.0.30 (Kali Linux, relay) → 192.168.0.10 (dc01) → 192.168.0.15 (Windows 10)",
-    },
-    "CVE-2026-27944_Nginx UI": {
-        "short": "Nginx UI",
-        "cve": "CVE-2026-27944",
-        "tagline": "Неавторизованное скачивание резервной копии конфигурации через API Nginx UI.",
-        "severity": "Высоко",
-        "cvss": 7.5,
-        "platform": "Linux / Контейнер",
-        "surface": "HTTP / API",
-        "category": "Утечка данных",
-        "attack": ["T1190", "T1552.001"],
-        "vector": "GET /api/backup до версии 2.3.3 возвращает архив с секретами без аутентификации.",
-        "focus": "HTTP 200 на /api/backup вместе с заголовком X-Backup-Security, включая нормализованные варианты пути.",
-        "lab": "Внешний сканер → Nginx UI 2.x, HTTP/HTTPS",
-    },
-    "CVE-2026-31431_Copy fail": {
-        "short": "Copy Fail",
-        "cve": "CVE-2026-31431",
-        "tagline": "Локальное повышение привилегий через перезапись page cache SUID-файла.",
-        "severity": "Критично",
-        "cvss": 8.8,
-        "platform": "Linux",
-        "surface": "Ядро / AF_ALG",
-        "category": "Повышение привилегий",
-        "attack": ["T1068", "T1548"],
-        "vector": "Цикл splice в AF_ALG перезаписывает страничный кэш /usr/bin/su распакованным пейлоадом.",
-        "focus": "Прогрессия exit=4, 8, 12 … 160 в парных splice и запуск su с euid=root без событий PAM.",
-        "lab": "Локальный пользователь → ядро Linux, системные вызовы socket/bind/splice",
-    },
-    "DCSync": {
-        "short": "DCSync",
-        "cve": "T1003.006",
-        "tagline": "Извлечение секретов Active Directory через злоупотребление репликацией каталога.",
-        "severity": "Критично",
-        "cvss": 9.0,
-        "platform": "Windows",
-        "surface": "DRSUAPI / LDAP",
-        "category": "Кража учётных данных",
-        "attack": ["T1003.006"],
-        "vector": "DRSGetNCChanges от узла, не являющегося контроллером домена, выгружает хеши учётных записей.",
-        "focus": "Событие 4662 с AccessMask=0x100 и GUID Replicating Directory Changes All от не-DC источника.",
-        "lab": "192.168.0.30 (Kali Linux, Impacket) → 192.168.0.10 (dc01), MS-DRSR",
-    },
-    "CVE-2025-33073": {
-        "short": "CVE-2025-33073",
-        "cve": "CVE-2025-33073",
-        "tagline": "Лабораторный сценарий с набором материалов и правил детектирования.",
-        "severity": "Средне",
-        "cvss": None,
-        "platform": "Windows",
-        "surface": "SMB",
-        "category": "Лабораторный сценарий",
-        "attack": [],
-        "vector": "Материалы и правила сценария используются для отработки триажа.",
-        "focus": "Сценарий входит в атлас как заготовка и дополняется по мере появления материалов.",
-        "lab": "Лабораторный стенд SOC",
-    },
-}
+# Сведения об атаках, их индикаторы, стенды и ссылки живут только в файле IOC.
+# Имя блока — только слова и слэши, поэтому «## LAB — описание» читается как LAB.
+BLOCK_MARKER = re.compile(r"(?m)^\s*##\s*(?P<name>[A-Za-zА-Яа-я /]+?)\s*(?:—|::|$)", re.M)
 
 SEVERITY_ORDER = {"Критично": 0, "Высоко": 1, "Средне": 2, "Низко": 3}
 
-HASH_RE = re.compile(r"\b[a-fA-F0-9]{32}(?:[a-fA-F0-9]{8})?(?:[a-fA-F0-9]{32})?\b")
-STATUS_PREFIX_RE = re.compile(r"\b(?:STATUS_|WERR_|ERROR_|NT_)[A-Z0-9_]+", re.I)
-UUID_RE = re.compile(r"\b[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}\b", re.I)
-STATUS_CODE_RE = re.compile(r"\b0x[a-f0-9]{6,8}\b", re.I)
-LIST_MARKER_RE = re.compile(r"^(?:•|\*|-|\d+\.)\s+")
-SPLIT_RE = re.compile(r"[,\s]+(?![^()`]*`)|;\s*")
-RPC_METHOD_RE = re.compile(r"\b(?:DRS|DRSGetNCChanges|DRSBind|Netr|EfsRpc|DRSCrackNames|DRSDomainControllerInfo)[A-Za-z0-9]*")
-PROCESS_RE = re.compile(r"\b[a-z0-9_.-]+\.exe\b", re.I)
-EVENT_LABEL_RE = re.compile(
-    r"(?:Sysmon|Security|SMBClient|SMBServer|NETLOGON|Linux Audit|Linux|Audit)\s*(?:Event ID|Event ID:|:)?\s*([0-9]{3,5})",
-    re.I,
-)
-QUOTED_RE = re.compile(r"`([^`\n]{2,120})`")
-HTTP_RE = re.compile(r"\b(?:GET|POST|HEAD|PUT)\s+(/\S*)")
-HOST_RE = re.compile(r"\b(?:[a-z0-9-]+\.)+(?:com|net|org|ru|local|io|gov|edu)\b", re.I)
-HASH_LIKE_RE = re.compile(r"\b[a-f0-9]{32,64}\b", re.I)
-OPNUM_RE = re.compile(r"\bOpnum\s*[=:]?\s*([0-9]{1,3})\b", re.I)
-PATH_RE = re.compile(r"(?<![\w])/(?:usr|bin|etc|var|api|tmp|opt|home)[\w./-]*")
-
-EVENT_SOURCES = {
-    "sysmon": "Sysmon",
-    "security": "Windows Security",
-    "smbclient": "SMBClient",
-    "smbserver": "SMBServer",
-    "netlogon": "NETLOGON",
-    "linux audit": "Linux Audit",
-    "audit": "Linux Audit",
-    "linux": "Linux Audit",
-}
-
-MITRE_TACTICS = {
-    "T1187": "Credential Access",
-    "T1003.006": "Credential Access",
-    "T1557.001": "Credential Access",
-    "T1552.001": "Credential Access",
-    "T1068": "Privilege Escalation",
-    "T1548": "Privilege Escalation",
-    "T1078.002": "Privilege Escalation",
-    "T1210": "Lateral Movement",
-    "T1021.002": "Lateral Movement",
-    "T1190": "Initial Access",
-    "T1569.002": "Execution",
-    "T1055": "Defense Evasion",
-}
 
 SHORTCUTS = [
     {"keys": ["Ctrl", "K"], "label": "Командная палитра: поиск по всему атласу"},
@@ -247,6 +95,37 @@ def classify_ioc(value: str) -> str | None:
     return None
 
 
+HASH_RE = re.compile(r"\b[a-fA-F0-9]{32}(?:[a-fA-F0-9]{8})?(?:[a-fA-F0-9]{32})?\b")
+STATUS_PREFIX_RE = re.compile(r"\b(?:STATUS_|WERR_|ERROR_|NT_)[A-Z0-9_]+", re.I)
+UUID_RE = re.compile(r"\b[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}\b", re.I)
+STATUS_CODE_RE = re.compile(r"\b0x[a-f0-9]{6,8}\b", re.I)
+LIST_MARKER_RE = re.compile(r"^(?:•|\*|-|\d+\.)\s+")
+SPLIT_RE = re.compile(r"[,\s]+(?![^()`]*`)|;\s*")
+RPC_METHOD_RE = re.compile(r"\b(?:DRS|DRSGetNCChanges|DRSBind|Netr|EfsRpc|DRSCrackNames|DRSDomainControllerInfo)[A-Za-z0-9]*")
+PROCESS_RE = re.compile(r"\b[a-z0-9_.-]+\.exe\b", re.I)
+EVENT_LABEL_RE = re.compile(
+    r"(?:Sysmon|Security|SMBClient|SMBServer|NETLOGON|Linux Audit|Linux|Audit)\s*(?:Event ID|Event ID:|:)?\s*([0-9]{3,5})",
+    re.I,
+)
+QUOTED_RE = re.compile(r"`([^`\n]{2,120})`")
+HTTP_RE = re.compile(r"\b(?:GET|POST|HEAD|PUT)\s+(/\S*)")
+HOST_RE = re.compile(r"\b(?:[a-z0-9-]+\.)+(?:com|net|org|ru|local|io|gov|edu)\b", re.I)
+HASH_LIKE_RE = re.compile(r"\b[a-f0-9]{32,64}\b", re.I)
+OPNUM_RE = re.compile(r"\bOpnum\s*[=:]?\s*([0-9]{1,3})\b", re.I)
+PATH_RE = re.compile(r"(?<![\w])/(?:usr|bin|etc|var|api|tmp|opt|home)[\w./-]*")
+
+EVENT_SOURCES = {
+    "sysmon": "Sysmon",
+    "security": "Windows Security",
+    "smbclient": "SMBClient",
+    "smbserver": "SMBServer",
+    "netlogon": "NETLOGON",
+    "linux audit": "Linux Audit",
+    "audit": "Linux Audit",
+    "linux": "Linux Audit",
+}
+
+
 # ---------------------------------------------------------------- IOC extraction
 
 
@@ -314,182 +193,6 @@ def extract_fragments(text: str) -> dict:
     return store
 
 
-# --------------------------------------------------------------- IOC catalogue
-
-
-def load_iocs_from_source(attacks: dict, iocs: dict) -> None:
-    """The manually curated IOC file is the single authoritative IOC source."""
-    if not IOC_SOURCE.is_file():
-        return
-    source = readable(IOC_SOURCE)
-    sections = re.split(r"(?m)^###\s+", source)
-    for section in sections[1:]:
-        heading, _, body = section.partition("\n")
-        attack_id = IOC_ATTACK_MAP.get(heading.strip().casefold())
-        attack = attacks.get(attack_id)
-        if attack_id == "CVE-2025-33073" and not attack:
-            attack = attacks[attack_id] = {
-                "id": attack_id,
-                "title": "CVE-2025-33073 · лабораторный сценарий",
-                "files": 0,
-                "readmes": [],
-                "iocs": {},
-                "ioc_groups": {"Host IOC": [], "Network IOC": []},
-            }
-        if not attack:
-            continue
-        group_parts = re.split(
-            r"(?im)^\*\*(Host IOC|Network\s*/\s*HTTP IOC|Network IOC)\*\*\s*$",
-            body,
-        )
-        run_fragments: dict = {}
-        for label, group_body in zip(group_parts[1::2], group_parts[2::2]):
-            category = "Host IOC" if label.casefold().startswith("host") else "Network IOC"
-            entries = []
-            current = []
-            for line in group_body.splitlines():
-                numbered = re.match(r"^\s*\d+\.\s+(.*)", line)
-                if numbered:
-                    if current:
-                        entries.append(current)
-                    current = [numbered.group(1)]
-                elif current:
-                    current.append(line)
-            if current:
-                entries.append(current)
-
-            for lines in entries:
-                first_line = lines[0].strip()
-                delimiter = re.search(r"\s(?:—|–|-)\s", first_line)
-                if delimiter:
-                    label_text = first_line[:delimiter.start()]
-                    detail_text = first_line[delimiter.end():].strip()
-                else:
-                    label_text = first_line
-                    detail_text = ""
-
-                code_label = re.search(r"`([^`\n]+)`", label_text)
-                value = code_label.group(1) if code_label and delimiter else re.sub(r"[`*_❗]", "", label_text)
-                value = re.sub(r"\s+", " ", value).strip(" :—–-")
-                if not value:
-                    continue
-
-                details = [detail_text] if detail_text else []
-                for continuation in lines[1:]:
-                    nested = continuation.strip()
-                    if nested:
-                        nested = re.sub(r"^(?:\*|-|\d+\.)\s+", "", nested)
-                        details.append(f"• {nested}")
-                description = "\n".join(details).strip() or first_line
-                indicator = {
-                    "value": value,
-                    "type": category,
-                    "description": description,
-                    "important": "❗" in "\n".join(lines),
-                }
-                attack["ioc_groups"][category].append(indicator)
-                key = value.casefold()
-                attack["iocs"].setdefault(key, indicator)
-                record = iocs.setdefault(key, {**indicator, "attacks": set()})
-                record["attacks"].add(attack_id)
-                run_fragments.update(extract_fragments("\n".join(lines)))
-        if run_fragments:
-            attack["fragments"] = run_fragments
-
-
-@lru_cache(maxsize=1)
-def catalog() -> dict:
-    attacks: dict[str, dict] = {}
-    iocs: dict[str, dict] = {}
-    readmes = []
-    excluded_dirs = SKIP_DIRS | EXCLUDED_CATALOG_FOLDERS | {"AD_CS_ESC"}
-    for current, directories, filenames in os.walk(ROOT):
-        directories[:] = [name for name in directories if name not in excluded_dirs]
-        folder = Path(current)
-        for filename in filenames:
-            if filename.lower() != "readme.md":
-                continue
-            file = folder / filename
-            rel = file.relative_to(ROOT).as_posix()
-            parts = file.relative_to(ROOT).parts
-            attack_info = attack_from_readme(parts)
-            if attack_info:
-                attack_id, title = attack_info
-                attack = attacks.setdefault(attack_id, {
-                    "id": attack_id, "title": title, "files": 0, "readmes": [], "iocs": {},
-                    "ioc_groups": {"Host IOC": [], "Network IOC": []},
-                })
-                attack["files"] += 1
-                attack["readmes"].append(rel)
-                readmes.append({"path": rel, "attack": attack_id, "title": attack["title"]})
-            elif len(parts) == 1:
-                readmes.append({"path": rel, "attack": "", "title": "Обзор репозитория"})
-    load_iocs_from_source(attacks, iocs)
-    # The catalog order stays deterministic: severity first, then name.
-    ordered = sorted(
-        attacks.values(),
-        key=lambda item: (SEVERITY_ORDER.get(meta(item["id"])["severity"], 9), item["id"].casefold()),
-    )
-    attacks = {item["id"]: item for item in ordered}
-    return {"attacks": attacks, "iocs": iocs, "readmes": readmes}
-
-
-def meta(attack_id: str) -> dict:
-    base = {
-        "short": attack_name(attack_id),
-        "cve": "",
-        "tagline": "",
-        "severity": "Средне",
-        "cvss": None,
-        "platform": "—",
-        "surface": "—",
-        "category": "Сценарий",
-        "attack": [],
-        "vector": "",
-        "focus": "",
-        "lab": "",
-    }
-    base.update(ATTACK_META.get(attack_id, {}))
-    return base
-
-
-def platform_label(value: str) -> str:
-    """Платформа всегда с заглавной буквы: «Linux / контейнер» → «Linux / Контейнер»."""
-    return " / ".join(part.strip().capitalize() if part.strip() else part for part in value.split("/"))
-
-
-def public_attack(item: dict) -> dict:
-    info = meta(item["id"])
-    return {
-        "id": item["id"],
-        "title": item["title"],
-        "short": info["short"],
-        "cve": info["cve"],
-        "files": item["files"],
-        "ioc_count": sum(len(group) for group in item["ioc_groups"].values()),
-        "host_count": len(item["ioc_groups"]["Host IOC"]),
-        "network_count": len(item["ioc_groups"]["Network IOC"]),
-        "readmes": item["readmes"],
-        "severity": info["severity"],
-        "cvss": info["cvss"],
-        "platform": platform_label(info["platform"]),
-        "surface": info["surface"],
-        "category": info["category"],
-        "tagline": info["tagline"],
-        "attack": [{"id": tid, "tactic": MITRE_TACTICS.get(tid, "—")} for tid in info["attack"]],
-    }
-
-
-def attack_fragments(attack: dict) -> list[dict]:
-    """Structured, copy-friendly artefacts extracted from the triage notes."""
-    store = attack.get("fragments") or {}
-    rows = sorted(store.values(), key=lambda row: (-row["count"], row["value"].casefold()))
-    return [
-        {"value": row["value"], "kind": row["kind"], "attach": row.get("attach") or ""}
-        for row in rows
-    ]
-
-
 def attack_directory(attack_id: str) -> Path:
     """Every public download must stay inside the folder of its attack."""
     return (ROOT / attack_id).resolve()
@@ -555,12 +258,636 @@ def details(item: dict) -> dict:
         "vector": info["vector"],
         "focus": info["focus"],
         "lab": info["lab"],
-        "tactics": sorted({MITRE_TACTICS.get(tid, "") for tid in info["attack"]} - {""}),
         "sources": (
             [{"label": "NVD", "url": f"https://nvd.nist.gov/vuln/detail/{cve}"}] if cve else []
         ) + [{"label": f"MITRE {tid}", "url": f"https://attack.mitre.org/techniques/{tid.split('.')[0]}/{tid.split('.')[1] + '/' if '.' in tid else ''}"} for tid in info["attack"] if tid.startswith("T")],
     }
 
+
+
+# --------------------------------------------------------------------- helpers
+
+
+def clean_text(value: str) -> str:
+    """Убирает markdown-разметку из значения, сохраняя текст как есть."""
+    value = (value or "").replace("\u00a0", " ")
+    value = re.sub(r"\*\*(.+?)\*\*", r"\1", value)
+    value = re.sub(r"(?<!\w)\*(?!\s)(.+?)(?<!\s)\*(?!\w)", r"\1", value)
+    return value.strip()
+
+
+def fingerprint(value: str) -> str:
+    return re.sub(r"[\s`*_]+", " ", (value or "").casefold()).strip()
+
+
+def parse_fields(block: str) -> dict[str, str]:
+    """Пары `ключ: значение`, включая многострочные значения с отступом."""
+    data: dict[str, str] = {}
+    key: str | None = None
+    for raw in block.splitlines():
+        line = raw.rstrip()
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if line[:1] in {" ", "\t"} and key:
+            data[key] = clean_text(f"{data[key]} {stripped}")
+            continue
+        if ":" in stripped:
+            name, _, value = stripped.partition(":")
+            key = name.strip().casefold()
+            data[key] = clean_text(value)
+    return data
+
+
+TECHNIQUE_RE = re.compile(r"\bT\d{4}(?:\.\d{3})?\b")
+
+
+def parse_techniques(block: str) -> list[dict[str, str]]:
+    """`T1210 = Lateral Movement`, `T1210 (Lateral Movement)` или просто `T1210`.
+
+    Поле `techniques:` может быть однострочным списком; продолжения на строках с
+    отступом тоже учитываются, поэтому техники удобно дописывать вручную.
+    """
+    techniques: list[dict[str, str]] = []
+    for raw in block.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.casefold().startswith("techniques:"):
+            line = line.split(":", 1)[1].strip()
+        line = line.lstrip("-*").strip()
+        if not line:
+            continue
+        for chunk in re.split(r",|;", line):
+            match = TECHNIQUE_RE.search(chunk)
+            if not match:
+                continue
+            tid = match.group(0).upper()
+            tactic = ""
+            if "=" in chunk:
+                tactic = chunk.split("=", 1)[1].strip()
+            else:
+                found = re.search(r"\(([^)]+)\)", chunk)
+                if found:
+                    tactic = found.group(1).strip()
+            if not any(item["id"] == tid for item in techniques):
+                techniques.append({"id": tid, "tactic": tactic or "—"})
+    return techniques
+
+
+def parse_blocks(body: str) -> list[tuple[str, str]]:
+    """Делит тело сценария на блоки по ключевым словам (ATTACK, LAB, HOST IOC…).
+
+    Всё, что стоит до первого ключевого слова, относится к блоку ATTACK: так поля
+    `name`, `severity`, `techniques` читаются, даже если слово ATTACK не написано.
+    """
+    markers = ("ATTACK", "LAB", "HOST IOC", "NETWORK IOC", "REFERENCES", "SKIP RULES")
+    pattern = re.compile(r"(?mi)^\s*(?P<name>" + "|".join(re.escape(m) for m in markers) + r")\s*$")
+    found = list(pattern.finditer(body))
+    blocks: list[tuple[str, str]] = []
+    if not found:
+        return [("ATTACK", body)]
+    head = body[: found[0].start()]
+    if head.strip():
+        blocks.append(("ATTACK", head))
+    for index, match in enumerate(found):
+        start = match.end()
+        end = found[index + 1].start() if index + 1 < len(found) else len(body)
+        blocks.append((match.group("name").upper(), body[start:end]))
+    merged: list[tuple[str, str]] = []
+    for name, chunk in blocks:
+        if merged and merged[-1][0] == name:
+            merged[-1] = (name, merged[-1][1] + chunk)
+        else:
+            merged.append((name, chunk))
+    return merged
+
+
+def parse_stanzas(block: str) -> list[list[str]]:
+    """Строки вида `a :: b :: c` → список разобранных полей (пустые пропускаются)."""
+    rows: list[list[str]] = []
+    for raw in block.splitlines():
+        line = raw.strip().lstrip("-").strip()
+        if not line or line.startswith("#") or line == "---":
+            continue
+        if set(line) <= {"═", "─", "—", "-", " "}:
+            continue
+        if "::" not in line:
+            continue
+        rows.append([clean_text(part) for part in line.split("::")])
+    return rows
+
+
+PLACEHOLDER_RE = re.compile(r"индикатор\w*\s+(?:нет|отсутству|не\s+описан)", re.I)
+
+
+def is_placeholder(value: str) -> bool:
+    return bool(PLACEHOLDER_RE.search(value or ""))
+
+
+def parse_indicators(block: str) -> list[dict[str, Any]]:
+    """Индикаторы: `- значение :: пояснение`, `- значение — пояснение` или таблица.
+
+    Оформление специально нестрогое: файл ведётся вручную, поэтому принимаются оба
+    разделителя, нумерованные пункты и markdown-таблица с колонками «индикатор/описание».
+    """
+    items: list[dict[str, Any]] = []
+    for raw in block.splitlines():
+        if not raw.strip() or raw.strip().startswith("#"):
+            continue
+        stripped = raw.lstrip()
+        if stripped.startswith(("- ", "* ")) or re.match(r"^\d+\.\s", stripped):
+            text = re.sub(r"^(?:- |\* |\d+\.\s+)", "", stripped).strip()
+            important = "❗" in text
+            text = text.replace("❗", "").strip()
+            if not text:
+                continue
+            if "::" in text:
+                value, _, description = text.partition("::")
+            else:
+                delimiter = re.search(r"\s+(?:—|–)\s+", text)
+                if delimiter:
+                    value, description = text[: delimiter.start()], text[delimiter.end():]
+                else:
+                    value, description = text, ""
+            value = value.strip().strip("`").strip()
+            description = description.strip()
+            if not value:
+                continue
+            if is_placeholder(value):
+                items.append({"value": value, "description": "", "important": False, "placeholder": True})
+                continue
+            items.append({"value": value, "description": description, "important": important})
+        elif items and raw[:1] in {" ", "\t"} and not items[-1].get("placeholder"):
+            continuation = stripped.strip()
+            if not continuation or continuation == "---" or is_placeholder(continuation):
+                continue
+            previous = items[-1]["description"]
+            items[-1]["description"] = (previous + " " + continuation).strip() if previous else continuation
+    return items or parse_indicator_table(block)
+
+
+def parse_indicator_table(block: str) -> list[dict[str, Any]]:
+    """Запасной вариант: таблица `| Индикатор | Тип | Описание |` для ручного ввода."""
+    rows: list[dict[str, Any]] = []
+    headers: list[str] = []
+    for raw in block.splitlines():
+        line = raw.strip()
+        if not line.startswith("|"):
+            continue
+        cells = [clean_text(cell) for cell in line.strip("|").split("|")]
+        if not headers:
+            headers = [cell.casefold() for cell in cells]
+            continue
+        if all(set(cell) <= {"-", ":", " "} for cell in cells):
+            continue
+        record = dict(zip(headers, cells))
+        value = (record.get("индикатор") or record.get("значение") or record.get("value") or "").strip()
+        if not value:
+            continue
+        description = (record.get("описание") or record.get("пояснение") or record.get("description") or "").strip()
+        important = "❗" in value or (record.get("ключевой", "").casefold() in {"да", "yes", "true", "1"})
+        rows.append({"value": value.replace("❗", "").strip(), "description": description, "important": important})
+    return rows
+
+
+def parse_cvss(value: str) -> float | None:
+    match = re.search(r"\d+(?:[.,]\d+)?", value or "")
+    if not match:
+        return None
+    try:
+        return float(match.group(0).replace(",", "."))
+    except ValueError:
+        return None
+
+
+# ------------------------------------------------------------------ IOC loader
+
+
+def parse_scenario(body: str) -> dict[str, Any]:
+    """Разбирает блок «АТАКА»: сведения, стенд, индикаторы, ссылки и служебные правила."""
+    attack: dict[str, str] = {}
+    technique_block = ""
+    groups: dict[str, list[dict[str, Any]]] = {"Host IOC": [], "Network IOC": []}
+    lab: list[dict[str, str]] = []
+    references: list[dict[str, str]] = []
+    skip: list[str] = []
+
+    for name, block in parse_blocks(body):
+        if name == "ATTACK":
+            attack = parse_fields(block)
+            technique_block = "\n".join(
+                line for line in block.splitlines() if line.strip().casefold().startswith("techniques:")
+                or line[:1] in {" ", "\t"}
+            )
+        elif name == "LAB":
+            for row in parse_stanzas(block):
+                row += [""] * (4 - len(row))
+                lab.append({"source": row[0], "address": row[1], "role": row[2], "notes": row[3]})
+        elif name == "HOST IOC":
+            groups["Host IOC"] = parse_indicators(block)
+        elif name == "NETWORK IOC":
+            groups["Network IOC"] = parse_indicators(block)
+        elif name == "REFERENCES":
+            for row in parse_stanzas(block):
+                row += [""] * (3 - len(row))
+                references.append({"type": row[0], "value": row[1], "description": row[2]})
+        elif name == "SKIP RULES":
+            skip = [row[0] for row in parse_stanzas(block) if row and row[0]]
+
+    return {
+        "meta": {
+            "short": attack.get("name") or "",
+            "folder": attack.get("folder") or "",
+            "cve": "" if attack.get("cve", "-") in {"", "-"} else attack["cve"],
+            "severity": attack.get("severity") or "Средне",
+            "cvss": parse_cvss(attack.get("cvss", "")),
+            "platform": attack.get("platform") or "—",
+            "surface": attack.get("surface") or "—",
+            "category": attack.get("category") or "Сценарий",
+            "tagline": attack.get("tagline") or "",
+            "vector": attack.get("vector") or "",
+            "focus": attack.get("focus") or "",
+            "techniques": parse_techniques(technique_block),
+        },
+        "ioc_groups": groups,
+        "lab": lab,
+        "references": references,
+        "skip": skip,
+    }
+
+
+def parse_global_section(name: str, block: str, settings: dict[str, Any]) -> None:
+    """Разбирает общие разделы файла: стенд, площадки TI и список исключений."""
+    if name == "LAB":
+        settings["lab"] = [
+            {"tag": row[0], "address": row[1] if len(row) > 1 else "", "role": row[2] if len(row) > 2 else "", "notes": row[3] if len(row) > 3 else ""}
+            for row in (row + [""] * (4 - len(row)) for row in parse_stanzas(block))
+        ]
+    elif name == "THREAT INTELLIGENCE":
+        settings["sources"] = [
+            {"label": row[0], "url": row[1] if len(row) > 1 else "", "note": row[2] if len(row) > 2 else ""}
+            for row in (row + [""] * (3 - len(row)) for row in parse_stanzas(block))
+        ]
+    elif name == "SKIP":
+        # В разделе SKIP пишут просто имена папок — по одному в строке.
+        entries: list[str] = []
+        for raw in block.splitlines():
+            line = raw.strip().lstrip("-").strip()
+            if not line or line.startswith("#") or "::" in line:
+                continue
+            if set(line) <= {"═", "─", "—", "-", " "}:
+                continue
+            entries.append(line)
+        settings["skip"] = entries
+
+
+GLOBAL_BLOCK_RE = re.compile(r"(?mi)^\s*(?:#+\s*)?(?P<name>LAB|THREAT INTELLIGENCE|SKIP)\s*(?:$|—|::)")
+ATTACK_RE = re.compile(r"(?mi)^\s*(?:#+\s*)?ATTACK\s*$")
+
+
+def is_global_section(line: str, in_attack: bool = False) -> str:
+    """Имя общего раздела файла (`LAB`, `THREAT INTELLIGENCE`, `SKIP`) или пустая строка.
+
+    Внутри блока атаки слово `LAB` относится к стенду сценария, поэтому контекст важен.
+    """
+    match = GLOBAL_BLOCK_RE.match(line)
+    if not match:
+        return ""
+    name = match.group("name").upper()
+    if in_attack and name == "LAB":
+        return ""
+    return name
+
+
+def parse_ioc_document(text: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Читает файл IOC: общие разделы и блоки «АТАКА» в порядке следования.
+
+    Разделы можно писать и как `ATTACK`, и как `## ATTACK` — обе формы равнозначны.
+    Баннеры из тире и комментарии-инструкции игнорируются.
+    """
+    settings: dict[str, Any] = {"lab": [], "sources": [], "skip": []}
+    scenarios: list[dict[str, Any]] = []
+    mode = "global"
+    current = ""
+    buffer: list[str] = []
+    attack_bodies: list[str] = []
+    header_lines: list[str] = []
+
+    def flush() -> None:
+        nonlocal buffer
+        body = "\n".join(buffer)
+        if current:
+            if current == "ATTACK":
+                attack_bodies.append(body)
+            else:
+                parse_global_section(current, body, settings)
+        buffer = []
+
+    for raw in text.splitlines():
+        stripped = raw.strip()
+        if stripped and set(stripped) <= {"═", "─", "—", "-", " "}:
+            continue  # декоративный баннер
+        if mode == "attack":
+            # Внутри блока атаки ключевые слова относятся к сценарию, а не к файлу.
+            if ATTACK_RE.match(raw):
+                flush()
+                current = "ATTACK"
+                continue
+            buffer.append(raw)
+            continue
+        if ATTACK_RE.match(raw):
+            flush()
+            mode = "attack"
+            current = "ATTACK"
+            continue
+        header_lines.append(raw)
+        section = is_global_section(raw, in_attack=False)
+        if section:
+            flush()
+            current = section
+        else:
+            buffer.append(raw)
+    flush()
+
+    for body in attack_bodies:
+        scenario = parse_scenario(body)
+        if scenario["meta"]["short"] or scenario["meta"]["folder"]:
+            scenarios.append(scenario)
+
+    # Общие разделы ищем только в шапке файла: в блоках атак LAB означает стенд сценария.
+    header = "\n".join(header_lines)
+    if not settings["lab"] and not settings["sources"]:
+        for section, body in parse_global_blocks(header):
+            parse_global_section(section, body, settings)
+    if not settings["skip"]:
+        for section, body in parse_global_blocks(header, names=("SKIP",)):
+            parse_global_section(section, body, settings)
+    settings["skip"] = [
+        row for row in settings["skip"]
+        if row and row.casefold() not in {"end", "attack"} and not set(row) <= {"─", "—", "-"}
+    ]
+    return settings, scenarios
+
+
+def parse_global_blocks(text: str, names: tuple[str, ...] = ("LAB", "THREAT INTELLIGENCE", "SKIP")) -> list[tuple[str, str]]:
+    """Выделяет общие разделы (LAB / THREAT INTELLIGENCE / SKIP) из шапки файла.
+
+    Блоки атак не рассматриваются: внутри них `LAB` — это стенд конкретного сценария.
+    """
+    header = ATTACK_RE.split(text)[0]
+    pattern = re.compile(
+        r"(?mi)^\s*(?:#+\s*)?(?P<name>" + "|".join(re.escape(name) for name in names) + r")\s*(?:$|—|::)"
+    )
+    found = list(pattern.finditer(header))
+    blocks: list[tuple[str, str]] = []
+    for index, match in enumerate(found):
+        start = match.end()
+        end = found[index + 1].start() if index + 1 < len(found) else len(header)
+        blocks.append((match.group("name").upper(), header[start:end]))
+    return blocks
+
+
+def resolve_folder(scenario: dict[str, Any], folders: list[str]) -> str:
+    """Папка сценария: явное поле `folder`, иначе поиск по CVE, затем по имени."""
+    meta = scenario["meta"]
+    explicit = meta.get("folder") or ""
+    if explicit and explicit in folders:
+        return explicit
+    cve = (meta.get("cve") or "").upper()
+    if cve:
+        match = next((folder for folder in folders if folder.upper().startswith(cve)), None)
+        if match:
+            return match
+    key = fingerprint(meta.get("short") or "").replace(" ", "")
+    if key:
+        match = next((folder for folder in folders if fingerprint(folder).replace(" ", "") == key), None)
+        if match:
+            return match
+    return ""
+
+
+def real_indicators(attack: dict, category: str) -> list[dict]:
+    """Индикаторы без строк-заглушек: их не считаем и не отдаём в экспорт."""
+    return [row for row in attack["ioc_groups"][category] if not row.get("placeholder")]
+
+
+def lab_text(item: dict) -> str:
+    parts = []
+    for entry in item.get("lab", []):
+        address = entry.get("address", "")
+        role = entry.get("role", "")
+        parts.append(f"{address} — {role}" if role else address)
+    return " → ".join(part for part in parts if part)
+
+
+@lru_cache(maxsize=1)
+def catalog() -> dict:
+    """Каталог атак целиком строится из файла IOC."""
+    issues: list[str] = []
+    lab: list[dict[str, str]] = []
+    ti_sources: list[dict[str, str]] = []
+    scenarios: list[dict[str, Any]] = []
+    skipped: set[str] = set()
+    folders: list[str] = sorted(
+        entry.name
+        for entry in ROOT.iterdir()
+        if entry.is_dir() and entry.name not in SKIP_DIRS and not entry.name.startswith(".")
+    )
+    if IOC_SOURCE.is_file():
+        settings, scenarios = parse_ioc_document(readable(IOC_SOURCE))
+        lab = settings["lab"]
+        ti_sources = settings["sources"]
+        skipped = set(settings["skip"])
+    else:
+        issues.append("Файл IOC не найден: каталог атак пуст")
+
+    attacks: dict[str, dict[str, Any]] = {}
+    iocs: dict[str, dict[str, Any]] = {}
+    readmes: list[dict[str, str]] = []
+    for scenario in scenarios:
+        attack_id = resolve_folder(scenario, folders)
+        if not attack_id:
+            issues.append(
+                f"Сценарий «{scenario['meta']['short']}» не привязан к папке: укажите `folder` в блоке ATTACK"
+            )
+            continue
+        attack = {
+            "id": attack_id,
+            "title": attack_id.replace("_", " "),
+            "files": 0,
+            "readmes": [],
+            "iocs": {},
+            "ioc_groups": {"Host IOC": [], "Network IOC": []},
+            "meta": scenario["meta"],
+            "lab": scenario["lab"],
+            "references": scenario["references"],
+            "skip": scenario["skip"],
+            "fragments": {},
+        }
+        for category in ("Host IOC", "Network IOC"):
+            for row in scenario["ioc_groups"][category]:
+                placeholder = bool(row.get("placeholder"))
+                indicator = {
+                    "value": row["value"],
+                    "type": category,
+                    "description": "" if placeholder else (row["description"] or row["value"]),
+                    "important": bool(row["important"]),
+                    "placeholder": placeholder,
+                }
+                attack["ioc_groups"][category].append(indicator)
+                if placeholder:
+                    continue
+                key = indicator["value"].casefold()
+                attack["iocs"].setdefault(key, indicator)
+                record = iocs.setdefault(key, {**indicator, "attacks": set()})
+                record["attacks"].add(attack_id)
+                attack["fragments"].update(extract_fragments(f"{indicator['value']} — {indicator['description']}"))
+        attacks[attack_id] = attack
+
+    excluded = SKIP_DIRS | EXCLUDED_CATALOG_FOLDERS | skipped
+    unlisted: set[str] = set()
+    for current, directories, filenames in os.walk(ROOT):
+        directories[:] = [name for name in directories if name not in excluded]
+        folder = Path(current)
+        for filename in filenames:
+            if filename.lower() != "readme.md":
+                continue
+            file = folder / filename
+            rel = file.relative_to(ROOT).as_posix()
+            parts = file.relative_to(ROOT).parts
+            if len(parts) == 1:
+                readmes.append({"path": rel, "attack": "", "title": "Обзор репозитория"})
+                continue
+            attack = attacks.get(parts[0])
+            if attack:
+                attack["files"] += 1
+                attack["readmes"].append(rel)
+                readmes.append({"path": rel, "attack": attack["id"], "title": attack["title"]})
+            else:
+                unlisted.add(parts[0])
+
+    for folder in sorted(unlisted):
+        count = len(list((ROOT / folder).rglob("README.md")))
+        issues.append(
+            f"Папка «{folder}» не описана в файле IOC: {count} README вне каталога. "
+            "Добавьте блок АТАКА или пометьте папку в разделе ## SKIP."
+        )
+
+    ordered = sorted(
+        attacks.values(),
+        key=lambda item: (SEVERITY_ORDER.get(item["meta"]["severity"], 9), item["id"].casefold()),
+    )
+    unique: list[str] = []
+    for issue in issues:
+        if issue not in unique:
+            unique.append(issue)
+    return {
+        "attacks": {item["id"]: item for item in ordered},
+        "iocs": iocs,
+        "readmes": readmes,
+        "lab": lab,
+        "sources": ti_sources,
+        "issues": unique,
+    }
+
+
+def attack_meta(attack: dict) -> dict:
+    return attack.get("meta") or {
+        "short": attack["id"],
+        "cve": "",
+        "severity": "Средне",
+        "cvss": None,
+        "platform": "—",
+        "surface": "—",
+        "category": "Сценарий",
+        "tagline": "",
+        "vector": "",
+        "focus": "",
+        "techniques": [],
+    }
+
+
+# ------------------------------------------------------------------- templates
+
+
+def platform_label(value: str) -> str:
+    """Платформа всегда с заглавной буквы: «Linux / контейнер» → «Linux / Контейнер»."""
+    return " / ".join(part.strip().capitalize() if part.strip() else part for part in (value or "").split("/"))
+
+
+def public_attack(item: dict) -> dict:
+    info = attack_meta(item)
+    host = real_indicators(item, "Host IOC")
+    network = real_indicators(item, "Network IOC")
+    return {
+        "id": item["id"],
+        "title": item["title"],
+        "short": info["short"],
+        "cve": info["cve"],
+        "files": item["files"],
+        "ioc_count": len(host) + len(network),
+        "host_count": len(host),
+        "network_count": len(network),
+        "readmes": item["readmes"],
+        "severity": info["severity"],
+        "cvss": info["cvss"],
+        "platform": platform_label(info["platform"]),
+        "surface": info["surface"],
+        "category": info["category"],
+        "tagline": info["tagline"],
+        "attack": info["techniques"],
+        "lab": item.get("lab", []),
+        "references": item.get("references", []),
+    }
+
+
+def attack_fragments(attack: dict) -> list[dict]:
+    store = attack.get("fragments") or {}
+    rows = sorted(store.values(), key=lambda row: (-row["count"], row["value"].casefold()))
+    return [{"value": row["value"], "kind": row["kind"], "attach": row.get("attach") or ""} for row in rows]
+
+
+def lab_matrix() -> list[dict]:
+    """Узлы стенда из раздела ## LAB с привязкой к сценариям."""
+    data = catalog()
+    nodes: list[dict] = []
+    for row in data["lab"]:
+        address = row.get("address", "")
+        ip = address.split("·")[0].strip()
+        scenarios: list[str] = []
+        if ip:
+            for attack in data["attacks"].values():
+                for entry in attack.get("lab", []):
+                    if re.search(rf"(?<![\d.]){re.escape(ip)}(?![\d.])", entry.get("address", "")) and attack["id"] not in scenarios:
+                        scenarios.append(attack["id"])
+        nodes.append({**row, "scenarios": scenarios})
+    return nodes
+
+
+def details(item: dict) -> dict:
+    info = attack_meta(item)
+    materials = material_files(item["id"])
+    groups = []
+    for name in ("Host IOC", "Network IOC"):
+        indicators = []
+        for raw in item["ioc_groups"][name]:
+            detected = None if raw.get("placeholder") else classify_ioc(raw["value"].strip())
+            indicators.append({**raw, "detected_type": detected or name.split()[0]})
+        groups.append({"type": name, "items": indicators})
+    return {
+        **public_attack(item),
+        "materials": materials,
+        "material_kinds": material_kinds(materials),
+        "ioc_groups": groups,
+        "fragments": attack_fragments(item),
+        "vector": info["vector"],
+        "focus": info["focus"],
+        "lab": item.get("lab", []),
+        "lab_text": lab_text(item),
+        "references": item.get("references", []),
+        "tactics": sorted({entry["tactic"] for entry in info["techniques"] if entry.get("tactic") and entry["tactic"] != "—"}),
+    }
 
 # ----------------------------------------------------------------------- routes
 
@@ -600,6 +927,10 @@ def site_meta():
             "critical": sum(1 for item in items if item["severity"] == "Критично"),
         },
         "filters": {"categories": categories, "platforms": platforms, "tactics": tactics, "severities": list(SEVERITY_ORDER)},
+        "lab": lab_matrix(),
+        "sources": data["sources"],
+        "issues": data["issues"],
+        "ioc_source": IOC_SOURCE.name,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 

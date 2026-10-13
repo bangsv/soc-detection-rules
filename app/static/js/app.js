@@ -1,13 +1,13 @@
 /* SOC Atlas · application shell: bootstrap, header behaviour, metrics, shortcuts. */
 
-import { $, $$, api, formatDate, isTyping, onIdle, toast } from "./utils.js";
+import { $, $$, api, esc, formatDate, isTyping, onIdle, toast } from "./utils.js";
 import { initTheme, toggleTheme } from "./theme.js";
 import { initTray } from "./tray.js";
 import { initSearch, focusSearch, setSearchQuery } from "./search.js";
 import { initAttacks } from "./attacks.js";
 import { initDocs } from "./docs.js";
 import { initPalette, open as openPalette } from "./palette.js";
-import { loadCatalog } from "./store.js";
+import { catalogData, loadCatalog } from "./store.js";
 
 const SECTIONS = ["explorer", "attacks-map", "knowledge"];
 
@@ -18,6 +18,35 @@ function metricTile(value, label, note, variant = "") {
       <span class="stat__label">${label}</span>
       ${note ? `<span class="stat__note">${note}</span>` : ""}
     </div>`;
+}
+
+function shortName(attackId) {
+  const attack = catalogData().attacks.find((item) => item.id === attackId);
+  return attack?.short || attackId;
+}
+
+/* Стенд в шапке строится из раздела ## LAB файла IOC — в разметке данных нет. */
+function renderLabCard(meta) {
+  const host = $("#lab-card");
+  if (!host) return;
+  const rows = meta.lab || [];
+  if (!rows.length) {
+    host.innerHTML = `<div class="info-list__row"><dt>Стенд</dt><dd>не описан в файле IOC</dd></div>`;
+    return;
+  }
+  host.innerHTML = rows
+    .map(
+      (row) => `
+      <div class="info-list__row">
+        <dt>${esc(row.tag || "node")}</dt>
+        <dd>
+          ${esc(row.address || "—")}
+          ${row.role ? `<span class="lab-role">${esc(row.role)}</span>` : ""}
+          ${row.scenarios?.length ? `<span class="lab-scenarios">${row.scenarios.map((id) => esc(shortName(id))).join(", ")}</span>` : ""}
+        </dd>
+      </div>`,
+    )
+    .join("");
 }
 
 async function renderMetrics(meta, items) {
@@ -167,6 +196,7 @@ async function boot() {
     const store = await loadCatalog();
     const meta = store.meta;
     const items = store.attacks;
+    renderLabCard(meta);
     await renderMetrics(meta, items);
     initAttacks(items, meta);
     initDocs(store.readmes);

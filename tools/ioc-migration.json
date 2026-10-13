@@ -1,0 +1,450 @@
+{
+  "attacks": {
+    "CVE-2017-0143_EternalBlue": {
+      "section": "EternalBlue",
+      "short": "EternalBlue",
+      "cve": "CVE-2017-0143",
+      "severity": "Критично",
+      "cvss": 9.8,
+      "platform": "Windows",
+      "surface": "Сеть / SMB",
+      "category": "Удалённое выполнение кода",
+      "tagline": "SMBv1 remote code execution на устаревших Windows-хостах.",
+      "vector": "Специально сформированные SMB-пакеты в SMBv1 приводят к переполнению и удалённому выполнению кода.",
+      "focus": "Связка аномальной фрагментации NT Transact / Trans2 с последующим необычным исходящим соединением процесса.",
+      "lab": "192.168.0.30 (Kali Linux) → 192.168.0.15 (Windows 10), SMB TCP/445",
+      "techniques": [
+        {
+          "id": "T1210",
+          "tactic": "Lateral Movement"
+        },
+        {
+          "id": "T1569.002",
+          "tactic": "Execution"
+        },
+        {
+          "id": "T1055",
+          "tactic": "Defense Evasion"
+        }
+      ],
+      "host_iocs": [
+        {
+          "value": "Security Event ID 4624",
+          "description": "Сетевой вход (`LogonType=3`) с `ANONYMOUS LOGON` / «АНОНИМНЫЙ ВХОД» на SMB-сервер. Это слабый контекстный признак: анонимный вход бывает легитимным, а эксплойт может использовать действующие учётные данные.",
+          "important": false,
+          "type": "Host"
+        },
+        {
+          "value": "Sysmon Event ID 3: подозрительный процесс → внешний хост",
+          "description": "Ищите исходящее соединение процесса, в который могла быть внедрена нагрузка, к неизвестному адресу вскоре после SMB-эксплуатации. В лабораторной конфигурации примером был `spoolsv.exe`, но имя процесса не фиксировано и может быть изменено.",
+          "important": true,
+          "type": "Host"
+        },
+        {
+          "value": "Sysmon Event ID 1 / 8 / 13",
+          "description": "Возможные постэксплуатационные события из приведённых в README примеров: создание процесса/команды с необычным именованным каналом, удалённый поток в `lsass.exe`, изменение ключа `...\\CurrentVersion\\Run` с запуском файла из временной папки. Это признаки последующих действий Meterpreter, а не обязательные признаки самой уязвимости EternalBlue.",
+          "important": false,
+          "type": "Host"
+        }
+      ],
+      "network_iocs": [
+        {
+          "value": "SMBv1 negotiation: NT LM 0.12",
+          "description": "В захвате атаки клиент согласует устаревший диалект SMBv1. Само наличие SMBv1 — признак слабой конфигурации, но не доказательство эксплуатации.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "SMB Tree Connect к IPC$",
+          "description": "В описанной цепочке EternalBlue обращается к скрытой SMB-шаре `IPC$` перед отправкой управляющих запросов. Соединения с `IPC$` встречаются и в администрировании, поэтому анализируйте их вместе с последующими аномальными SMB-транзакциями.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "STATUS_INSUFF_SERVER_RESOURCES (0xC0000205)",
+          "description": "В исследованном PCAP возникает при серии специально сформированных SMB Session Setup запросов и подготовке пула памяти. Отдельный код ошибки без контекста недостаточен для вывода об атаке.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "NT Transact / Trans2 Secondary: аномальная фрагментация",
+          "description": "Ищите NT Transact с необычно большим `Total Data Count`, за которым следуют фрагменты Trans2; в лабораторном дампе Wireshark показал `Bytes remaining until TDC: 61111`. Значение `61111` — пример из конкретного PCAP, а не постоянная сигнатура.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "SMB STATUS_INVALID_PARAMETER (0xC000000D)",
+          "description": "В исследованной последовательности ответ следует после подозрительных NT Trans/Trans2 запросов и соответствует обработке эксплойта. Сам по себе `INVALID_PARAMETER` может быть обычной ошибкой клиента; подтверждайте предшествующими пакетами.",
+          "important": true,
+          "type": "Network"
+        }
+      ]
+    },
+    "CVE-2020-1472_Zerologon": {
+      "section": "Zerologon",
+      "short": "Zerologon",
+      "cve": "CVE-2020-1472",
+      "severity": "Критично",
+      "cvss": 10.0,
+      "platform": "Windows",
+      "surface": "RPC / MS-NRPC",
+      "category": "Повышение привилегий",
+      "tagline": "Криптографический дефект Netlogon: сброс пароля компьютерной учётной записи DC.",
+      "vector": "Перебор NetrServerAuthenticate3 с нулевым ClientCredential и последующий NetrServerPasswordSet2.",
+      "focus": "Цикл Opnum 4 → Opnum 26 с нулевыми challenge/credential и финальным STATUS_SUCCESS перед сменой пароля.",
+      "lab": "192.168.0.30 (Kali Linux) → 192.168.0.10 (dc01), MS-NRPC TCP/135 + динамический RPC",
+      "techniques": [
+        {
+          "id": "T1068",
+          "tactic": "Privilege Escalation"
+        },
+        {
+          "id": "T1078.002",
+          "tactic": "Privilege Escalation"
+        }
+      ],
+      "host_iocs": [
+        {
+          "value": "Security Event ID 4742: изменён пароль учётной записи контроллера домена",
+          "description": "Особенно подозрительно, если изменён `PasswordLastSet` у учётной записи DC, а субъект — `ANONYMOUS LOGON` с `SubjectUserSid=S-1-5-7`. Проверьте, что непосредственно перед событием нет штатного `NETLOGON Event ID 5823` для той же учётной записи.",
+          "important": true,
+          "type": "Host"
+        },
+        {
+          "value": "NETLOGON Event ID 5805",
+          "description": "Ошибка защищённого канала может появиться после рассинхронизации пароля компьютерной учётной записи. Используйте её как подтверждение после подозрительного 4742, но не как самостоятельное доказательство ZeroLogon.",
+          "important": false,
+          "type": "Host"
+        }
+      ],
+      "network_iocs": [
+        {
+          "value": "MS-NRPC UUID 12345678-1234-ABCD-EF00-01234567CFFB",
+          "description": "Идентификатор интерфейса Netlogon в исследованных RPC Bind запросах. Bind и обращения к RPC Endpoint Mapper сами по себе нормальны; далее проверяйте содержимое и последовательность вызовов.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "NetrServerReqChallenge (Opnum 4) + ClientChallenge = 8 нулевых байт",
+          "description": "Поле `ClientChallenge` в исследованных запросах содержит `00 00 00 00 00 00 00 00`. Обычные запросы Netlogon тоже используют этот метод, но не должны многократно передавать нулевой challenge.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "NetrServerAuthenticate3 (Opnum 26) + ClientCredential = 8 нулевых байт",
+          "description": "Ищите запросы с нулевым `ClientCredential` и отключёнными флагами Sign/Seal. Это значительно более сильный признак, чем сам факт вызова метода.",
+          "important": true,
+          "type": "Network"
+        },
+        {
+          "value": "Повторяющийся цикл Opnum 4 → Opnum 26",
+          "description": "Большое число запросов с нулевыми challenge/credential за короткий интервал, обычно с чередованием отказов `STATUS_ACCESS_DENIED (0xC0000022)`, указывает на перебор уязвимого Netlogon. В PCAP зафиксировано 142 попытки; это число — характеристика стенда, а не универсальный порог.",
+          "important": true,
+          "type": "Network"
+        },
+        {
+          "value": "NetrServerAuthenticate3 → STATUS_SUCCESS (0x00000000)",
+          "description": "Успешный ответ после серии неудачных попыток — признак того, что аутентификация прошла. Проверяйте дальнейший вызов смены пароля для подтверждения цепочки.",
+          "important": true,
+          "type": "Network"
+        },
+        {
+          "value": "NetrServerPasswordSet2 (Opnum 30)",
+          "description": "В исследованной атаке следует сразу за успешной аутентификацией и используется для изменения секрета компьютерной учётной записи. Учитывайте контекст предыдущих нулевых запросов и успешного Opnum 26.",
+          "important": true,
+          "type": "Network"
+        }
+      ]
+    },
+    "CVE-2026-31431_Copy fail": {
+      "section": "Copy Fail",
+      "short": "Copy Fail",
+      "cve": "CVE-2026-31431",
+      "severity": "Критично",
+      "cvss": 8.8,
+      "platform": "Linux",
+      "surface": "Ядро / AF_ALG",
+      "category": "Повышение привилегий",
+      "tagline": "Локальное повышение привилегий через перезапись page cache SUID-файла.",
+      "vector": "Цикл splice в AF_ALG перезаписывает страничный кэш /usr/bin/su распакованным пейлоадом.",
+      "focus": "Прогрессия exit=4, 8, 12 … 160 в парных splice и запуск su с euid=root без событий PAM.",
+      "lab": "Локальный пользователь → ядро Linux, системные вызовы socket/bind/splice",
+      "techniques": [
+        {
+          "id": "T1068",
+          "tactic": "Privilege Escalation"
+        },
+        {
+          "id": "T1548",
+          "tactic": "Privilege Escalation"
+        }
+      ],
+      "host_iocs": [
+        {
+          "value": "Linux Audit: Инициализация и настройка криптографического сокета AF_ALG",
+          "description": "Фиксируется последовательность вызовов: `syscall=socket` с `a0=alg` (AF_ALG) и `a1=SOCK_SEQPACKET`, за которым следует `syscall=bind` (с `saddr_fam=alg`) и два вызова `syscall=setsockopt` с уровнем `a1=SOL_ALG` и параметрами `a2=0x1` (ALG_SET_KEY) и `a2=0x5` (ALG_SET_AEAD_AUTHSIZE). Эта цепочка подготавливает уязвимый криптографический контекст `authencesn` в ядре.",
+          "important": false,
+          "type": "Host"
+        },
+        {
+          "value": "Linux Audit: Циклическая передача данных через splice в AF_ALG (Page Cache Overwrite)",
+          "description": "Ключевой индикатор эксплуатации. Фиксируется массовая серия парных вызовов `syscall=splice` (с ключом `splice_user`). Первый `splice` передает данные из файлового дескриптора (открытого `/usr/bin/su`) в пайп, второй `splice` передает данные из пайпа в файловый дескриптор сокета `AF_ALG`.",
+          "important": false,
+          "type": "Host"
+        },
+        {
+          "value": "Linux Audit: Аномальная прогрессия смещения (exit) в вызовах splice",
+          "description": "Уникальный поведенческий паттерн. В успешном логе значение `exit` (количество переданных байт) в первой паре `splice` последовательно увеличивается на 4 в каждой итерации: `exit=4`, `exit=8`, `exit=12`, ..., `exit=160`. Это прямое отражение работы эксплойта, который пословно (по 4 байта) перезаписывает страничный кэш (page cache) целевого SUID-файла распакованным пейлоадом.",
+          "important": true,
+          "type": "Host"
+        },
+        {
+          "value": "Linux Audit: Запуск SUID-файла /usr/bin/su с обходом аутентификации",
+          "description": "Фиксируется выполнение `sh -c -- su`, а затем `syscall=execve` для `/usr/bin/su`. В событии запуска `su` указаны `uid=user` и `auid=user`, но при этом `euid=root` и `suid=root`. Критически важно: между запуском `su` и получением оболочки **отсутствуют** стандартные события PAM (`USER_AUTH`, `CRED_ACQ`, `USER_LOGIN`), что подтверждает обход проверки пароля за счет подмены содержимого бинарного файла в страничном кэше ядра.",
+          "important": true,
+          "type": "Host"
+        },
+        {
+          "value": "Linux Audit: Получение root-оболочки с сохранением исходного auid",
+          "description": "Сразу за `su` следует событие `syscall=execve` для `/bin/sh` (или `dash`), в котором `uid=root`, `euid=root`, `suid=root`, но `auid` по-прежнему равен исходному непривилегированному пользователю (`auid=user`).",
+          "important": false,
+          "type": "Host"
+        }
+      ],
+      "network_iocs": [
+        {
+          "value": "Сетевые индикаторы отсутствуют",
+          "description": "",
+          "important": false,
+          "placeholder": true,
+          "type": "Network"
+        }
+      ]
+    },
+    "DCSync": {
+      "section": "DCSync",
+      "short": "DCSync",
+      "cve": "T1003.006",
+      "severity": "Критично",
+      "cvss": 9.0,
+      "platform": "Windows",
+      "surface": "DRSUAPI / LDAP",
+      "category": "Кража учётных данных",
+      "tagline": "Извлечение секретов Active Directory через злоупотребление репликацией каталога.",
+      "vector": "DRSGetNCChanges от узла, не являющегося контроллером домена, выгружает хеши учётных записей.",
+      "focus": "Событие 4662 с AccessMask=0x100 и GUID Replicating Directory Changes All от не-DC источника.",
+      "lab": "192.168.0.30 (Kali Linux, Impacket) → 192.168.0.10 (dc01), MS-DRSR",
+      "techniques": [
+        {
+          "id": "T1003.006",
+          "tactic": "Credential Access"
+        }
+      ],
+      "host_iocs": [
+        {
+          "value": "Security Event ID 4624: LogonType=3 для субъекта с правами репликации",
+          "description": "Усиливает подозрение, если вход выполнен с рабочей станции/сервера, который не является контроллером домена, под учётной записью с правами репликации. Обычная сетевая аутентификация сама по себе не означает DCSync.",
+          "important": false,
+          "type": "Host"
+        },
+        {
+          "value": "Security Event ID 4662: AccessMask=0x100 и права репликации",
+          "description": "Проверяйте `ObjectType={19195a5b-6da0-11d0-afd3-00c04fd930c9}` (domainDNS) и один или несколько GUID прав: `1131f6aa-9c07-11d1-f79f-00c04fc2dcd2` (Replicating Directory Changes All), `1131f6ad-9c07-11d1-f79f-00c04fc2dcd2` (Replicating Directory Changes), `89e95b76-444d-4c62-991a-0facbeda640c` (Replicating Directory Changes In Filtered Set). Для регистрации 4662 требуется соответствующая SACL (Если машинная УЗ); отсутствие события не исключает атаку.",
+          "important": true,
+          "type": "Host"
+        }
+      ],
+      "network_iocs": [
+        {
+          "value": "DRSUAPI / MS-DRSR UUID e3514235-4b06-11d1-ab04-00c04fc2dcd2",
+          "description": "RPC Bind к интерфейсу репликации Active Directory. Сопоставьте инициатора с перечнем контроллеров домена: легитимная репликация также использует этот UUID.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "DRSGetNCChanges (Opnum 3)",
+          "description": "Основной RPC-вызов получения изменений каталога. Сам метод используется штатной репликацией, поэтому критичен контекст источника и результат ответа.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "DRSGetNCChanges → повторяющиеся крупные TCP-пакеты от DC не-DC узлу",
+          "description": "В успешном PCAP наблюдаются многофрагментные ответы размером в несколько килобайт (например, 2112, 4400 и 4864 байта) от контроллера к не-DC источнику. Размер около 1200 байт не является универсальным порогом: сравнивайте направление, повторяемость, объём и роль узла.",
+          "important": true,
+          "type": "Network"
+        },
+        {
+          "value": "DRSBind (Opnum 0) → DRSDomainControllerInfo (16) / DRSCrackNames (12)",
+          "description": "Эти вызовы встречаются в последовательности перед DRSGetNCChanges и помогают обогатить расследование. Отдельно они не являются признаком кражи данных.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "RPC Authentication Level: Packet Privacy",
+          "description": "После Bind содержимое DRS-запросов/ответов может быть зашифровано. В таком случае используйте метаданные RPC, объёмы/фрагментацию ответов, роль источника и Windows Event 4662.",
+          "important": false,
+          "type": "Network"
+        }
+      ]
+    },
+    "CVE-2021-36942_PetitPotam": {
+      "section": "PetitPotam",
+      "short": "PetitPotam",
+      "cve": "CVE-2021-36942",
+      "severity": "Высоко",
+      "cvss": 8.1,
+      "platform": "Windows",
+      "surface": "RPC / MS-EFSRPC",
+      "category": "Принуждение к аутентификации",
+      "tagline": "Принудительная аутентификация через EFSRPC с последующим NTLM Relay.",
+      "vector": "EfsRpcOpenFileRaw с UNC-путём на контролируемый узел заставляет DC инициировать NTLM-аутентификацию.",
+      "focus": "Входящий SMB на DC (Initiated=false) и следующий за ним исходящий SMB от DC (Initiated=true) на TCP/445.",
+      "lab": "192.168.0.30 (Kali Linux, relay) → 192.168.0.10 (dc01) → 192.168.0.15 (Windows 10)",
+      "techniques": [
+        {
+          "id": "T1187",
+          "tactic": "Credential Access"
+        },
+        {
+          "id": "T1557.001",
+          "tactic": "Credential Access"
+        },
+        {
+          "id": "T1021.002",
+          "tactic": "Lateral Movement"
+        }
+      ],
+      "host_iocs": [
+        {
+          "value": "Security Event ID 4624: LogonType=3 от неизвестного узла",
+          "description": "На контроллере домена может фиксироваться `ANONYMOUS LOGON` по NTLM; в лабораторном примере источник — хост, инициировавший SMB/RPC. Анонимная учётная запись не обязательна: атакующий может использовать ранее скомпрометированные учётные данные.",
+          "important": false,
+          "type": "Host"
+        },
+        {
+          "value": "Sysmon Event ID 3: входящий SMB на DC, затем исходящий SMB от DC",
+          "description": "Сопоставьте входящее соединение к контроллеру домена на TCP/445 (`Initiated=false`) с последующим исходящим соединением от DC к адресу на TCP/445 (`Initiated=true`). Неожиданный исходящий SMB с DC — ключевой признак принуждения к аутентификации.",
+          "important": true,
+          "type": "Host"
+        },
+        {
+          "value": "Sysmon Event ID 18: PipeConnected",
+          "description": "В материалах зафиксировано подключение процесса System к каналу `\\lsass`; исходный запрос использовал именованный канал `lsarpc` для MS-EFSRPC. Интерпретируйте событие вместе с EFSRPC-вызовом и исходящим SMB, так как named pipes сами по себе легитимны.",
+          "important": false,
+          "type": "Host"
+        },
+        {
+          "value": "Security Event ID 4624 на целевом хосте: учётная запись DC$ и IP источника-ретранслятора",
+          "description": "В лабораторной цепочке рабочая станция приняла сетевой вход (`LogonType=3`) от учётной записи `DC01$`, пришедший с IP хоста атакующего. Это признак успешной NTLM Relay после принуждения; имя DC и адреса в реальной среде будут другими.",
+          "important": true,
+          "type": "Host"
+        },
+        {
+          "value": "SMBClient Event ID 30805 / 30816 / 31012 / 31013",
+          "description": "В исследованной попытке эти события сопровождали подключение DC к упрощённому SMB listener; в частности, встречались статусы `0xC00000C3`, `0xC00000CC` и `0xC000A000`. Они полезны как контекст попытки, но ошибки не доказывают успешную ретрансляцию.",
+          "important": false,
+          "type": "Host"
+        },
+        {
+          "value": "SMBServer Event ID 551: 0xC000006D",
+          "description": "В материалах соответствует отказу в ретрансляции при проверке NTLM/MIC на фоне SMB Signing. Это может указывать на неудачную попытку relay.",
+          "important": false,
+          "type": "Host"
+        }
+      ],
+      "network_iocs": [
+        {
+          "value": "MS-EFSRPC UUID c681d488-d850-11d0-8c52-00c04fd90f7e",
+          "description": "Bind к интерфейсу EFSRPC является отправной точкой поиска, но интерфейс используется Windows легитимно и один Bind не подтверждает атаку.",
+          "important": false,
+          "type": "Network"
+        },
+        {
+          "value": "EFSRPC-вызов с UNC-путём на неожиданный узел",
+          "description": "Проверяйте `EfsRpcOpenFileRaw` (Opnum 0), а также альтернативные вызовы, встречающиеся в материалах: `EfsRpcEncryptFileSrv` (4), `EfsRpcDecryptFileSrv` (5), `EfsRpcQueryUsersOnFile`, `EfsRpcQueryRecoveryAgents`, `EfsRpcRemoveUsersFromFile`, `EfsRpcAddUsersToFile`, `EfsRpcFileKeyInfo`, `EfsRpcDuplicateEncryptionInfoFile`, `EfsRpcAddUsersToFileEx`, `EfsRpcFileKeyInfoEx`, `EfsRpcGetEncryptedFileMetadata`, `EfsRpcSetEncryptedFileMetadata`, `EfsRpcEncryptFileExSrv`, `EfsRpcQueryProtectors`. Наиболее важно сочетание RPC-вызова с UNC-целью вида `\\\\host\\share\\file` и исходящим SMB от DC.",
+          "important": true,
+          "type": "Network"
+        },
+        {
+          "value": "Исходящая SMB/NTLM-аутентификация от DC на TCP/445",
+          "description": "После EFSRPC запроса контроллер домена подключается к указанному удалённому SMB-хосту и отправляет NTLM Authenticate. В PCAP это можно искать как NTLMSSP Authenticate (тип 3) от DC; такая последовательность указывает на потенциальную утечку/relay учётных данных.",
+          "important": true,
+          "type": "Network"
+        },
+        {
+          "value": "WERR_BAD_NETPATH / ERROR_BAD_NETPATH",
+          "description": "Ответ на EFSRPC-запрос с фиктивным UNC-путём подтверждает, что DC обработал запрос и попытался открыть сетевой ресурс; в исследованной цепочке исходящая NTLM-аутентификация происходила до этого ответа. Код не доказывает, что relay на целевой сервис завершился успешно.",
+          "important": true,
+          "type": "Network"
+        },
+        {
+          "value": "SMB2 Negotiate / NTLM Negotiate → Challenge → Authenticate",
+          "description": "Последовательность исходящего SMB и NTLM от DC к listener помогает связать coercion с передачей ответа аутентификации. Для определения успеха relay проверяйте отдельный вход на целевой системе.",
+          "important": false,
+          "type": "Network"
+        }
+      ]
+    },
+    "CVE-2026-27944_Nginx UI": {
+      "section": "Nginx UI",
+      "short": "Nginx UI",
+      "cve": "CVE-2026-27944",
+      "severity": "Высоко",
+      "cvss": 7.5,
+      "platform": "Linux / Контейнер",
+      "surface": "HTTP / API",
+      "category": "Утечка данных",
+      "tagline": "Неавторизованное скачивание резервной копии конфигурации через API Nginx UI.",
+      "vector": "GET /api/backup до версии 2.3.3 возвращает архив с секретами без аутентификации.",
+      "focus": "HTTP 200 на /api/backup вместе с заголовком X-Backup-Security, включая нормализованные варианты пути.",
+      "lab": "Внешний сканер → Nginx UI 2.x, HTTP/HTTPS",
+      "techniques": [
+        {
+          "id": "T1190",
+          "tactic": "Initial Access"
+        },
+        {
+          "id": "T1552.001",
+          "tactic": "Credential Access"
+        }
+      ],
+      "host_iocs": [],
+      "network_iocs": [
+        {
+          "value": "GET /api/backup → HTTP 200 OK + X-Backup-Security",
+          "description": "На уязвимой Nginx UI до версии 2.3.3 запрос без аутентификации возвращает архив резервной копии и заголовок `X-Backup-Security`. Проверяйте метод, HTTP-статус и наличие заголовка вместе: одного запроса или пути недостаточно, чтобы подтвердить получение архива.",
+          "important": true,
+          "type": "Network"
+        },
+        {
+          "value": "Нормализованные варианты пути /api/backup",
+          "description": "В локальном тесте успешный ответ `200` также получен для `/%61%70%69/%62%61%63%6b%75%70`, `/api/./backup`, `/api/././backup` и запросов с query-параметрами. Регистр пути, двойной slash и `HEAD` в проверках возвращали `404`, завершающий slash — `301`.",
+          "important": false,
+          "type": "Network"
+        }
+      ]
+    }
+  },
+  "order": [
+    "CVE-2017-0143_EternalBlue",
+    "CVE-2020-1472_Zerologon",
+    "CVE-2026-31431_Copy fail",
+    "DCSync",
+    "CVE-2021-36942_PetitPotam",
+    "CVE-2026-27944_Nginx UI"
+  ],
+  "tactics": {
+    "T1187": "Credential Access",
+    "T1003.006": "Credential Access",
+    "T1557.001": "Credential Access",
+    "T1552.001": "Credential Access",
+    "T1068": "Privilege Escalation",
+    "T1548": "Privilege Escalation",
+    "T1078.002": "Privilege Escalation",
+    "T1210": "Lateral Movement",
+    "T1021.002": "Lateral Movement",
+    "T1190": "Initial Access",
+    "T1569.002": "Execution",
+    "T1055": "Defense Evasion"
+  }
+}

@@ -96,12 +96,12 @@
             <span class="author-card__cta">Профиль специалиста <span aria-hidden="true">→</span></span>
           </a>
 
-          <dl class="info-list reveal" style="--reveal-delay:200ms" id="lab-card" aria-label="Лабораторный стенд">
-            <div class="info-list__row"><dt>DC primary</dt><dd>192.168.0.10 · dc01</dd></div>
-            <div class="info-list__row"><dt>DC secondary</dt><dd>192.168.0.100 · dc02</dd></div>
-            <div class="info-list__row"><dt>Workstation</dt><dd>192.168.0.15 · Windows 10</dd></div>
-            <div class="info-list__row"><dt>Attacker</dt><dd>192.168.0.30 · Kali Linux</dd></div>
-          </dl>
+          <div class="info-list reveal" style="--reveal-delay:200ms" id="lab-card" aria-label="Лабораторный стенд" aria-live="polite">
+            <div class="info-list__row skeleton" style="height:38px"></div>
+            <div class="info-list__row skeleton" style="height:38px"></div>
+            <div class="info-list__row skeleton" style="height:38px"></div>
+            <div class="info-list__row skeleton" style="height:38px"></div>
+          </div>
         </aside>
       </div>
 
@@ -132,7 +132,7 @@
             <span class="field__icon" aria-hidden="true">⌕</span>
             <label class="visually-hidden" for="ioc-search">Поиск по индикаторам компрометации</label>
             <input id="ioc-search" type="search" autocomplete="off" spellcheck="false"
-                   placeholder="CVE-2021-36942, EfsRpcOpenFileRaw, 0xc000000d, Replicating Directory Changes">
+                   placeholder="Значение индикатора, RPC-метод, код статуса, Event ID">
             <kbd>/</kbd>
           </div>
 
@@ -168,7 +168,7 @@
                 <label class="rail__label" for="attack-search">Поиск сценария</label>
                 <div class="field field--sm">
                   <span class="field__icon" aria-hidden="true">⌕</span>
-                  <input id="attack-search" type="search" autocomplete="off" placeholder="DCSync, SMB, RPC…">
+                  <input id="attack-search" type="search" autocomplete="off" placeholder="Название, CVE, протокол…">
                 </div>
               </div>
               <div class="rail__group">

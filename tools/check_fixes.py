@@ -33,14 +33,17 @@ meta = json.load(urllib.request.urlopen(f"{BASE}/api/meta"))
 filters = meta["filters"]["platforms"]
 check("Фильтр платформ с заглавной", "Контейнер" in filters and "контейнер" not in filters, "; ".join(filters))
 
-labs = {item["short"]: item for item in items}
 detail = json.load(urllib.request.urlopen(f"{BASE}/api/attacks/CVE-2017-0143_EternalBlue"))
-check("Стенд EternalBlue: Windows 10", "Windows 10" in detail["lab"], detail["lab"])
-check("Стенд EternalBlue: Kali Linux", "Kali Linux" in detail["lab"], detail["lab"])
+lab_rows = " ".join(f"{row.get('address', '')} {row.get('notes', '')} {row.get('role', '')}" for row in detail["lab"])
+check("Стенд EternalBlue: Windows 10", "Windows 10" in lab_rows, lab_rows[:140])
+check("Стенд EternalBlue: Kali Linux", "Kali Linux" in lab_rows, lab_rows[:140])
+check("Стенд приходит таблицей", isinstance(detail["lab"], list) and len(detail["lab"]) == 2, str(type(detail["lab"])))
+check("Ссылки REFERENCES приходят из IOC", len(detail["references"]) >= 5, str(len(detail["references"])))
 
 petitpotam = json.load(urllib.request.urlopen(f"{BASE}/api/attacks/CVE-2021-36942_PetitPotam"))
-check("Стенд PetitPotam: Windows 10", "Windows 10" in petitpotam["lab"], petitpotam["lab"])
-check("Стенд PetitPotam: Kali Linux", "Kali Linux" in petitpotam["lab"], petitpotam["lab"])
+petitpotam_lab = " ".join(str(row) for row in petitpotam["lab"])
+check("Стенд PetitPotam: Windows 10", "Windows 10" in petitpotam_lab, petitpotam_lab[:140])
+check("Стенд PetitPotam: Kali Linux", "Kali Linux" in petitpotam_lab, petitpotam_lab[:140])
 
 print()
 print(f"{len(failures)} failure(s)" if failures else "все проверки пройдены")

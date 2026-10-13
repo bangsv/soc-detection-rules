@@ -40,6 +40,7 @@ check("first attack is critical", items[0]["severity"] == "Критично", it
 for item in items:
     status, detail, _ = get(f"/api/attacks/{urllib.parse.quote(item['id'])}")
     groups = {group["type"]: group["items"] for group in detail["ioc_groups"]}
+    real_rows = [row for rows in groups.values() for row in rows if not row.get("placeholder")]
     issues = []
     if status != 200:
         issues.append("status")
@@ -47,13 +48,30 @@ for item in items:
         issues.append("no materials")
     if not detail["vector"]:
         issues.append("no vector")
-    if sum(len(v) for v in groups.values()) != item["ioc_count"]:
-        issues.append("ioc count mismatch")
+    if not detail["lab"]:
+        issues.append("no lab rows from IOC")
+    if not detail["references"]:
+        issues.append("no cross-references from IOC")
+    if len(real_rows) != item["ioc_count"]:
+        issues.append(f"ioc count mismatch: {len(real_rows)} != {item['ioc_count']}")
     check(f"detail {item['id']}", not issues, ", ".join(issues))
     for group in detail["ioc_groups"]:
         for indicator in group["items"]:
+            if indicator.get("placeholder"):
+                continue
             if not indicator["detected_type"]:
                 check(f"indicator type {indicator['value']}", False)
+
+# Данные об атаках должны приходить из файла IOC.
+check("ioc source is the IOC file", meta.get("ioc_source") == "IOC", str(meta.get("ioc_source")))
+check("lab read from IOC", len(meta.get("lab", [])) == 4, str(len(meta.get("lab", []))))
+check(
+    "lab nodes linked to scenarios",
+    sum(1 for node in meta.get("lab", []) if node.get("scenarios")) >= 3,
+    str([(node.get("tag"), node.get("scenarios")) for node in meta.get("lab", [])]),
+)
+check("threat intelligence from IOC", len(meta.get("sources", [])) >= 4, str(len(meta.get("sources", []))))
+check("no catalogue issues", not meta.get("issues"), "; ".join(meta.get("issues", [])))
 
 status, tray, _ = get("/api/attacks/DCSync/tray")
 check("tray count matches", tray["count"] == 7, str(tray["count"]))

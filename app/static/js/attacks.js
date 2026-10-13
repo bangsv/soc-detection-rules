@@ -163,6 +163,41 @@ function rich(text) {
     .join("");
 }
 
+function labTable(rows) {
+  if (!rows?.length) return "";
+  return `
+    <div class="lab-table">
+      <table>
+        <thead>
+          <tr><th>Source</th><th>Address</th><th>Role</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          ${rows
+            .map(
+              (row) =>
+                `<tr><td><code>${esc(row.source || "—")}</code></td><td>${esc(row.address || "—")}</td><td>${esc(row.role || "—")}</td><td class="dim">${esc(row.notes || "—")}</td></tr>`,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function referencesRow(rows) {
+  if (!rows?.length) return "";
+  return `<div class="cluster">
+      ${rows
+        .map((row) => {
+          const label = `${esc(row.type)}${row.value ? ` · ${esc(row.value.replace(/^https?:\/\//, "").slice(0, 60))}` : ""}`;
+          const title = esc(row.description || row.value || row.type);
+          return /^https?:/.test(row.value || "")
+            ? `<a class="chip chip--link" href="${esc(row.value)}" target="_blank" rel="noreferrer" title="${title}">${label} ↗</a>`
+            : `<span class="chip" title="${title}">${label}</span>`;
+        })
+        .join("")}
+    </div>`;
+}
+
 function detailTemplate(detail) {
   const groups = detail.ioc_groups.map((group) => ({ ...group, key: group.type.startsWith("Host") ? "host" : "network" }));
   const total = groups.reduce((sum, group) => sum + group.items.length, 0);
@@ -185,19 +220,20 @@ function detailTemplate(detail) {
     <div class="detail__grid">
       <div class="detail__block"><h4>Вектор атаки</h4><p>${esc(detail.vector)}</p></div>
       <div class="detail__block"><h4>На что смотреть в логах</h4><p>${esc(detail.focus)}</p></div>
-      <div class="detail__block"><h4>Стенд воспроизведения</h4><p>${esc(detail.lab)}</p></div>
+      <div class="detail__block"><h4>Стенд воспроизведения</h4><p>${esc(detail.lab_text || "описан в таблице ниже")}</p></div>
     </div>
 
-    ${detail.lab ? `<p class="detail__lab"><span class="dot dot--live" aria-hidden="true"></span>${esc(detail.lab)}</p>` : ""}
+    ${labTable(detail.lab)}
 
     <div class="detail__actions">
       <button class="btn btn--primary btn--sm" type="button" data-tray-add-attack="${esc(detail.id)}">Добавить все IOC в набор</button>
       <button class="btn btn--ghost btn--sm" type="button" data-copy-attack="${esc(detail.id)}" data-mode="text">Копировать списком</button>
       <a class="btn btn--ghost btn--sm" href="/api/attacks/${encodeURIComponent(detail.id)}/tray?format=csv">CSV</a>
       <a class="btn btn--ghost btn--sm" href="/api/attacks/${encodeURIComponent(detail.id)}/bundle">ZIP с материалами</a>
-      ${detail.sources?.length ? detail.sources.map((source) => `<a class="btn btn--quiet btn--sm" href="${esc(source.url)}" target="_blank" rel="noreferrer">${esc(source.label)} ↗</a>`).join("") : ""}
       <span class="detail__count">${countLabel(total, ["индикатор", "индикатора", "индикаторов"])} · ${countLabel(detail.materials.length, ["материал", "материала", "материалов"])}</span>
     </div>
+
+    ${referencesRow(detail.references)}
 
     <div class="ioc">
       <div class="ioc__tabs" role="tablist" aria-label="Группы индикаторов">

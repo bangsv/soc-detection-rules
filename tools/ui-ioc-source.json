@@ -1,0 +1,19 @@
+[
+  { "wait": 3500 },
+  { "check": ["lab card built from IOC", "document.querySelectorAll('#lab-card .info-list__row').length"] },
+  { "check": ["lab card без зашитых адресов", "!document.querySelector('#lab-card').innerHTML.includes('skeleton')"] },
+  { "check": ["lab card содержит dc01", "document.querySelector('#lab-card').textContent.includes('dc01')"] },
+  { "check": ["lab card содержит attacker", "document.querySelector('#lab-card').textContent.includes('attacker')"] },
+  { "check": ["lab card привязывает сценарии", "document.querySelector('#lab-card').textContent.includes('EternalBlue')"] },
+  { "click": "[data-scenario]" },
+  { "wait": 1500 },
+  { "check": ["таблица стенда из IOC", "document.querySelectorAll('#attack-detail .lab-table tbody tr').length"] },
+  { "check": ["нет [object Object]", "!document.querySelector('#attack-detail').innerHTML.includes('object Object')"] },
+  { "check": ["блок стенда читаемый", "document.querySelectorAll('#attack-detail .detail__block')[2].querySelector('p').textContent.includes('192.168.0')"] },
+  { "check": ["ссылки REFERENCES", "document.querySelectorAll('#attack-detail .chip--link').length"] },
+  { "check": ["NVD в ссылках", "[...document.querySelectorAll('#attack-detail .chip')].some(c => c.textContent.includes('NVD'))"] },
+  { "eval": "document.querySelector('#attack-detail').scrollIntoView(); window.scrollBy(0, 260)" },
+  { "wait": 500 },
+  { "shot": "ioc-source-detail.png" },
+  { "check": ["нет горизонтального переполнения", "document.documentElement.scrollWidth <= window.innerWidth + 2"] }
+]
