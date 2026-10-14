@@ -1,0 +1,11 @@
+[
+  { "wait": 3800 },
+  { "eval": "[...document.querySelectorAll('[data-scenario]')].slice(0,2).map(el => el.textContent.replace(/\\s+/g,' ').trim())" },
+  { "check": ["на карточке видны IOC и правила", "document.querySelector('[data-scenario]').textContent.includes('правил')"] },
+  { "check": ["счётчики не нулевые", "[...document.querySelectorAll('[data-scenario]')].every(el => !/\\b0 правил\\b/.test(el.textContent))"] },
+  { "click": "[data-scenario]" },
+  { "wait": 1600 },
+  { "eval": "document.querySelector('#attack-detail').scrollIntoView({block:'start'})" },
+  { "wait": 700 },
+  { "shot": "card-stats-check.png" }
+]

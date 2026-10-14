@@ -147,14 +147,42 @@ def _add_fragment(store: dict, raw: str, kind: str, attach_to: str | None = None
         entry["attach"] = attach_to
 
 
+def _add_quoted_value(store: dict, raw: str, attach_to: str | None = None) -> None:
+    """Значение из `обратных кавычек`: только похожее на реальный технический артефакт.
+
+    Файл IOC — это проза, поэтому без фильтра в список попадают обрывки фраз. Правила:
+    одно слово (или токен с путём), без предложений, без чистых чисел вроде 61111.
+    """
+    value = _clean_fragment(raw)
+    if not value or len(value) < 3 or len(value) > 80:
+        return
+    if re.search(r"\.\s|,\s|;\s|:\s|[!?]\s", value):
+        return
+    if "(" in value and ")" not in value:
+        return
+    if " " in value and not re.search(r"[\\/:]", value):
+        return
+    if re.fullmatch(r"[\d\s.,:]+", value):
+        return
+    if value.isdigit():
+        return
+    # То, что уже попадает в отдельные категории, в «Значения» не дублируем.
+    if STATUS_CODE_RE.search(value) or UUID_RE.search(value) or HTTP_RE.search(value) or "=" in value:
+        return
+    _add_fragment(store, value, "Значение", attach_to)
+
+
 def extract_fragments(text: str) -> dict:
-    """Pull concrete technical artefacts out of mixed Russian/English prose."""
+    """Достаёт из описаний IOC конкретные артефакты: ID событий, коды, RPC-методы.
+
+    Используется поиском и командной палитрой: обрывки фраз не собираем, иначе подсказки
+    превращаются в мусор.
+    """
     store: dict = {}
     for line in text.splitlines():
         stripped = line.strip()
         if not stripped:
             continue
-        marker = bool(LIST_MARKER_RE.match(stripped))
         anchors: list[tuple[int, str]] = []
         for match in EVENT_LABEL_RE.finditer(stripped):
             source = EVENT_SOURCES.get(match.group(0).split("Event")[0].strip().casefold(), "")
@@ -164,7 +192,7 @@ def extract_fragments(text: str) -> dict:
                 anchors.append((match.start(), value))
         for match in QUOTED_RE.finditer(stripped):
             inner = match.group(1)
-            _add_fragment(store, inner, "Значение", anchors[0][1] if anchors else None)
+            _add_quoted_value(store, inner, anchors[0][1] if anchors else None)
             for uuid in UUID_RE.findall(inner):
                 _add_fragment(store, uuid, "UUID", inner)
             for opnum in OPNUM_RE.finditer(inner):
@@ -185,12 +213,9 @@ def extract_fragments(text: str) -> dict:
             _add_fragment(store, match.group(0), "Домен", anchors[0][1] if anchors else None)
         for match in HASH_LIKE_RE.finditer(stripped):
             _add_fragment(store, match.group(0), "Хеш", anchors[0][1] if anchors else None)
-        if not stripped.startswith("`"):
-            for chunk in SPLIT_RE.split(re.sub(r"^-+\s*", "", stripped)):
-                token = _clean_fragment(chunk)
-                if 3 <= len(token) <= 48 and re.search(r"[A-Za-zА-Яа-я]", token) and not token.endswith((".", "!", "?")):
-                    _add_fragment(store, token, "Ключ", anchors[0][1] if anchors else None)
     return store
+
+
 
 
 def attack_directory(attack_id: str) -> Path:
@@ -832,7 +857,7 @@ RULE_KINDS: list[tuple[str, str, tuple[str, ...]]] = [
     ("sigma", "Sigma", ("sigma",)),
     ("suricata", "Suricata", ("suricata",)),
     ("auditd", "auditd", ("audit.rules", "auditd", "audit_rule")),
-    ("xp-normalization", "XP · нормализация", ("normalization_rule", "normalization_event")),
+    ("xp-normalization", "XP · нормализация", ("normalization_rule",)),
     ("sysmon", "Sysmon", ("sysmon",)),
     ("xp-correlation", "XP · корреляция", ("correlation_rule", "correlation")),
     ("xp-rule", "XP · правило", ("rule.co", "formula.xp")),
@@ -860,7 +885,8 @@ RULE_EXCLUDE = re.compile(
     re.I,
 )
 # Служебные файлы правил: без них список остаётся списком самих правил.
-RULE_EXCLUDED_NAMES = {"metainfo.yaml", "metainfo.yml", "normalized_success.json"}
+# normalization_event.txt — это примеры нормализованных событий, а не правило.
+RULE_EXCLUDED_NAMES = {"metainfo.yaml", "metainfo.yml", "normalized_success.json", "normalization_event.txt"}
 RULE_EXTENSIONS = {".rules", ".yml", ".yaml", ".xml", ".conf", ".co", ".xp", ".json", ".txt", ".py", ".ps1", ".rb", ".spl"}
 
 

@@ -14,8 +14,6 @@ const state = {
   current: null,
 };
 
-const FRAGMENT_KINDS = ["Event ID", "Код статуса", "RPC-метод", "Opnum", "HTTP-путь", "UUID"];
-
 function matches(item) {
   const term = normalize(state.query);
   if (term) {
@@ -106,30 +104,6 @@ function renderGrid() {
   host.innerHTML = visible.length
     ? visible.map(scenarioCard).join("")
     : `<div class="result result--empty">Под выбранные фильтры сценариев нет. Сбросьте фильтры или измените запрос.</div>`;
-}
-
-function fragmentRow(value, kind) {
-  return `<div class="cluster" style="gap:8px">
-      <span class="badge badge--plain">${esc(kind)}</span>
-      <code class="result__value" data-copy-value="${esc(value)}" title="Нажмите, чтобы скопировать">${esc(value)}</code>
-      <button class="icon-btn" type="button" data-collect="${esc(value)}" data-collect-type="${esc(kind)}" title="В набор IOC" aria-label="Добавить ${esc(value)}">＋</button>
-    </div>`;
-}
-
-function fragmentsBlock(detail) {
-  const fragments = detail.fragments || [];
-  const shown = fragments.filter((fragment) => FRAGMENT_KINDS.includes(fragment.kind)).slice(0, 18);
-  if (!shown.length) return "";
-  const hidden = fragments.length - shown.length;
-  return `
-    <details class="materials">
-      <summary><span>Технические фрагменты из триаж-заметок</span><small>${fragments.length}</small></summary>
-      <div class="stack stack--sm" style="padding:14px 16px">
-        <p class="text-xs dim">Автоматически извлечённые значения из пояснений: удобно копировать в правила и запросы SIEM.</p>
-        ${shown.map((fragment) => fragmentRow(fragment.value, fragment.kind)).join("")}
-        ${hidden > 0 ? `<p class="text-2xs dim">Ещё ${hidden} фрагментов скрыто — используйте поиск по индикаторам.</p>` : ""}
-      </div>
-    </details>`;
 }
 
 function iocRow(indicator, index, group) {
@@ -265,8 +239,6 @@ function detailTemplate(detail) {
           .join("")}
       </div>
     </div>
-
-    ${fragmentsBlock(detail)}
 
     <section id="attack-rules" class="rules-host" aria-label="Правила детектирования"></section>
 
