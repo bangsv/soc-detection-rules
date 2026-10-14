@@ -36,6 +36,7 @@ status, items, _ = get("/api/attacks")
 check("/api/attacks returns list", isinstance(items, list) and len(items) == 6)
 check("every attack has severity", all(item["severity"] for item in items))
 check("first attack is critical", items[0]["severity"] == "Критично", items[0]["id"])
+check("rules counted on cards", sum(item.get("rules_count", 0) for item in items) >= 40, str(sum(item.get("rules_count", 0) for item in items)))
 
 for item in items:
     status, detail, _ = get(f"/api/attacks/{urllib.parse.quote(item['id'])}")
@@ -72,6 +73,15 @@ check(
 )
 check("threat intelligence from IOC", len(meta.get("sources", [])) >= 4, str(len(meta.get("sources", []))))
 check("no catalogue issues", not meta.get("issues"), "; ".join(meta.get("issues", [])))
+
+# Правила детектирования: список отдаётся с деталями, содержимое — по отдельному запросу.
+status, rules, _ = get("/api/attacks/CVE-2017-0143_EternalBlue/rules")
+check("rules list has groups", bool(rules["groups"]), str(rules.get("total")))
+check("rules list has files", rules["total"] >= 5, str(rules["total"]))
+rule_path = rules["groups"][0]["items"][0]["path"]
+status, rule, _ = get("/api/attacks/CVE-2017-0143_EternalBlue/rule?path=" + urllib.parse.quote(rule_path))
+check("rule content served", bool(rule["content"].strip()), rule_path)
+check("rule content has language", bool(rule.get("language")), str(rule.get("language")))
 
 status, tray, _ = get("/api/attacks/DCSync/tray")
 check("tray count matches", tray["count"] == 7, str(tray["count"]))

@@ -238,32 +238,6 @@ def response_headers() -> dict:
     return {"Cache-Control": "no-store"}
 
 
-def details(item: dict) -> dict:
-    info = meta(item["id"])
-    materials = material_files(item["id"])
-    groups = []
-    for name in ("Host IOC", "Network IOC"):
-        indicators = []
-        for raw in item["ioc_groups"][name]:
-            detected = classify_ioc(raw["value"].strip())
-            indicators.append({**raw, "detected_type": detected or name.split()[0]})
-        groups.append({"type": name, "items": indicators})
-    cve = info["cve"] if info["cve"].startswith("CVE-") else ""
-    return {
-        **public_attack(item),
-        "materials": materials,
-        "material_kinds": material_kinds(materials),
-        "ioc_groups": groups,
-        "fragments": attack_fragments(item),
-        "vector": info["vector"],
-        "focus": info["focus"],
-        "lab": info["lab"],
-        "sources": (
-            [{"label": "NVD", "url": f"https://nvd.nist.gov/vuln/detail/{cve}"}] if cve else []
-        ) + [{"label": f"MITRE {tid}", "url": f"https://attack.mitre.org/techniques/{tid.split('.')[0]}/{tid.split('.')[1] + '/' if '.' in tid else ''}"} for tid in info["attack"] if tid.startswith("T")],
-    }
-
-
 
 # --------------------------------------------------------------------- helpers
 
@@ -829,6 +803,7 @@ def public_attack(item: dict) -> dict:
         "ioc_count": len(host) + len(network),
         "host_count": len(host),
         "network_count": len(network),
+        "rules_count": rules_payload(item["id"])["total"],
         "readmes": item["readmes"],
         "severity": info["severity"],
         "cvss": info["cvss"],
@@ -846,6 +821,146 @@ def attack_fragments(attack: dict) -> list[dict]:
     store = attack.get("fragments") or {}
     rows = sorted(store.values(), key=lambda row: (-row["count"], row["value"].casefold()))
     return [{"value": row["value"], "kind": row["kind"], "attach": row.get("attach") or ""} for row in rows]
+
+
+# ------------------------------------------------- правила детектирования (SIEM/NDR/EDR)
+
+# Тип правила определяется папкой и именем файла: папки сценариев можно раскладывать
+# привычным образом (Sigma_rules, suricata_rules, audit.rules, XP_rule/...).
+# Порядок важен: частные признаки (normalization, correlation) идут раньше общих (sysmon).
+RULE_KINDS: list[tuple[str, str, tuple[str, ...]]] = [
+    ("sigma", "Sigma", ("sigma",)),
+    ("suricata", "Suricata", ("suricata",)),
+    ("auditd", "auditd", ("audit.rules", "auditd", "audit_rule")),
+    ("xp-normalization", "XP · нормализация", ("normalization_rule", "normalization_event")),
+    ("sysmon", "Sysmon", ("sysmon",)),
+    ("xp-correlation", "XP · корреляция", ("correlation_rule", "correlation")),
+    ("xp-rule", "XP · правило", ("rule.co", "formula.xp")),
+    ("kaspersky", "Kaspersky KUMA", (".kuma.", "kuma_", "kuma/")),
+    ("maxpatrol", "MaxPatrol SIEM", ("maxpatrol", "pt_siem")),
+    ("wazuh", "Wazuh", ("wazuh", "ossec")),
+    ("elastic", "ELK / ElastAlert", ("elastalert", "elastic", "eql")),
+    ("splunk", "Splunk", ("splunk", ".spl")),
+]
+
+RULE_LANGUAGES = {
+    "sigma": "yaml",
+    "suricata": "suricata",
+    "sysmon": "xml",
+    "auditd": "ini",
+    "xp-normalization": "text",
+    "xp-correlation": "text",
+    "xp-rule": "text",
+}
+
+# Что не показываем в правилах: материалы триажа, переводы, тесты и служебные метафайлы.
+RULE_EXCLUDE = re.compile(
+    r"triage/|/i18n/|/tests?/|\.pcapng$|\.evtx$|\.(png|jpg|jpeg|gif|ico|pdf|zip)$|"
+    r"eve\.json$|stats\.log$|suricata\.log$|readme\.md$|\.pyc$|__pycache__",
+    re.I,
+)
+# Служебные файлы правил: без них список остаётся списком самих правил.
+RULE_EXCLUDED_NAMES = {"metainfo.yaml", "metainfo.yml", "normalized_success.json"}
+RULE_EXTENSIONS = {".rules", ".yml", ".yaml", ".xml", ".conf", ".co", ".xp", ".json", ".txt", ".py", ".ps1", ".rb", ".spl"}
+
+
+def classify_rule(path: Path, attack_id: str) -> tuple[str, str] | None:
+    """Определяет тип правила по пути и имени файла; None — не правило."""
+    rel = path.relative_to(ROOT).as_posix()
+    inner = rel[len(attack_id) + 1:]
+    if RULE_EXCLUDE.search(inner) or path.suffix.lower() not in RULE_EXTENSIONS:
+        return None
+    if path.name.casefold() in RULE_EXCLUDED_NAMES:
+        return None
+    haystack = f"{inner} {path.name}".casefold()
+    for kind, title, markers in RULE_KINDS:
+        if any(marker.casefold() in haystack for marker in markers):
+            return kind, title
+    # Одиночный файл Sigma-формата (`sigma.yml` вне папки Sigma_rules).
+    if path.suffix.lower() in {".yml", ".yaml"}:
+        head = path.read_text(encoding="utf-8", errors="replace")[:2000]
+        if re.search(r"title:|logsource:|detection:", head):
+            return "sigma", "Sigma"
+    return None
+
+
+@lru_cache(maxsize=256)
+def attack_rules(attack_id: str) -> tuple[dict, ...]:
+    """Список правил сценария: тип, файл, размер. Содержимое отдаётся отдельным запросом."""
+    base = attack_directory(attack_id)
+    if ROOT not in base.parents or not base.is_dir():
+        return ()
+    found: dict[str, dict] = {}
+    for source in sorted(base.rglob("*"), key=lambda item: item.as_posix().casefold()):
+        if not source.is_file() or any(part in SKIP_DIRS for part in source.relative_to(ROOT).parts):
+            continue
+        classified = classify_rule(source, attack_id)
+        if not classified:
+            continue
+        kind, title = classified
+        rel = source.relative_to(ROOT).as_posix()
+        folder = source.parent.relative_to(base).as_posix()
+        found[rel] = {
+            "id": rel,
+            "name": source.name,
+            "path": rel,
+            "folder": "" if folder == "." else folder,
+            "kind": kind,
+            "kind_title": title,
+            "size": source.stat().st_size,
+        }
+    return tuple(found.values())
+
+
+def rules_payload(attack_id: str) -> dict:
+    """Сгруппированный по типам список правил: компактно для интерфейса."""
+    rows = list(attack_rules(attack_id))
+    groups: list[dict] = []
+    for kind, title, _ in RULE_KINDS:
+        subset = [row for row in rows if row["kind"] == kind]
+        if not subset:
+            continue
+        groups.append({
+            "kind": kind,
+            "title": title,
+            "count": len(subset),
+            "size": sum(row["size"] for row in subset),
+            "items": subset,
+        })
+    # Типы, которых нет в префиксном списке (нестандартные имена файлов).
+    known = {kind for kind, _, _ in RULE_KINDS}
+    rest = [row for row in rows if row["kind"] not in known]
+    if rest:
+        groups.append({
+            "kind": "other",
+            "title": "Прочие правила",
+            "count": len(rest),
+            "size": sum(row["size"] for row in rest),
+            "items": rest,
+        })
+    return {"total": len(rows), "groups": groups}
+
+
+def read_rule_content(attack_id: str, rule_id: str) -> dict:
+    """Читает содержимое правила; доступ ограничен папкой сценария."""
+    base = attack_directory(attack_id)
+    target = (ROOT / rule_id).resolve()
+    if ROOT not in target.parents or base not in target.parents or not target.is_file():
+        raise HTTPException(404, "Rule not found")
+    text = readable(target)
+    lines = text.count("\n") + 1
+    classified = classify_rule(target, attack_id) or ("text", "Правило")
+    return {
+        "id": rule_id,
+        "name": target.name,
+        "path": target.relative_to(ROOT).as_posix(),
+        "kind": classified[0],
+        "kind_title": classified[1],
+        "language": RULE_LANGUAGES.get(classified[0], "text"),
+        "size": target.stat().st_size,
+        "lines": lines,
+        "content": text,
+    }
 
 
 def lab_matrix() -> list[dict]:
@@ -887,6 +1002,7 @@ def details(item: dict) -> dict:
         "lab_text": lab_text(item),
         "references": item.get("references", []),
         "tactics": sorted({entry["tactic"] for entry in info["techniques"] if entry.get("tactic") and entry["tactic"] != "—"}),
+        "rules": rules_payload(item["id"]),
     }
 
 # ----------------------------------------------------------------------- routes
@@ -963,6 +1079,23 @@ def attack_detail(attack_id: str):
     if not item:
         raise HTTPException(404, "Attack not found")
     return details(item)
+
+
+@app.get("/api/attacks/{attack_id}/rules")
+def attack_rules_list(attack_id: str):
+    """Список правил сценария по типам: Sigma, Suricata, Sysmon, auditd, XP и другие."""
+    item = catalog()["attacks"].get(attack_id)
+    if not item:
+        raise HTTPException(404, "Attack not found")
+    return rules_payload(attack_id)
+
+
+@app.get("/api/attacks/{attack_id}/rule")
+def attack_rule_content(attack_id: str, path: str = Query(min_length=1)):
+    """Содержимое одного правила: загружается только при открытии в интерфейсе."""
+    if attack_id not in catalog()["attacks"]:
+        raise HTTPException(404, "Attack not found")
+    return read_rule_content(attack_id, path)
 
 
 @app.get("/api/attacks/{attack_id}/tray")

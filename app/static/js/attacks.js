@@ -2,6 +2,7 @@
 
 import { $, $$, api, copyText, countLabel, esc, fileSize, highlight, normalize, severityBadge, toast } from "./utils.js";
 import { addToTray } from "./tray.js";
+import { mountRules } from "./rules.js";
 
 const state = {
   items: [],
@@ -78,9 +79,9 @@ function scenarioCard(item) {
       <p class="scenario__tagline">${esc(item.tagline)}</p>
       <div class="scenario__stats">
         <span><b>${item.ioc_count}</b> IOC</span>
+        <span><b>${item.rules_count || 0}</b> правил</span>
         <span><b>${item.host_count}</b> host</span>
         <span><b>${item.network_count}</b> net</span>
-        <span><b>${item.files}</b> README</span>
       </div>
       <div class="scenario__meter"><i style="width:${Math.round((item.ioc_count / max) * 100)}%"></i></div>
       <div class="scenario__tactics">
@@ -267,6 +268,8 @@ function detailTemplate(detail) {
 
     ${fragmentsBlock(detail)}
 
+    <section id="attack-rules" class="rules-host" aria-label="Правила детектирования"></section>
+
     <details class="materials">
       <summary><span>Материалы сценария</span><small>${detail.materials.length} файлов · ${detail.material_kinds.join(", ")}</small></summary>
       <div class="materials__list">
@@ -306,6 +309,7 @@ export async function showAttack(attackId, { scroll = true } = {}) {
   try {
     const detail = await api(`/api/attacks/${encodeURIComponent(attackId)}`);
     panel.innerHTML = detailTemplate(detail);
+    mountRules(detail);
     state.current = attackId;
     $$("#attacks [data-scenario]").forEach((card) =>
       card.setAttribute("aria-current", String(card.dataset.scenario === attackId)),

@@ -5,6 +5,7 @@ import { initTheme, toggleTheme } from "./theme.js";
 import { initTray } from "./tray.js";
 import { initSearch, focusSearch, setSearchQuery } from "./search.js";
 import { initAttacks } from "./attacks.js";
+import { initRules } from "./rules.js";
 import { initDocs } from "./docs.js";
 import { initPalette, open as openPalette } from "./palette.js";
 import { catalogData, loadCatalog } from "./store.js";
@@ -188,6 +189,7 @@ async function boot() {
   initTray();
   initSearch();
   initPalette();
+  initRules();
   initScrollSpy();
   initReveal();
   initShortcuts();

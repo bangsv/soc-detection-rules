@@ -2,6 +2,253 @@
    SOC Atlas · components
    ========================================================================== */
 
+/* ------------------------------------------------- правила детектирования */
+
+.rules {
+  display: grid;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  border: 1px solid var(--border-1);
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--surface-solid) 45%, transparent);
+}
+
+.rules__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+
+.rules__head h4 {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.rule-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rule-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--r-pill);
+  background: var(--surface-1);
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  transition: border-color var(--t-fast), background var(--t-fast), color var(--t-fast);
+}
+
+.rule-tab small {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+}
+
+.rule-tab:hover {
+  border-color: var(--border-strong);
+  color: var(--text-1);
+}
+
+.rule-tab[aria-selected="true"] {
+  border-color: var(--border-strong);
+  background: var(--surface-active);
+  color: var(--text-1);
+}
+
+.rule-tab[aria-selected="true"] small {
+  color: var(--accent);
+}
+
+.rule-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding-top: 2px;
+}
+
+.rules__body {
+  display: grid;
+  grid-template-columns: minmax(200px, 280px) minmax(0, 1fr);
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.rule-files {
+  display: grid;
+  gap: 4px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.rule-file {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--r-xs);
+  color: var(--text-2);
+  text-align: left;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+
+.rule-file:hover {
+  background: var(--surface-hover);
+  color: var(--text-1);
+}
+
+.rule-file[aria-current="true"] {
+  border-color: var(--border-strong);
+  background: var(--surface-active);
+  color: var(--text-1);
+}
+
+.rule-file__kind {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--info);
+  white-space: nowrap;
+}
+
+.rule-file__text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.rule-file__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: inherit;
+}
+
+.rule-file__folder {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.rule-file__size {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.rule-viewer {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  border: 1px solid var(--border-1);
+  border-radius: var(--r-sm);
+  background: color-mix(in oklab, var(--bg-deep) 55%, transparent);
+  overflow: hidden;
+}
+
+.rule-viewer--empty {
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  min-height: 180px;
+  padding: var(--space-24);
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  text-align: center;
+  border-style: dashed;
+}
+
+.rule-viewer__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px var(--space-12);
+  border-bottom: 1px solid var(--border-1);
+  background: color-mix(in oklab, var(--surface-solid) 60%, transparent);
+}
+
+.rule-viewer__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rule-viewer__path {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.rule-code {
+  margin: 0;
+  max-height: 420px;
+  overflow: auto;
+  padding: var(--space-16);
+  background: transparent;
+  font-size: var(--fs-2xs);
+  line-height: 1.65;
+  tab-size: 2;
+}
+
+.rule-code code {
+  white-space: pre;
+  color: var(--text-1);
+}
+
+.rule-hint {
+  padding: var(--space-12);
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  line-height: 1.7;
+}
+
+.rule-hint code {
+  padding: 1px 5px;
+  border: 1px solid var(--border-1);
+  border-radius: 5px;
+  background: var(--surface-1);
+  color: var(--accent);
+  font-size: var(--fs-2xs);
+}
+
+@media (max-width: 900px) {
+  .rules__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rule-files {
+    max-height: 220px;
+  }
+
+  .rule-code {
+    max-height: 320px;
+  }
+}
+
 /* ------------------------------------------------------------- стенд сценария */
 
 .lab-table {
