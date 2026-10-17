@@ -1,0 +1,66 @@
+# Логика правила:
+# Событие 4624
+# Так как злоумышленик может выполнить DCSync атаку с машиной УЗ DC (например после атаки NTLM Relay),
+# то мы проверяем откуда была аутентификация (src.ip) сопоставляем с известными серверами (Server_List) и если src.ip не совпадает с известными серверами, то мы считаем что это подозрительная активность.
+# также если мы видим, что в репликации участвуем не машиная УЗ (можно добавить табличный список с УЗ не машиными но с репликацией если в этом есть потребность), то также считаем что это подозрительная активность.
+# Соыбтие 4662 - все стандартно для DCSync
+
+query Check_Server ($ip) from Server_List {
+    column::ip == $ip
+}
+
+event Success_login:
+    key:
+        event_src.hostname, subject.account.name
+    filter {
+        msgid == "4624"
+        and logon_type == 3
+        and status == "success"
+        and event_src.title == "windows"
+        and not (exec_query("Check_Server", [src.ip]) or match(".*$", subject.account.name))
+    }
+        
+event Suspicion_performed_object:
+    key:
+        event_src.hostname, subject.account.name
+    filter {
+        msgid == "4662"
+        and datafield5 == "0x100"   
+        and regex(lower(datafield2), ".*(1131f6aa-9c07-11d1-f79f-00c04fc2dcd2|1131f6ad-9c07-11d1-f79f-00c04fc2dcd2|19195a5b-6da0-11d0-afd3-00c04fd930c9|)") != null
+        and object.type == "19195a5b-6da0-11d0-afd3-00c04fd930c9"
+        and status == "success"
+        and event_src.title == "windows"
+    }
+
+rule DCSync: (Success_login -> Suspicion_performed_object) timer 1m
+
+on Success_login {
+
+    $src.ip = src.ip 
+    $src.port = src.port
+    $dst.hostname = dst.hostname 
+
+    $subject.account.name = subject.account.name
+    $logon_type = logon_type
+
+    $datafield9 = datafield9
+}
+
+on Suspicion_performed_object{
+    
+    $object.type = object.type
+    $subject.account.domain = subject.account.domain
+    $datafield2 = datafield2
+    $datafield5 = datafield5
+}
+
+emit { 
+    
+    $correlation_type = "incident"
+
+    $object = "ds_object"
+    $action = "copy"
+    $status = "success"
+    $importance = "high"
+
+}
