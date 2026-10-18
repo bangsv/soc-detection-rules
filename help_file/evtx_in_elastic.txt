@@ -1,0 +1,7 @@
+evtx2es path/*.evtx \
+  --host localhost \
+  --port 9200 \
+  --scheme http \
+  --login elastic \
+  --pwd '1111' \
+  --index NAME_INDEX
