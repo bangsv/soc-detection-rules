@@ -138,16 +138,11 @@
 .triage-card__foot {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
   margin-top: 2px;
   padding-top: 8px;
   border-top: 1px solid var(--border-1);
-}
-
-.triage-card__tool {
-  font-size: 10px;
-  color: var(--text-3);
 }
 
 .triage-card__download {
@@ -155,36 +150,6 @@
   font-weight: 700;
   color: var(--accent);
   white-space: nowrap;
-}
-
-.triage-result {
-  padding: 1px 7px;
-  border-radius: var(--r-pill);
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.triage-result--success {
-  background: var(--accent-dim);
-  color: var(--accent);
-}
-
-.triage-result--fail {
-  background: color-mix(in oklab, var(--warn) 18%, transparent);
-  color: var(--warn);
-}
-
-.triage-result--legit {
-  background: color-mix(in oklab, var(--info) 18%, transparent);
-  color: var(--info);
-}
-
-.triage-result--test {
-  background: var(--surface-2);
-  color: var(--text-3);
 }
 
 @media (max-width: 640px) {

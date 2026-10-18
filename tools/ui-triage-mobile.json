@@ -7,6 +7,7 @@
   { "check": ["карточки в одну колонку", "document.querySelectorAll('#attack-triage .triage-card').length > 0"] },
   { "check": ["нет просмотрщика содержимого", "!document.querySelector('#attack-triage .rule-code')"] },
   { "check": ["карточка скачивается", "[...document.querySelectorAll('#attack-triage .triage-card')].every(a => a.getAttribute('download'))"] },
+  { "check": ["нет текстовых меток", "document.querySelectorAll('#attack-triage .triage-result').length === 0"] },
   { "check": ["нет горизонтального переполнения", "document.documentElement.scrollWidth <= 392"] },
   { "eval": "document.querySelector('#attack-triage').scrollIntoView({block:'start'})" },
   { "wait": 700 },

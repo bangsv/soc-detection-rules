@@ -1451,7 +1451,7 @@ def download(path: str):
 
 @app.get("/api/attacks/{attack_id}/bundle")
 def bundle(attack_id: str):
-    """Download one scenario as a single ZIP archive."""
+    """Скачать сценарий одним ZIP-архивом."""
     item = catalog()["attacks"].get(attack_id)
     if not item:
         raise HTTPException(404, "Attack not found")
@@ -1470,10 +1470,18 @@ def bundle(attack_id: str):
             json.dumps(payload, ensure_ascii=False, indent=2),
         )
     safe_name = re.sub(r"[^\w.\-]+", "_", attack_id)
+    body = buffer.getvalue()
     return Response(
-        buffer.getvalue(),
+        body,
         media_type="application/zip",
-        headers={"Content-Disposition": f'attachment; filename="{safe_name}.zip"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{safe_name}.zip"',
+            # Браузер не должен гадать по типу: это всегда архив, а не страница.
+            "Content-Type": "application/zip",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Length": str(len(body)),
+            "Cache-Control": "no-store",
+        },
     )
 
 

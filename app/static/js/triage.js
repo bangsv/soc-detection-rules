@@ -57,19 +57,20 @@ function fileCard(item) {
     <a class="triage-card" href="${esc(item.download)}" download="${esc(item.name)}" data-result="${esc(item.result || "none")}" title="Скачать ${esc(item.name)}">
       <span class="triage-card__top">
         <span class="triage-card__ext">${esc(item.kind)}</span>
-        ${item.result ? `<span class="triage-result triage-result--${esc(item.result)}">${esc(item.result_title)}</span>` : ""}
         <span class="triage-card__size">${fileSize(item.size)}</span>
       </span>
       <span class="triage-card__name">${esc(item.name)}</span>
       <span class="triage-card__meta">
         ${item.scenario ? `<span class="triage-card__tag">${esc(item.scenario)}</span>` : ""}
-        <span class="triage-card__type">${esc(item.type_title)}</span>
       </span>
       <span class="triage-card__foot">
-        <span class="triage-card__tool">Открыть в: ${esc(item.tool)}</span>
         <span class="triage-card__download" aria-hidden="true">Скачать ↓</span>
       </span>
     </a>`;
+}
+
+function zipName() {
+  return `${state.attackId}.zip`;
 }
 
 function render() {
@@ -96,7 +97,7 @@ function render() {
           <input type="search" data-triage-search value="${esc(state.query)}" placeholder="Фильтр по имени: secretsdump, mimikatz…" autocomplete="off">
         </label>
         <span class="triage-bar__count">${items.length === total() ? "все файлы" : `найдено ${items.length}`}</span>
-        <a class="btn btn--primary btn--sm" href="${esc(state.triage.bundle)}" download>Скачать всё ZIP</a>
+        <a class="btn btn--primary btn--sm" href="${esc(state.triage.bundle)}" download="${esc(zipName())}">Скачать всё ZIP</a>
       </div>
 
       <p class="triage-note">${esc(group?.note || "Дампы, журналы и вывод PoC: нажмите на карточку, чтобы скачать файл")}</p>
