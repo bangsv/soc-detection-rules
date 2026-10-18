@@ -8,6 +8,7 @@ import zipfile
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import quote
 
 import markdown
 from fastapi import FastAPI, HTTPException, Query
@@ -861,10 +862,10 @@ RULE_KINDS: list[tuple[str, str, tuple[str, ...]]] = [
     ("sysmon", "Sysmon", ("sysmon",)),
     ("xp-correlation", "XP · корреляция", ("correlation_rule", "correlation")),
     ("xp-rule", "XP · правило", ("rule.co", "formula.xp")),
+    ("elastic", "ELK / Elastic", ("elastic", "elk", "elastalert", "eql", "ndjson")),
     ("kaspersky", "Kaspersky KUMA", (".kuma.", "kuma_", "kuma/")),
     ("maxpatrol", "MaxPatrol SIEM", ("maxpatrol", "pt_siem")),
     ("wazuh", "Wazuh", ("wazuh", "ossec")),
-    ("elastic", "ELK / ElastAlert", ("elastalert", "elastic", "eql")),
     ("splunk", "Splunk", ("splunk", ".spl")),
 ]
 
@@ -876,7 +877,13 @@ RULE_LANGUAGES = {
     "xp-normalization": "text",
     "xp-correlation": "text",
     "xp-rule": "text",
+    "elastic": "json",
 }
+
+# Где лежат правила: папка detection_rule (новая раскладка) и привычные имена папок.
+RULE_ROOT_DIR = "detection_rule"
+RULE_ROOT_MARKERS = ("detection_rule", "sigma", "suricata", "sysmon", "audit", "elk_rules",
+                     "normalization_rule", "correlation_rule", "kuma", "wazuh", "splunk")
 
 # Что не показываем в правилах: материалы триажа, переводы, тесты и служебные метафайлы.
 RULE_EXCLUDE = re.compile(
@@ -887,7 +894,19 @@ RULE_EXCLUDE = re.compile(
 # Служебные файлы правил: без них список остаётся списком самих правил.
 # normalization_event.txt — это примеры нормализованных событий, а не правило.
 RULE_EXCLUDED_NAMES = {"metainfo.yaml", "metainfo.yml", "normalized_success.json", "normalization_event.txt"}
-RULE_EXTENSIONS = {".rules", ".yml", ".yaml", ".xml", ".conf", ".co", ".xp", ".json", ".txt", ".py", ".ps1", ".rb", ".spl"}
+RULE_EXTENSIONS = {".rules", ".yml", ".yaml", ".xml", ".conf", ".co", ".xp", ".json", ".txt",
+                   ".py", ".ps1", ".rb", ".spl", ".ndjson"}
+
+
+def is_rule_candidate(path: Path, attack_id: str) -> bool:
+    """Файл лежит в правилах: внутри detection_rule или в папке с признаком системы."""
+    try:
+        parts = path.relative_to(ROOT / attack_id).parts
+    except ValueError:
+        return False
+    if RULE_ROOT_DIR in parts:
+        return True
+    return any(any(marker in part.casefold() for marker in RULE_ROOT_MARKERS) for part in parts[:-1])
 
 
 def classify_rule(path: Path, attack_id: str) -> tuple[str, str] | None:
@@ -902,7 +921,7 @@ def classify_rule(path: Path, attack_id: str) -> tuple[str, str] | None:
     for kind, title, markers in RULE_KINDS:
         if any(marker.casefold() in haystack for marker in markers):
             return kind, title
-    # Одиночный файл Sigma-формата (`sigma.yml` вне папки Sigma_rules).
+    # Одиночный файл Sigma-формата (`sigma.yml` вне папки sigma_rules).
     if path.suffix.lower() in {".yml", ".yaml"}:
         head = path.read_text(encoding="utf-8", errors="replace")[:2000]
         if re.search(r"title:|logsource:|detection:", head):
@@ -919,6 +938,8 @@ def attack_rules(attack_id: str) -> tuple[dict, ...]:
     found: dict[str, dict] = {}
     for source in sorted(base.rglob("*"), key=lambda item: item.as_posix().casefold()):
         if not source.is_file() or any(part in SKIP_DIRS for part in source.relative_to(ROOT).parts):
+            continue
+        if not is_rule_candidate(source, attack_id):
             continue
         classified = classify_rule(source, attack_id)
         if not classified:
@@ -989,21 +1010,225 @@ def read_rule_content(attack_id: str, rule_id: str) -> dict:
     }
 
 
+# ------------------------------------------------------ материалы триажа (triage)
+
+# Группы материалов триажа: подпись, как в файлах называется результат, что это.
+TRIAGE_KINDS: list[tuple[str, str, str, tuple[str, ...]]] = [
+    ("wireshark", "Wireshark", "Сетевые дампы (PCAPNG): разбор трафика по этапам атаки",
+     ("wireshark", "pcap", "dump")),
+    ("windows_logs", "Windows", "Журналы Windows: EVTX и выгрузки Sysmon",
+     ("windows_logs", "windows", "evtx", "sysmon")),
+    ("linux_logs", "Linux / auditd", "Журналы Linux и auditd",
+     ("linux_logs", "linux_log", "audit_log")),
+    ("suricata_logs", "Suricata", "Логи IDS Suricata: eve.json, fast.log, stats.log",
+     ("suricata",)),
+    ("cli", "Вывод PoC", "Вывод эксплойта из терминала: успешный и неуспешный запуск",
+     ("output_cli", "cli", "poc", "script")),
+    ("hash", "Хеши", "НTLM-хеши и учётные данные, полученные на стенде",
+     ("hash", "ntlm", "credential")),
+]
+
+# Как в именах файлов помечают результат эксперимента.
+# Порядок важен: `not_success` — это провал, поэтому проверки провала идут раньше успеха.
+TRIAGE_RESULTS: list[tuple[str, str, str]] = [
+    ("fail", "провал", r"not_success|not_not_success|nоt_success|fail|error|ошибк|_bad"),
+    ("legit", "легитимное", r"legit|normal|baseline|легитим|репликац|ввод_контрол"),
+    ("success", "успех", r"success|succeess|успех|_ok|good"),
+    ("test", "тест правила", r"test"),
+]
+
+TRIAGE_RESULT_LABELS = {
+    "success": "Успешная атака",
+    "fail": "Неуспешная атака",
+    "legit": "Легитимная активность",
+    "test": "Проверка правила",
+    "": "Результат не указан",
+}
+
+# Чем открывать файл: подсказка рядом с кнопкой скачивания.
+TRIAGE_TOOLS = {
+    ".pcapng": "Wireshark",
+    ".pcap": "Wireshark",
+    ".evtx": "Просмотр событий Windows",
+    ".json": "Текстовый редактор",
+    ".ndjson": "Текстовый редактор",
+    ".log": "Текстовый редактор",
+    ".txt": "Текстовый редактор",
+    ".xml": "Просмотр событий / редактор",
+    ".csv": "Excel",
+    ".md": "Просмотр markdown",
+}
+
+# Что такое файл — по папке, в которой он лежит.
+TRIAGE_FILE_TYPES = {
+    "wireshark": "Сетевой дамп",
+    "windows_logs": "Журнал Windows",
+    "linux_logs": "Журнал Linux",
+    "suricata_logs": "Лог IDS",
+    "output_cli": "Вывод эксплойта",
+}
+
+TRIAGE_KIND_TITLES = {".pcapng": "PCAPNG", ".evtx": "EVTX", ".json": "JSON", ".txt": "TXT",
+                      ".log": "LOG", ".xml": "XML", ".md": "MD", ".zip": "ZIP"}
+
+
+def triage_result(name: str) -> str:
+    """Успех, провал или легитимная активность — по имени файла."""
+    haystack = name.casefold()
+    for key, _, pattern in TRIAGE_RESULTS:
+        if re.search(pattern, haystack):
+            return key
+    return ""
+
+
+def triage_scenario_label(name: str, folder: str) -> str:
+    """Сценарий внутри прогона: `metasploit`, `mimikatz`, `legitimate_activity`.
+
+    В Zerologon логи разложены по подпапкам инструментов, и без этой подписи
+    `eve.json` из metasploit не отличить от `eve.json` из mimikatz.
+    """
+    parts = [part for part in folder.split("/") if part and part.casefold() != "triage"]
+    skip = {"wireshark", "windows_logs", "linux_logs", "suricata_logs", "output_cli_poc", "output_cli"}
+    variants = [part for part in parts[1:] if part.casefold() not in skip]
+    if not variants:
+        return ""
+    label = " / ".join(variants).replace("_", " ").strip()
+    return label.capitalize() if label else ""
+
+
+def triage_description(name: str, result_key: str, file_type: str) -> str:
+    """Короткая подпись: что это за файл, без пересказа содержимого."""
+    if result_key:
+        return f"{file_type} · {TRIAGE_RESULT_LABELS[result_key].lower()}"
+    if file_type:
+        return file_type
+    return "Файл материала"
+
+
+@lru_cache(maxsize=256)
+def attack_triage(attack_id: str) -> tuple[dict, ...]:
+    """Файлы для разбора инцидента: дампы, журналы, вывод PoC. Только из папки triage."""
+    base = attack_directory(attack_id)
+    if ROOT not in base.parents or not base.is_dir():
+        return ()
+    found: dict[str, dict] = {}
+    for source in sorted(base.rglob("*"), key=lambda item: item.as_posix().casefold()):
+        if not source.is_file() or any(part in SKIP_DIRS for part in source.relative_to(ROOT).parts):
+            continue
+        inside = source.relative_to(base)
+        if "triage" not in [part.casefold() for part in inside.parts[:-1]]:
+            continue
+        if source.suffix.lower() in {".pyc"} or "__pycache__" in inside.parts:
+            continue
+        rel = source.relative_to(ROOT).as_posix()
+        folder = "" if inside.parent.as_posix() == "." else inside.parent.as_posix()
+        ext = source.suffix.lower()
+        result = triage_result(source.name)
+        file_type = next(
+            (label for key, label in TRIAGE_FILE_TYPES.items() if key in folder.casefold()), "Материал"
+        )
+        found[rel] = {
+            "id": rel,
+            "name": source.name,
+            "path": rel,
+            "folder": folder,
+            "ext": ext,
+            "kind": TRIAGE_KIND_TITLES.get(ext, ext.lstrip(".").upper() or "FILE"),
+            "result": result,
+            "result_title": TRIAGE_RESULT_LABELS.get(result, ""),
+            "scenario": triage_scenario_label(source.name, folder),
+            "type_title": file_type,
+            "description": triage_description(source.name, result, file_type),
+            "tool": TRIAGE_TOOLS.get(ext, "Текстовый редактор"),
+            "download": f"/api/attacks/{attack_id}/triage/file?path={quote(rel)}",
+            "size": source.stat().st_size,
+        }
+    return tuple(found.values())
+
+
+def triage_group_of(row: dict) -> str:
+    """Определяет группу материала по папке, в которой он лежит (первый уровень)."""
+    folder = row["folder"].casefold()
+    name = row["name"].casefold()
+    for kind, _, _, markers in TRIAGE_KINDS:
+        if any(marker in folder for marker in markers):
+            return kind
+    for kind, _, _, markers in TRIAGE_KINDS:
+        if any(marker in name for marker in markers):
+            return kind
+    return "other"
+
+
+def triage_payload(attack_id: str) -> dict:
+    """Сгруппированный список материалов триажа с готовыми ссылками на скачивание."""
+    rows = list(attack_triage(attack_id))
+    order = {key: index for index, (key, _, _) in enumerate(TRIAGE_RESULTS)}
+
+    def sort_key(row: dict) -> tuple:
+        # Успех, провал, легитимное, прочее — внутри группы по имени.
+        return (order.get(row["result"], 99), (row.get("scenario") or "").casefold(), row["name"].casefold())
+
+    groups: list[dict] = []
+    for kind, title, note, _ in TRIAGE_KINDS:
+        subset = [row for row in rows if triage_group_of(row) == kind]
+        if not subset:
+            continue
+        subset.sort(key=sort_key)
+        groups.append({
+            "kind": kind,
+            "title": title,
+            "note": note,
+            "count": len(subset),
+            "size": sum(row["size"] for row in subset),
+            "bundle": f"/api/attacks/{attack_id}/bundle",
+            "items": subset,
+        })
+    rest = [row for row in rows if triage_group_of(row) == "other"]
+    if rest:
+        rest.sort(key=sort_key)
+        groups.append({
+            "kind": "other",
+            "title": "Прочее",
+            "note": "Дополнительные материалы: скрипты, хеши, README",
+            "count": len(rest),
+            "size": sum(row["size"] for row in rest),
+            "bundle": f"/api/attacks/{attack_id}/bundle",
+            "items": rest,
+        })
+    by_result = {key: sum(1 for row in rows if row["result"] == key) for key, _, _ in TRIAGE_RESULTS}
+    return {
+        "total": len(rows),
+        "size": sum(row["size"] for row in rows),
+        "results": by_result,
+        "bundle": f"/api/attacks/{attack_id}/bundle",
+        "groups": groups,
+    }
+
+
+def read_triage_content(attack_id: str, path_id: str) -> dict:
+    """Отдаёт материал триажа файлом на скачивание.
+
+    Содержимое в интерфейсе не показываем: дампы и журналы открывают в Wireshark
+    и Просмотрщике событий, поэтому единственное действие — скачать.
+    """
+    base = attack_directory(attack_id)
+    target = (ROOT / path_id).resolve()
+    if ROOT not in target.parents or base not in target.parents or not target.is_file():
+        raise HTTPException(404, "File not found")
+    if "triage" not in [part.casefold() for part in target.relative_to(base).parts[:-1]]:
+        raise HTTPException(404, "File not found")
+    return {
+        "id": path_id,
+        "name": target.name,
+        "path": target.relative_to(ROOT).as_posix(),
+        "download": f"/api/attacks/{attack_id}/triage/file?path={quote(target.relative_to(ROOT).as_posix())}",
+        "size": target.stat().st_size,
+    }
+
+
 def lab_matrix() -> list[dict]:
-    """Узлы стенда из раздела ## LAB с привязкой к сценариям."""
-    data = catalog()
-    nodes: list[dict] = []
-    for row in data["lab"]:
-        address = row.get("address", "")
-        ip = address.split("·")[0].strip()
-        scenarios: list[str] = []
-        if ip:
-            for attack in data["attacks"].values():
-                for entry in attack.get("lab", []):
-                    if re.search(rf"(?<![\d.]){re.escape(ip)}(?![\d.])", entry.get("address", "")) and attack["id"] not in scenarios:
-                        scenarios.append(attack["id"])
-        nodes.append({**row, "scenarios": scenarios})
-    return nodes
+    """Узлы стенда из раздела ## LAB: только то, что задано в файле IOC."""
+    return [{**row} for row in catalog()["lab"]]
 
 
 def details(item: dict) -> dict:
@@ -1029,6 +1254,7 @@ def details(item: dict) -> dict:
         "references": item.get("references", []),
         "tactics": sorted({entry["tactic"] for entry in info["techniques"] if entry.get("tactic") and entry["tactic"] != "—"}),
         "rules": rules_payload(item["id"]),
+        "triage": triage_payload(item["id"]),
     }
 
 # ----------------------------------------------------------------------- routes
@@ -1122,6 +1348,30 @@ def attack_rule_content(attack_id: str, path: str = Query(min_length=1)):
     if attack_id not in catalog()["attacks"]:
         raise HTTPException(404, "Attack not found")
     return read_rule_content(attack_id, path)
+
+
+@app.get("/api/attacks/{attack_id}/triage")
+def attack_triage_list(attack_id: str):
+    """Материалы для разбора инцидента: дампы, журналы, вывод PoC."""
+    item = catalog()["attacks"].get(attack_id)
+    if not item:
+        raise HTTPException(404, "Attack not found")
+    return triage_payload(attack_id)
+
+
+@app.get("/api/attacks/{attack_id}/triage/file")
+def attack_triage_content(attack_id: str, path: str = Query(min_length=1)):
+    """Материал триажа на скачивание: дампы и журналы открывают в своих программах."""
+    if attack_id not in catalog()["attacks"]:
+        raise HTTPException(404, "Attack not found")
+    read_triage_content(attack_id, path)
+    target = (ROOT / path).resolve()
+    return FileResponse(
+        target,
+        filename=target.name,
+        media_type="application/octet-stream",
+        content_disposition_type="attachment",
+    )
 
 
 @app.get("/api/attacks/{attack_id}/tray")

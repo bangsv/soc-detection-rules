@@ -1,0 +1,14 @@
+[
+  { "viewport": [390, 844], "mobile": true },
+  { "wait": 3200 },
+  { "click": "[data-scenario]" },
+  { "wait": 1800 },
+  { "check": ["панель triage на мобильном", "!!document.querySelector('#attack-triage .triage')"] },
+  { "check": ["карточки в одну колонку", "document.querySelectorAll('#attack-triage .triage-card').length > 0"] },
+  { "check": ["нет просмотрщика содержимого", "!document.querySelector('#attack-triage .rule-code')"] },
+  { "check": ["карточка скачивается", "[...document.querySelectorAll('#attack-triage .triage-card')].every(a => a.getAttribute('download'))"] },
+  { "check": ["нет горизонтального переполнения", "document.documentElement.scrollWidth <= 392"] },
+  { "eval": "document.querySelector('#attack-triage').scrollIntoView({block:'start'})" },
+  { "wait": 700 },
+  { "shot": "mobile-triage.png" }
+]

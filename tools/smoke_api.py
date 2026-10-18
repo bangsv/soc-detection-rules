@@ -55,6 +55,11 @@ for item in items:
         issues.append("no cross-references from IOC")
     if len(real_rows) != item["ioc_count"]:
         issues.append(f"ioc count mismatch: {len(real_rows)} != {item['ioc_count']}")
+    triage = detail.get("triage") or {}
+    if not triage.get("total"):
+        issues.append("no triage materials")
+    if not (detail.get("rules") or {}).get("total"):
+        issues.append("no detection rules")
     check(f"detail {item['id']}", not issues, ", ".join(issues))
     for group in detail["ioc_groups"]:
         for indicator in group["items"]:
@@ -67,9 +72,14 @@ for item in items:
 check("ioc source is the IOC file", meta.get("ioc_source") == "IOC", str(meta.get("ioc_source")))
 check("lab read from IOC", len(meta.get("lab", [])) == 4, str(len(meta.get("lab", []))))
 check(
-    "lab nodes linked to scenarios",
-    sum(1 for node in meta.get("lab", []) if node.get("scenarios")) >= 3,
-    str([(node.get("tag"), node.get("scenarios")) for node in meta.get("lab", [])]),
+    "lab nodes have address and role",
+    all(node.get("address") and node.get("role") for node in meta.get("lab", [])),
+    str([(node.get("tag"), node.get("address")) for node in meta.get("lab", [])]),
+)
+check(
+    "lab does not list scenarios",
+    all("scenarios" not in node for node in meta.get("lab", [])),
+    str([node for node in meta.get("lab", []) if "scenarios" in node]),
 )
 check("threat intelligence from IOC", len(meta.get("sources", [])) >= 4, str(len(meta.get("sources", []))))
 check("no catalogue issues", not meta.get("issues"), "; ".join(meta.get("issues", [])))

@@ -1,8 +1,9 @@
 /* Attack catalog: filters, scenario cards, detail console and exports. */
 
-import { $, $$, api, copyText, countLabel, esc, fileSize, highlight, normalize, severityBadge, toast } from "./utils.js";
+import { $, $$, api, copyText, countLabel, esc, highlight, normalize, severityBadge, toast } from "./utils.js";
 import { addToTray } from "./tray.js";
 import { mountRules } from "./rules.js";
+import { mountTriage } from "./triage.js";
 
 const state = {
   items: [],
@@ -242,22 +243,7 @@ function detailTemplate(detail) {
 
     <section id="attack-rules" class="rules-host" aria-label="Правила детектирования"></section>
 
-    <details class="materials">
-      <summary><span>Материалы сценария</span><small>${detail.materials.length} файлов · ${detail.material_kinds.join(", ")}</small></summary>
-      <div class="materials__list">
-        ${detail.materials
-          .map(
-            (material) => `
-          <a class="material" href="/api/download?path=${encodeURIComponent(material.path)}" download>
-            <span class="material__kind">${esc(material.kind)}</span>
-            <span class="material__name" title="${esc(material.path)}">${esc(material.path)}</span>
-            <span class="material__size">${fileSize(material.size)}</span>
-            <b aria-hidden="true">↓</b>
-          </a>`,
-          )
-          .join("")}
-      </div>
-    </details>
+    <section id="attack-triage" class="rules-host" aria-label="Материалы triage"></section>
 
     ${
       detail.readmes.length
@@ -282,6 +268,7 @@ export async function showAttack(attackId, { scroll = true } = {}) {
     const detail = await api(`/api/attacks/${encodeURIComponent(attackId)}`);
     panel.innerHTML = detailTemplate(detail);
     mountRules(detail);
+    mountTriage(detail);
     state.current = attackId;
     $$("#attacks [data-scenario]").forEach((card) =>
       card.setAttribute("aria-current", String(card.dataset.scenario === attackId)),

@@ -2,6 +2,201 @@
    SOC Atlas · components
    ========================================================================== */
 
+/* ------------------------------------------------------- материалы triage */
+
+.triage {
+  display: grid;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  border: 1px solid var(--border-1);
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--surface-solid) 45%, transparent);
+}
+
+.triage-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.triage-bar__search {
+  flex: 1 1 220px;
+  min-width: 160px;
+}
+
+.triage-bar__search input {
+  width: 100%;
+  padding: 7px 11px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--r-sm);
+  background: var(--surface-1);
+  color: var(--text-1);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+}
+
+.triage-bar__search input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.triage-bar__count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.triage-note {
+  color: var(--text-3);
+  font-size: var(--fs-2xs);
+  line-height: 1.6;
+}
+
+.triage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+.triage-card {
+  display: grid;
+  gap: 6px;
+  padding: 12px var(--space-16) 10px;
+  border: 1px solid var(--border-1);
+  border-left: 2px solid var(--border-2);
+  border-radius: var(--r-sm);
+  background: color-mix(in oklab, var(--surface-solid) 60%, transparent);
+  color: var(--text-1);
+  transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+}
+
+.triage-card:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.triage-card[data-result="success"] {
+  border-left-color: var(--accent);
+}
+
+.triage-card[data-result="fail"] {
+  border-left-color: var(--warn);
+}
+
+.triage-card[data-result="legit"] {
+  border-left-color: var(--info);
+}
+
+.triage-card__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.triage-card__ext {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+}
+
+.triage-card__size {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.triage-card__name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+.triage-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.triage-card__tag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+}
+
+.triage-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-1);
+}
+
+.triage-card__tool {
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.triage-card__download {
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.triage-result {
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.triage-result--success {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.triage-result--fail {
+  background: color-mix(in oklab, var(--warn) 18%, transparent);
+  color: var(--warn);
+}
+
+.triage-result--legit {
+  background: color-mix(in oklab, var(--info) 18%, transparent);
+  color: var(--info);
+}
+
+.triage-result--test {
+  background: var(--surface-2);
+  color: var(--text-3);
+}
+
+@media (max-width: 640px) {
+  .triage-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .triage-bar__search {
+    flex-basis: 100%;
+  }
+}
+
 /* ------------------------------------------------- правила детектирования */
 
 .rules {
@@ -314,11 +509,18 @@
   font-size: var(--fs-2xs);
 }
 
-.lab-scenarios {
+.lab-host {
   display: block;
-  color: var(--accent);
+  color: var(--text-1);
   font-family: var(--font-mono);
   font-size: var(--fs-2xs);
+}
+
+.lab-notes {
+  display: block;
+  color: var(--text-3);
+  font-size: 10px;
+  line-height: 1.5;
 }
 
 /* Строка-заглушка из файла IOC: «сетевых индикаторов нет — атака локальная». */
@@ -1385,109 +1587,6 @@ details.rail__group > summary:hover {
   border-radius: var(--r-sm);
   color: var(--text-3);
   font-size: var(--fs-xs);
-}
-
-/* ---------------------------------------------------------------- materials */
-
-.materials {
-  border: 1px solid var(--border-1);
-  border-radius: var(--r-md);
-  background: color-mix(in oklab, var(--surface-solid) 45%, transparent);
-  overflow: hidden;
-}
-
-.materials summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-12);
-  padding: 13px var(--space-16);
-  cursor: pointer;
-  list-style: none;
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  transition: background var(--t-fast);
-}
-
-.materials summary::-webkit-details-marker {
-  display: none;
-}
-
-.materials summary:hover {
-  background: var(--surface-hover);
-}
-
-.materials summary small {
-  font-family: var(--font-mono);
-  font-size: var(--fs-2xs);
-  color: var(--accent);
-  font-weight: 500;
-}
-
-.materials[open] summary {
-  border-bottom: 1px solid var(--border-1);
-}
-
-.materials__list {
-  max-height: 340px;
-  overflow: auto;
-}
-
-.material {
-  display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) 78px 18px;
-  align-items: center;
-  gap: var(--space-12);
-  padding: 9px var(--space-16);
-  color: var(--text-2);
-  font-size: var(--fs-xs);
-  transition: background var(--t-fast), color var(--t-fast);
-}
-
-.materials__list,
-.materials summary {
-  min-width: 0;
-}
-
-.material + .material {
-  border-top: 1px solid var(--border-1);
-}
-
-.material:hover {
-  background: var(--surface-hover);
-  color: var(--text-1);
-}
-
-.material__kind {
-  font-family: var(--font-mono);
-  font-size: var(--fs-2xs);
-  text-align: center;
-  padding: 3px 0;
-  border: 1px solid color-mix(in oklab, var(--info) 32%, transparent);
-  border-radius: 6px;
-  color: var(--info);
-}
-
-.material__name {
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--font-mono);
-  font-size: var(--fs-2xs);
-}
-
-.material__size {
-  text-align: right;
-  font-family: var(--font-mono);
-  font-size: var(--fs-2xs);
-  color: var(--text-3);
-}
-
-.material b {
-  color: var(--accent);
-  font-size: 14px;
 }
 
 /* ------------------------------------------------------------- search log */
@@ -2574,14 +2673,6 @@ body:has(#tray:not([hidden]) #tray-panel:not([hidden])) .toasts {
   .timeline__item {
     grid-template-columns: minmax(0, 1fr);
     gap: 6px;
-  }
-
-  .material {
-    grid-template-columns: 46px minmax(0, 1fr) 16px;
-  }
-
-  .material__size {
-    display: none;
   }
 
   .tray {

@@ -6,9 +6,10 @@ import { initTray } from "./tray.js";
 import { initSearch, focusSearch, setSearchQuery } from "./search.js";
 import { initAttacks } from "./attacks.js";
 import { initRules } from "./rules.js";
+import { initTriage } from "./triage.js";
 import { initDocs } from "./docs.js";
 import { initPalette, open as openPalette } from "./palette.js";
-import { catalogData, loadCatalog } from "./store.js";
+import { loadCatalog } from "./store.js";
 
 const SECTIONS = ["explorer", "attacks-map", "knowledge"];
 
@@ -21,12 +22,9 @@ function metricTile(value, label, note, variant = "") {
     </div>`;
 }
 
-function shortName(attackId) {
-  const attack = catalogData().attacks.find((item) => item.id === attackId);
-  return attack?.short || attackId;
-}
-
-/* Стенд в шапке строится из раздела ## LAB файла IOC — в разметке данных нет. */
+/* Стенд в шапке строится из раздела ## LAB файла IOC — в разметке данных нет.
+   Показываем узел, адрес, роль и что на нём смотреть: перечень сценариев, в которых
+   узел участвует, ничего не добавлял, поэтому его больше не выводим. */
 function renderLabCard(meta) {
   const host = $("#lab-card");
   if (!host) return;
@@ -41,9 +39,9 @@ function renderLabCard(meta) {
       <div class="info-list__row">
         <dt>${esc(row.tag || "node")}</dt>
         <dd>
-          ${esc(row.address || "—")}
+          <span class="lab-host">${esc(row.address || "—")}</span>
           ${row.role ? `<span class="lab-role">${esc(row.role)}</span>` : ""}
-          ${row.scenarios?.length ? `<span class="lab-scenarios">${row.scenarios.map((id) => esc(shortName(id))).join(", ")}</span>` : ""}
+          ${row.notes ? `<span class="lab-notes">${esc(row.notes)}</span>` : ""}
         </dd>
       </div>`,
     )
@@ -190,6 +188,7 @@ async function boot() {
   initSearch();
   initPalette();
   initRules();
+  initTriage();
   initScrollSpy();
   initReveal();
   initShortcuts();
