@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#070d11">
+  <meta name="description" content="Единая база инструментов и материалов для blue team: правила детектирования, тестовые логи, форензика, AD CS, инфраструктура SOC.">
+  <title>Инструменты blue team · SOC Atlas</title>
+  <link rel="icon" href="/static/assets/icon.ico" sizes="any">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/static/css/core.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/tools.css">
+  <link rel="stylesheet" href="/static/css/utilities.css">
+</head>
+<body class="tools-page">
+  <a class="dsh-skip" href="#main">Перейти к содержимому</a>
+
+  <header class="site-header" id="site-header">
+    <a class="brand" href="/">
+      <span class="brand__mark" aria-hidden="true">◈</span>
+      <span class="brand__word">SOC <b>ATLAS</b></span>
+    </a>
+    <nav class="nav" id="nav" aria-label="Навигация">
+      <a href="/#explorer">Индикаторы</a>
+      <a href="/#attacks-map">Атаки</a>
+      <a href="/#knowledge">Документация</a>
+      <a href="/tools" aria-current="true">Инструменты</a>
+      <a href="/about">Автор</a>
+      <a href="https://github.com/bangsv" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </nav>
+    <div class="header-tools">
+      <button class="btn btn--quiet btn--icon" id="theme-toggle" type="button" aria-label="Переключить светлую и тёмную тему" title="Тема (T)">
+        <span data-theme-icon aria-hidden="true">☾</span>
+      </button>
+      <button class="btn btn--quiet btn--icon nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Открыть меню">
+        <span aria-hidden="true">☰</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main" class="shell">
+    <section class="tools-hero">
+      <p class="eyebrow reveal">Blue team · рабочий набор</p>
+      <h1 class="reveal" style="--reveal-delay:60ms">
+        База знаний<br><em class="tools-hero__accent">для аналитика SOC</em>
+      </h1>
+      <p class="tools-hero__lede reveal" style="--reveal-delay:120ms">
+        Инструменты, методики и справочники, которые нужны в работе: threat hunting и уровни зрелости,
+        правила YARA и Suricata, Event ID и бенчмарки, форензика памяти и хостов, разбор малвари и
+        чек-листы реагирования. Для каждого пункта — что это и зачем он в SOC, с прямой ссылкой на источник.
+      </p>
+      <div class="tools-hero__actions reveal" style="--reveal-delay:180ms">
+        <label class="tools-search">
+          <span class="visually-hidden">Поиск по инструментам</span>
+          <input id="tools-search" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="Поиск: auditd, память, AD CS, ELK…">
+          <kbd>/</kbd>
+        </label>
+        <span class="tools-count" id="tools-count" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <section class="tools-filters reveal" id="tools-filters" aria-label="Фильтры"></section>
+
+    <div id="tools-list" class="tools-list" aria-live="polite"></div>
+
+    <section class="tools-note reveal" aria-label="Как этим пользоваться">
+      <h2>Как этим пользоваться</h2>
+      <div class="tools-note__grid">
+        <div>
+          <h3>1. Правило → проверка на данных</h3>
+          <p>Пишете или берёте правило (auditd, Sigma, Suricata) и проверяете его на наборе
+          журналов из раздела «Тестовые данные». Если срабатывает не там — правило правится до внедрения,
+          а не после инцидента.</p>
+        </div>
+        <div>
+          <h3>2. Нет готовых данных — соберите их</h3>
+          <p>Vulhub поднимает уязвимый сервис одной командой. Повторили атаку, сняли трафик и логи,
+          добавили в свой сценарий — и получили собственный набор для проверки.</p>
+        </div>
+        <div>
+          <h3>3. Стенд для SIEM</h3>
+          <p>docker-elk — тестовый Elastic Stack на ноутбуке. Туда заливаются собранные журналы,
+          и правила проверяются запросами, а не в голове.</p>
+        </div>
+      </div>
+      <p class="tools-note__warn">
+        Материалы внешние и принадлежат их авторам. Уязвимые стенды и утилиты обхода UAC
+        запускайте только в изолированной лаборатории.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell site-footer__inner">
+      <div class="stack stack--sm">
+        <span class="brand"><span class="brand__mark" aria-hidden="true">◈</span> <span class="brand__word">SOC <b>ATLAS</b></span></span>
+        <p class="text-xs dim">Материалы подготовлены для внутреннего использования в SOC и в образовательных целях.</p>
+      </div>
+      <div class="site-footer__links">
+        <a href="/">К атласу</a>
+        <a href="/about">Автор</a>
+        <a href="https://github.com/bangsv/soc-detection-rules" target="_blank" rel="noreferrer">SOC Detection Rules ↗</a>
+      </div>
+      <div class="site-footer__meta">
+        <span>© 2026</span>
+        <span>Захарчук Юрий Александрович</span>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/static/js/tools.js"></script>
+</body>
+</html>

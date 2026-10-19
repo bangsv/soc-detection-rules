@@ -29,6 +29,7 @@
       <a href="#explorer" data-nav="explorer">Индикаторы</a>
       <a href="#attacks-map" data-nav="attacks-map">Атаки</a>
       <a href="#knowledge" data-nav="knowledge">Документация</a>
+      <a href="/tools">Инструменты</a>
       <a href="/about">Автор</a>
       <a href="https://github.com/bangsv/soc-detection-rules" target="_blank" rel="noreferrer">GitHub ↗</a>
     </nav>
@@ -69,6 +70,7 @@
           <div class="hero__actions reveal" style="--reveal-delay:180ms">
             <a class="btn btn--primary" href="#explorer">Открыть поиск по IOC <span aria-hidden="true">→</span></a>
             <a class="btn btn--ghost" href="#attacks-map">Карта сценариев</a>
+            <a class="btn btn--quiet" href="/tools">База инструментов <span aria-hidden="true">↗</span></a>
             <a class="btn btn--quiet" href="#knowledge">Документация ↓</a>
           </div>
           <div class="hero__chips reveal" style="--reveal-delay:240ms" id="hero-chips" aria-label="Типы источников телеметрии">
@@ -256,6 +258,23 @@
             </div>
           </aside>
         </div>
+      </div>
+    </section>
+
+    <section class="page-section tools-teaser" id="tools-teaser" aria-labelledby="tools-teaser-title">
+      <div class="shell">
+        <a class="tools-teaser__card reveal" href="/tools">
+          <span class="tools-teaser__body">
+            <span class="eyebrow">Инструменты · 193 записи</span>
+            <span class="tools-teaser__title" id="tools-teaser-title">База знаний для аналитика SOC</span>
+            <span class="tools-teaser__text">
+              Утилиты, методики и справочники: threat hunting, правила YARA и Suricata, Event ID,
+              бенчмарки, форензика памяти и хостов, чек-листы реагирования. С фильтром по задаче,
+              платформе и источнику.
+            </span>
+            <span class="tools-teaser__link">Открыть базу инструментов <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
       </div>
     </section>
   </main>

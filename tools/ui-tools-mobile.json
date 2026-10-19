@@ -1,0 +1,11 @@
+[
+  { "viewport": [390, 844], "mobile": true },
+  { "wait": 2500 },
+  { "check": ["строк 193", "document.querySelectorAll('.tool-row').length === 193"] },
+  { "check": ["разделов 10", "document.querySelectorAll('.tools-group').length === 10"] },
+  { "check": ["нет «С чего начать»", "!document.querySelector('#tools-list').textContent.includes('С чего начать')"] },
+  { "check": ["нет горизонтального переполнения", "document.documentElement.scrollWidth <= 392"] },
+  { "eval": "document.querySelector('.tools-filters').scrollIntoView({block:'start'})" },
+  { "wait": 600 },
+  { "shot": "mobile-tools.png" }
+]

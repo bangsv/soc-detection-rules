@@ -1270,6 +1270,12 @@ def about():
     return FileResponse(Path(__file__).parent / "static" / "about.html", headers=response_headers())
 
 
+@app.get("/tools", response_class=FileResponse)
+def tools():
+    """Единая база инструментов и материалов для blue team."""
+    return FileResponse(Path(__file__).parent / "static" / "tools.html", headers=response_headers())
+
+
 @app.get("/api/health")
 def health():
     return {"ok": True, "root": str(ROOT), "generated_at": datetime.now(timezone.utc).isoformat()}

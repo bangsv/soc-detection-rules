@@ -2682,3 +2682,53 @@ body:has(#tray:not([hidden]) #tray-panel:not([hidden])) .toasts {
     transform: none;
   }
 }
+
+/* ------------------------------------------- приглашение в базу инструментов */
+
+.tools-teaser {
+  padding-block: clamp(2rem, 4vw, 3.5rem);
+}
+
+.tools-teaser__card {
+  display: block;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  background:
+    radial-gradient(120% 140% at 100% 0%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 55%),
+    color-mix(in oklab, var(--surface-solid) 60%, transparent);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color var(--t-fast), transform var(--t-fast);
+}
+
+.tools-teaser__card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.tools-teaser__body {
+  display: grid;
+  gap: 10px;
+  max-width: 72ch;
+}
+
+.tools-teaser__title {
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-1);
+}
+
+.tools-teaser__text {
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+}
+
+.tools-teaser__link {
+  margin-top: 6px;
+  color: var(--accent);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
