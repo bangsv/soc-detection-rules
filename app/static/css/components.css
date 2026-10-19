@@ -2686,49 +2686,72 @@ body:has(#tray:not([hidden]) #tray-panel:not([hidden])) .toasts {
 /* ------------------------------------------- приглашение в базу инструментов */
 
 .tools-teaser {
-  padding-block: clamp(2rem, 4vw, 3.5rem);
+  padding-block: var(--space-24) var(--space-40);
 }
 
 .tools-teaser__card {
-  display: block;
-  padding: clamp(1.5rem, 3vw, 2.25rem);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--r-lg);
-  background:
-    radial-gradient(120% 140% at 100% 0%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 55%),
-    color-mix(in oklab, var(--surface-solid) 60%, transparent);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16) var(--space-32);
+  padding: var(--space-20) var(--space-24);
+  border: 1px solid var(--border-1);
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--surface-solid) 55%, transparent);
   color: inherit;
   text-decoration: none;
-  transition: border-color var(--t-fast), transform var(--t-fast);
+  transition: border-color var(--t-fast), background var(--t-fast);
 }
 
 .tools-teaser__card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
 }
 
 .tools-teaser__body {
   display: grid;
-  gap: 10px;
-  max-width: 72ch;
+  gap: 4px;
+  flex: 1 1 420px;
 }
 
 .tools-teaser__title {
-  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  font-size: var(--fs-md);
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-1);
 }
 
 .tools-teaser__text {
-  color: var(--text-2);
-  font-size: var(--fs-sm);
-  line-height: 1.7;
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  line-height: 1.65;
 }
 
 .tools-teaser__link {
-  margin-top: 6px;
-  color: var(--accent);
-  font-size: var(--fs-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-pill);
+  color: var(--text-1);
+  font-size: var(--fs-xs);
   font-weight: 700;
+  white-space: nowrap;
+  transition: border-color var(--t-fast), color var(--t-fast);
+}
+
+.tools-teaser__card:hover .tools-teaser__link {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tools-teaser__count {
+  padding-right: 10px;
+  border-right: 1px solid var(--border-1);
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 400;
 }

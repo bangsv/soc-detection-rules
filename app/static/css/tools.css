@@ -77,6 +77,13 @@
   white-space: nowrap;
 }
 
+.tools-hero__meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
 /* ------------------------------------------------------------------ фильтры */
 
 .tools-filters {

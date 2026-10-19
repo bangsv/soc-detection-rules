@@ -1,6 +1,6 @@
 /* About page bootstrap: theme control, mobile navigation, scroll effects. */
 
-import { $, $$ } from "./utils.js";
+import { $, $$, api } from "./utils.js";
 import { initTheme, toggleTheme } from "./theme.js";
 
 function initHeader() {
@@ -53,6 +53,20 @@ document.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "t") toggleTheme();
 });
 
+/* Числа проекта берутся из API: при изменении базы они не расходятся со статичным текстом. */
+async function fillAtlasStats() {
+  const target = $("[data-atlas-note]");
+  if (!target) return;
+  try {
+    const meta = await api("/api/meta");
+    const counts = meta.counts;
+    target.textContent = `${counts.attacks} сценариев · ${counts.iocs} индикаторов · ${counts.readmes} документов`;
+  } catch {
+    target.textContent = "";
+  }
+}
+
 initTheme();
 initHeader();
 initReveal();
+fillAtlasStats();

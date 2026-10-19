@@ -59,13 +59,14 @@
         <div class="hero__lead">
           <p class="eyebrow reveal">Detection engineering · knowledge base</p>
           <h1 id="hero-title" class="reveal" style="--reveal-delay:60ms">
-            Детектирование
-            <em>с полным контекстом</em>
+            База правил детектирования<br>
+            <em>и индикаторов компрометации</em>
           </h1>
           <p class="hero__lede reveal" style="--reveal-delay:120ms">
-            Атлас правил и индикаторов компрометации, собранных по результатам реальных лабораторных
-            атак: Sigma, XP, Suricata, Sysmon, Windows, Linux и сетевые артефакты
-            Wireshark — с пояснением, почему каждый признак работает и где он ломается.
+            Правила и индикаторы, полученные в лабораторных сценариях и подтверждённые на реальных
+            журналах и дампах: Sigma, MaxPatrol XP, Suricata, Sysmon, Windows Security и Linux Audit.
+            Каждый индикатор сопровождается пояснением, на каком событии он основан, какое условие
+            должно выполняться и при каких легитимных действиях он срабатывает ложно.
           </p>
           <div class="hero__actions reveal" style="--reveal-delay:180ms">
             <a class="btn btn--primary" href="#explorer">Открыть поиск по IOC <span aria-hidden="true">→</span></a>
@@ -124,8 +125,8 @@
             <h2 id="explorer-title">Поиск по индикаторам</h2>
           </div>
           <p class="section-head__aside">
-            Единый индекс: 42 авторских IOC из базы, технические фрагменты из README и справочные
-            описания. Поиск идёт по значению, типу и тексту пояснения.
+            Единый индекс индикаторов из базы, технических фрагментов из документации и справочных
+            описаний. Поиск выполняется по значению индикатора, его типу и тексту пояснения.
           </p>
         </div>
 
@@ -261,18 +262,19 @@
       </div>
     </section>
 
-    <section class="page-section tools-teaser" id="tools-teaser" aria-labelledby="tools-teaser-title">
+    <section class="tools-teaser" id="tools-teaser" aria-labelledby="tools-teaser-title">
       <div class="shell">
         <a class="tools-teaser__card reveal" href="/tools">
           <span class="tools-teaser__body">
-            <span class="eyebrow">Инструменты · 193 записи</span>
             <span class="tools-teaser__title" id="tools-teaser-title">База знаний для аналитика SOC</span>
             <span class="tools-teaser__text">
-              Утилиты, методики и справочники: threat hunting, правила YARA и Suricata, Event ID,
-              бенчмарки, форензика памяти и хостов, чек-листы реагирования. С фильтром по задаче,
-              платформе и источнику.
+              Утилиты, методики и справочники по направлениям: threat hunting, правила YARA и Suricata,
+              Event ID и бенчмарки, форензика памяти и хостов, реагирование на инциденты.
             </span>
-            <span class="tools-teaser__link">Открыть базу инструментов <span aria-hidden="true">→</span></span>
+          </span>
+          <span class="tools-teaser__link">
+            <span class="tools-teaser__count" data-tools-count></span>
+            Перейти <span aria-hidden="true">→</span>
           </span>
         </a>
       </div>

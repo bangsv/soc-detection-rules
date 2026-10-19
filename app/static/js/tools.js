@@ -235,9 +235,27 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+function pluralize(count) {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return `${count} запись`;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return `${count} записи`;
+  return `${count} записей`;
+}
+
+function applyCounts() {
+  // Числа в статическом тексте берутся из данных: при добавлении записей они не расходятся.
+  const label = pluralize(TOOLS.length);
+  for (const node of $$("[data-tools-count]")) node.textContent = label;
+  for (const node of $$("[data-tools-total]")) node.textContent = String(TOOLS.length);
+  for (const node of $$("[data-tools-groups]")) node.textContent = String(GROUPS.length);
+  for (const node of $$("[data-tools-sources]")) node.textContent = String(Object.values(SOURCES).filter((source) => source.id !== "mine").length);
+}
+
 initTheme();
 initHeader();
 initReveal();
 readHash();
+applyCounts();
 renderAll(false);
 initEvents();
