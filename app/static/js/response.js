@@ -89,13 +89,12 @@ function draw(attack) {
   links.innerHTML=`<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z"/></marker></defs>${links.innerHTML}`;
   minimapNodes.innerHTML=rects.map((node,i)=>`<rect class="minimap-node minimap-node--${steps[i].kind}" data-minimap-step="${i}" x="${node.left}" y="${node.top}" width="${node.width}" height="${node.height}" rx="20"/>`).join("");
   minimapNodes.querySelectorAll("[data-minimap-step]").forEach(node=>node.addEventListener("click",event=>{event.stopPropagation();showDetail(steps[Number(node.dataset.minimapStep)],true);}));
-  renderSummary(attack); showDetail(steps[0]); renderGuide(attack); scale=Math.min(.72, Math.max(.62,(viewport.clientWidth-40)/1100)); centerStep(0);
+  renderSummary(attack); showDetail(steps[0]); renderGuide(attack); $("#download-runbook").disabled=false; scale=Math.min(.72, Math.max(.62,(viewport.clientWidth-40)/1100)); centerStep(0);
 }
 let guideRoles = [], guideRoleIndex = 0;
-function renderGuide(attack) {
-  const p=getProfile(attack), source=(attack.readmes||[]).find(path=>/README\.md$/i.test(path));
-  $("#guide-scenario").textContent=p.title;
-  guideRoles=[
+function buildGuideRoles(attack) {
+  const p=getProfile(attack);
+  return [
     {name:"SOC L1",steps:[
       ["Принять алерт",`Зарегистрируйте событие и сохраните ID правила, время, источник, цель, учётную запись и критичность актива. Откройте исходную запись в SIEM/EDR, не ограничивайтесь текстом уведомления.`],
       ["Проверить контекст",`Сверьте активность с окном работ, заявкой и известными тестами; подтвердите у владельца по доверенному каналу. ${p.signal}`],
@@ -117,6 +116,11 @@ function renderGuide(attack) {
       ["Контроль и улучшения",`После устранения повторите поиск по индикаторам сценария и подтвердите восстановление с владельцем. Если для вывода не хватало данных или этап не детектировался, заведите задачу на покрытие телеметрией или улучшение правила.`]
     ]}
   ];
+}
+function renderGuide(attack) {
+  const p=getProfile(attack), source=(attack.readmes||[]).find(path=>/README\.md$/i.test(path));
+  $("#guide-scenario").textContent=p.title;
+  guideRoles=buildGuideRoles(attack);
   guideRoleIndex=0;drawGuideStep();
   const outside= /2025-33073/i.test(attack.id) ? ` <a href="https://learn.microsoft.com/defender-for-identity/alerts-xdr" target="_blank" rel="noreferrer">Источник Microsoft ↗</a>` : /31431/i.test(attack.id) ? ` <a href="https://access.redhat.com/security/cve/cve-2026-31431" target="_blank" rel="noreferrer">Источник Red Hat ↗</a>` : "";
   $("#guide-source").innerHTML=`Материалы сценария: <code>${source||attack.id+" (README отсутствует)"}</code> · правила обнаружения и triage${outside}`;
@@ -127,6 +131,54 @@ function drawGuideStep() {
   host.innerHTML=`<div class="guide-tabs" role="tablist" aria-label="Этап реагирования">${guideRoles.map((r,i)=>`<button class="guide-tab ${i===guideRoleIndex?"is-active":""}" type="button" role="tab" aria-selected="${i===guideRoleIndex}" data-role="${i}">${r.name}</button>`).join("")}</div><div class="guide-steps-list">${role.steps.map(([title,text],i)=>`<article class="guide-current"><span class="guide-current__index">${String(i+1).padStart(2,"0")}</span><div><h3>${title}</h3><p>${text}</p></div></article>`).join("")}</div>`;
   host.querySelectorAll("[data-role]").forEach(button=>button.addEventListener("click",()=>{guideRoleIndex=Number(button.dataset.role);drawGuideStep();}));
 }
+function exportEscape(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+}
+function wrapSvgText(value, limit=30) {
+  const words=String(value).split(/\s+/), lines=[];let line="";
+  for(const word of words){if(line&&`${line} ${word}`.length>limit){lines.push(line);line=word;}else line=line?`${line} ${word}`:word;}
+  if(line)lines.push(line);return lines.slice(0,3);
+}
+function buildRunbookDocument(attack,roles) {
+  const profile=getProfile(attack),{steps,edges}=buildSteps(attack);
+  const markerId=`arrow-${String(attack.id).replace(/[^a-z0-9_-]+/gi,"-")}`;
+  const key=`${attack.id} ${attack.title}`;
+  const sources = /EternalBlue|2017-0143/i.test(key) ? "Suricata EVE/PCAP · Windows Security · Sysmon" :
+    /PetitPotam|36942/i.test(key) ? "Sysmon 3/18 · Security 4624 · SMBClient/Server · PCAP" :
+    /Zerologon|2020-1472/i.test(key) ? "Netlogon · Security 4742/4624 · Suricata RPC" :
+    /DCSync/i.test(key) ? "Security 4662/4624 · Directory Service · RPC/DRSUAPI" :
+    /2025-33073/i.test(key) ? "DNS · SMB Client · Kerberos · Defender for Identity · PCAP" :
+    /Nginx UI|27944/i.test(key) ? "HTTP access/error · WAF/reverse proxy · audit trail · PCAP" :
+    /Copy fail|31431/i.test(key) ? "Linux Audit · kernel logs · EDR · inventory ядра" : "SIEM/EDR · сетевые и endpoint журналы · инвентарь актива";
+  const escalation = /EternalBlue|2017-0143/i.test(key) ? "Подозрительная SMB-сигнатура вместе с последующей активной сессией или действиями на узле." :
+    /PetitPotam|36942/i.test(key) ? "После EFS RPC DC инициирует SMB/NTLM к неизвестному узлу либо подтверждён relay." :
+    /Zerologon|2020-1472/i.test(key) ? "Изменение учётной записи DC без ожидаемого события Netlogon 5823 или от анонимного субъекта." :
+    /DCSync/i.test(key) ? "4662/DRSUAPI у неавторизованного субъекта или источника вне списка контроллеров домена." :
+    /2025-33073/i.test(key) ? "Устройство разрешило подозрительное имя и отправило Kerberos/SMB-аутентификацию на неутверждённый узел." :
+    /Nginx UI|27944/i.test(key) ? "Неавторизованный успешный ответ `/api/backup` или утечка ключа/резервной копии." :
+    /Copy fail|31431/i.test(key) ? "Коррелированная AF_ALG последовательность с запуском оболочки или подтверждённым повышением привилегий." : "Подтверждённое воздействие, несанкционированное изменение или неполнота критичной телеметрии.";
+
+  const rects=steps.map((step,index)=>{const [left,top]=layout.positions[index];return {left,top,width:290,height:102,step};});
+  const edgeSvg=edges.map(([from,to,label])=>{const a=rects[from],b=rects[to];let sx=a.left+a.width/2,sy=a.top+a.height,ex=b.left+b.width/2,ey=b.top;if(Math.abs(ex-sx)>100||ey<sy){sx=a.left+a.width;sy=a.top+a.height/2;ex=b.left;ey=b.top+b.height/2;}const mid=(sy+ey)/2,d=`M ${sx} ${sy} C ${sx} ${mid}, ${ex} ${mid}, ${ex} ${ey}`;return `<path d="${d}" marker-end="url(#${markerId})"/><text x="${(sx+ex)/2}" y="${(sy+ey)/2-6}">${exportEscape(label)}</text>`;}).join("");
+  const nodeSvg=rects.map(({left,top,width,height,step})=>{const lines=wrapSvgText(step.title);return `<g class="node ${exportEscape(step.kind)}"><rect x="${left}" y="${top}" width="${width}" height="${height}" rx="16"/><text class="lane" x="${left+14}" y="${top+23}">${exportEscape(step.lane)}</text><text class="title" x="${left+14}" y="${top+49}">${lines.map((line,i)=>`<tspan x="${left+14}" dy="${i?22:0}">${exportEscape(line)}</tspan>`).join("")}</text></g>`;}).join("");
+  const summary=`<section class="summary"><h2>${exportEscape(profile.title)}</h2><p><b>\u041a\u0440\u0438\u0442\u0438\u0447\u043d\u043e\u0441\u0442\u044c:</b> ${exportEscape([attack.severity,attack.cvss?`CVSS ${attack.cvss}`:""].filter(Boolean).join(" \u00b7 ")||"\u041e\u043f\u0440\u0435\u0434\u0435\u043b\u044f\u0435\u0442\u0441\u044f \u043f\u043e \u0430\u043a\u0442\u0438\u0432\u0443 \u0438 \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u044b\u043c \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0430\u043c")}</p><p><b>\u041a\u043b\u044e\u0447\u0435\u0432\u044b\u0435 \u043f\u0440\u0438\u0437\u043d\u0430\u043a\u0438:</b> ${exportEscape(profile.signal)}</p><p><b>\u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0438 \u0434\u0430\u043d\u043d\u044b\u0445:</b> ${exportEscape(sources)}</p><p><b>\u042d\u0441\u043a\u0430\u043b\u0430\u0446\u0438\u044f:</b> ${exportEscape(escalation)}</p></section>`;
+  const roleHtml=roles.map(role=>`<section class="role"><h2>${exportEscape(role.name)}</h2><ol>${role.steps.map(([title,text])=>`<li><h3>${exportEscape(title)}</h3><p>${exportEscape(text)}</p></li>`).join("")}</ol></section>`).join("");
+  const source=attack.readmes?.find(path=>/README\.md$/i.test(path))||attack.id;
+  const doc=`<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>\u0420\u0435\u0430\u0433\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 SOC \u2014 ${exportEscape(profile.title)}</title><style>
+    :root{color-scheme:light}*{box-sizing:border-box}body{margin:0;padding:32px;font:16px/1.55 Arial,sans-serif;color:#17253a;background:#fff}main{max-width:1440px;margin:auto}h1{font-size:30px;margin:0 0 8px}h2{font-size:22px;margin:0 0 14px}h3{font-size:17px;margin:0 0 5px}.meta{color:#53657b;margin:0 0 22px}.summary,.role{border:1px solid #d6e0ec;border-radius:14px;padding:20px;margin:22px 0}.summary p,.role p{margin:7px 0}.diagram-wrap{overflow:auto;border:1px solid #d6e0ec;border-radius:14px;padding:12px;margin:18px 0 30px}.diagram{display:block;width:100%;min-width:1100px;height:auto}.diagram path{fill:none;stroke:#687d98;stroke-width:5}.diagram marker path{fill:#687d98;stroke:none}.diagram text{font-family:Arial,sans-serif;fill:#233b5d}.diagram .lane{font-size:17px;fill:#526d8d}.diagram .title{font-size:21px}.node rect{fill:#f5f8fc;stroke:#b7c8dd;stroke-width:4}.node.decision rect{fill:#fff8e9;stroke:#e9a62e}.node.danger rect{fill:#fff0ef;stroke:#e37c75}.node.success rect{fill:#eff9f0;stroke:#85c894}.role ol{padding-left:25px}.role li{padding:0 0 14px 5px;break-inside:avoid}.source{padding-top:14px;border-top:1px solid #d6e0ec;color:#53657b;font-size:13px}@media print{body{padding:0}.diagram-wrap{overflow:visible}.diagram{min-width:0;width:100%}.summary,.role{break-inside:avoid}@page{margin:14mm}}
+    </style></head><body><main><h1>\u0420\u0435\u0430\u0433\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 SOC</h1><p class="meta">\u0421\u0446\u0435\u043d\u0430\u0440\u0438\u0439: ${exportEscape(profile.title)} \u00b7 \u0421\u0444\u043e\u0440\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u043e ${new Date().toLocaleString("ru-RU")}</p>${summary}<h2>\u0411\u043b\u043e\u043a-\u0441\u0445\u0435\u043c\u0430 \u0440\u0435\u0430\u0433\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f</h2><div class="diagram-wrap"><svg class="diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="\u0411\u043b\u043e\u043a-\u0441\u0445\u0435\u043c\u0430 \u0440\u0435\u0430\u0433\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f SOC"><defs><marker id="${markerId}" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z"/></marker></defs>${edgeSvg}${nodeSvg}</svg></div><h2>\u041f\u043e\u043b\u043d\u044b\u0439 \u0441\u0446\u0435\u043d\u0430\u0440\u0438\u0439 \u0440\u0435\u0430\u0433\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f</h2>${roleHtml}<p class="source">\u041c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b \u0441\u0446\u0435\u043d\u0430\u0440\u0438\u044f: ${exportEscape(source)}. \u041f\u0435\u0440\u0435\u0434 \u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0435\u043c \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439 \u043f\u043e \u043b\u043e\u043a\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u0438 \u0438 \u0432\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044e \u0441\u043b\u0435\u0434\u0443\u0439\u0442\u0435 \u0432\u043d\u0443\u0442\u0440\u0435\u043d\u043d\u0435\u043c\u0443 \u0440\u0435\u0433\u043b\u0430\u043c\u0435\u043d\u0442\u0443 IR \u0438 \u0441\u043e\u0433\u043b\u0430\u0441\u043e\u0432\u0430\u043d\u0438\u044f\u043c \u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438.</p></main></body></html>`;
+  return doc;
+}
+function downloadRunbook() {
+  if(!attackList.length)return;
+  const docs=attackList.map(attack=>buildRunbookDocument(attack,buildGuideRoles(attack)));
+  const first=docs[0],style=first.match(/<style>[\s\S]*?<\/style>/)?.[0]||"";
+  const sections=docs.map((doc,index)=>{const main=doc.match(/<main>[\s\S]*?<\/main>/)?.[0]||"";return main.replace("<main>",`<main class="scenario${index?" scenario--break":""}">`);}).join("");
+  const bundle=`<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>\u0412\u0441\u0435 \u0438\u043d\u0441\u0442\u0440\u0443\u043a\u0446\u0438\u0438 SOC</title>${style.replace("</style>",".scenario--break{break-before:page}</style>")}</head><body>${sections}</body></html>`;
+  const blob=new Blob([bundle],{type:"text/html;charset=utf-8"}),url=URL.createObjectURL(blob),link=document.createElement("a");
+  link.href=url;link.download="soc-response-all-scenarios.html";document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
 function showDetail(step, center=false) {
   currentStepIndex=flowSteps.indexOf(step);
   $("#step-detail").innerHTML='<p class="eyebrow">'+step.lane+'</p><h2>'+step.title+'</h2><p>'+step.detail+'</p><p class="detail-tip"><b>Фиксация:</b> сохраните ссылку на источник и артефакты в карточке кейса. Указывайте, что подтверждено и какие данные ещё нужны.</p>';
@@ -157,6 +209,7 @@ async function init() {
     select.addEventListener("change",()=>{activeId=select.value;const a=attackList.find(v=>v.id===activeId);draw(a);}); activeId=attackList[0].id;draw(attackList[0]);
   } catch { $("#flow-empty").hidden=false; $("#flow-empty").textContent="Не удалось загрузить сценарии. Проверьте доступность каталога SOC Atlas."; }
 }
+$("#download-runbook").addEventListener("click",downloadRunbook);
 $("#zoom-in").addEventListener("click",()=>{scale=Math.min(2.2,scale*1.15);placeWorld();});
 $("#zoom-out").addEventListener("click",()=>{scale=Math.max(.45,scale/1.15);placeWorld();});
 $("#zoom-fit").addEventListener("click",()=>{scale=Math.min(1,(viewport.clientWidth-40)/layout.width);x=20;y=12;placeWorld();});
