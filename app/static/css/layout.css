@@ -120,14 +120,98 @@
   transform: scaleX(1);
 }
 
-.nav-more { position: relative; }
-.nav-more > summary { list-style: none;cursor: pointer;padding: 9px 13px;border-radius: var(--r-pill);color: var(--text-2);font-size: var(--fs-sm);font-weight: 600; }
-.nav-more > summary::-webkit-details-marker { display:none; }
-.nav-more > summary::after { content:"⌄";margin-inline-start:6px;color:var(--text-3); }
-.nav-more[open] > summary,.nav-more > summary:hover { color:var(--text-1);background:var(--surface-hover); }
-.nav-more__menu { position:absolute;right:0;top:calc(100% + 8px);z-index:20;display:grid;min-width:180px;padding:7px;border:1px solid var(--border-1);border-radius:14px;background:var(--surface-solid);box-shadow:var(--shadow-2); }
-.nav-more__menu a { padding:9px 11px;border-radius:9px;white-space:nowrap; }
-.nav-more__menu a::after { display:none; }
+/* Пункт «Ещё» оформлен как обычная ссылка навигации:
+   та же типографика, отступы и подчёркивание при наведении. */
+.nav-more {
+  position: relative;
+}
+
+.nav-more > summary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  list-style: none;
+  padding: 9px 13px;
+  border-radius: var(--r-pill);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--t-fast), background var(--t-fast);
+}
+
+.nav-more > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Стрелка — тонкая линия, повторяет цвет текста и поворачивается при открытии. */
+.nav-more > summary::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-block-start: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  opacity: 0.65;
+  transform: rotate(45deg);
+  transition: transform var(--t-fast), opacity var(--t-fast);
+}
+
+.nav-more[open] > summary::after {
+  margin-block-start: 2px;
+  transform: rotate(-135deg);
+  opacity: 1;
+}
+
+/* Подчёркивание под пунктом — то же, что у остальных ссылок навигации. */
+.nav-more > summary::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 5px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--info));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--t-base);
+}
+
+.nav-more > summary:hover,
+.nav-more[open] > summary {
+  color: var(--text-1);
+  background: var(--surface-hover);
+}
+
+.nav-more > summary:hover::before,
+.nav-more[open] > summary::before {
+  transform: scaleX(1);
+}
+
+.nav-more__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 20;
+  display: grid;
+  min-width: 180px;
+  padding: 7px;
+  border: 1px solid var(--border-1);
+  border-radius: 14px;
+  background: var(--surface-solid);
+  box-shadow: var(--shadow-2);
+}
+
+.nav-more__menu a {
+  padding: 9px 11px;
+  border-radius: 9px;
+  white-space: nowrap;
+}
+
+.nav-more__menu a::after {
+  display: none;
+}
 
 .header-tools {
   display: flex;
@@ -446,7 +530,8 @@ main {
     font-size: var(--fs-md);
   }
 
-  .nav-more > summary { padding:13px 14px;border-radius:var(--r-sm);font-size:var(--fs-md); }
+  .nav-more > summary { display:flex;padding:13px 14px;border-radius:var(--r-sm);font-size:var(--fs-md); }
+  .nav-more > summary::before { left:14px;right:14px;bottom:8px; }
   .nav-more__menu { position:static;min-width:0;margin:0 0 4px 12px;padding:4px;border:0;border-left:1px solid var(--border-1);border-radius:0;background:transparent;box-shadow:none; }
   .nav-more__menu a { padding:10px 12px;font-size:var(--fs-sm); }
 
