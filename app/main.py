@@ -1276,6 +1276,12 @@ def tools():
     return FileResponse(Path(__file__).parent / "static" / "tools.html", headers=response_headers())
 
 
+@app.get("/response", response_class=FileResponse)
+def response_playbooks():
+    """Interactive SOC incident response playbooks for the published scenarios."""
+    return FileResponse(Path(__file__).parent / "static" / "response.html", headers=response_headers())
+
+
 @app.get("/api/health")
 def health():
     return {"ok": True, "root": str(ROOT), "generated_at": datetime.now(timezone.utc).isoformat()}

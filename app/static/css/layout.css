@@ -108,15 +108,26 @@
 }
 
 .nav a:hover,
-.nav a[aria-current="true"] {
+.nav a[aria-current="true"],
+.nav a[aria-current="page"] {
   color: var(--text-1);
   background: var(--surface-hover);
 }
 
 .nav a:hover::after,
-.nav a[aria-current="true"]::after {
+.nav a[aria-current="true"]::after,
+.nav a[aria-current="page"]::after {
   transform: scaleX(1);
 }
+
+.nav-more { position: relative; }
+.nav-more > summary { list-style: none;cursor: pointer;padding: 9px 13px;border-radius: var(--r-pill);color: var(--text-2);font-size: var(--fs-sm);font-weight: 600; }
+.nav-more > summary::-webkit-details-marker { display:none; }
+.nav-more > summary::after { content:"⌄";margin-inline-start:6px;color:var(--text-3); }
+.nav-more[open] > summary,.nav-more > summary:hover { color:var(--text-1);background:var(--surface-hover); }
+.nav-more__menu { position:absolute;right:0;top:calc(100% + 8px);z-index:20;display:grid;min-width:180px;padding:7px;border:1px solid var(--border-1);border-radius:14px;background:var(--surface-solid);box-shadow:var(--shadow-2); }
+.nav-more__menu a { padding:9px 11px;border-radius:9px;white-space:nowrap; }
+.nav-more__menu a::after { display:none; }
 
 .header-tools {
   display: flex;
@@ -434,6 +445,10 @@ main {
     border-radius: var(--r-sm);
     font-size: var(--fs-md);
   }
+
+  .nav-more > summary { padding:13px 14px;border-radius:var(--r-sm);font-size:var(--fs-md); }
+  .nav-more__menu { position:static;min-width:0;margin:0 0 4px 12px;padding:4px;border:0;border-left:1px solid var(--border-1);border-radius:0;background:transparent;box-shadow:none; }
+  .nav-more__menu a { padding:10px 12px;font-size:var(--fs-sm); }
 
   .nav-toggle {
     display: inline-grid;

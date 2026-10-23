@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light"><meta name="theme-color" content="#070d11">
+  <meta name="description" content="Интерактивные инструкции SOC по первичной обработке и реагированию на атаки из каталога SOC Atlas.">
+  <title>Реагирование SOC · SOC Atlas</title>
+  <link rel="icon" href="/static/assets/icon.ico" sizes="any">
+  <link rel="stylesheet" href="/static/css/core.css"><link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/layout.css"><link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/response.css">
+</head>
+<body class="response-page">
+  <a class="dsh-skip" href="#main">&#1055;&#1077;&#1088;&#1077;&#1081;&#1090;&#1080; &#1082; &#1089;&#1086;&#1076;&#1077;&#1088;&#1078;&#1080;&#1084;&#1086;&#1084;&#1091;</a>
+  <header class="site-header" id="site-header">
+    <a class="brand" href="/"><span class="brand__mark" aria-hidden="true">◈</span><span class="brand__word">SOC <b>ATLAS</b></span></a>
+    <nav class="nav" id="nav" aria-label="&#1054;&#1089;&#1085;&#1086;&#1074;&#1085;&#1072;&#1103; &#1085;&#1072;&#1074;&#1080;&#1075;&#1072;&#1094;&#1080;&#1103;">
+      <a href="/#explorer" data-nav="explorer">&#1055;&#1086;&#1080;&#1089;&#1082;</a>
+      
+      <a href="/response" aria-current="page">&#1056;&#1077;&#1072;&#1075;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1080;&#1077;</a>
+      <a href="/tools">&#1048;&#1085;&#1089;&#1090;&#1088;&#1091;&#1084;&#1077;&#1085;&#1090;&#1099;</a>
+      <a href="/about">&#1040;&#1074;&#1090;&#1086;&#1088;</a>
+      <details class="nav-more">
+        <summary>&#1045;&#1097;&#1105;</summary>
+        <div class="nav-more__menu">
+          <a href="/#attacks-map">&#1040;&#1090;&#1072;&#1082;&#1080;</a>
+          <a href="/#knowledge">&#1044;&#1086;&#1082;&#1091;&#1084;&#1077;&#1085;&#1090;&#1072;&#1094;&#1080;&#1103;</a>
+          <a href="https://github.com/bangsv/soc-detection-rules" target="_blank" rel="noreferrer">GitHub &#8599;</a>
+        </div>
+      </details>
+    </nav>
+    <div class="header-tools"><button class="btn btn--quiet btn--icon" id="theme-toggle" type="button" aria-label="Переключить тему"><span data-theme-icon>☾</span></button>
+      <button class="btn btn--quiet btn--icon nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Открыть меню"><span>☰</span></button></div>
+  </header>
+  <main id="main" class="shell response-main">
+    <section class="response-hero">
+      <p class="eyebrow">SOC operations · incident response</p>
+      <h1>Инструкции <em>реагирования SOC</em></h1>
+      <p class="response-lede">Порядок действий L1, L2 и IT/IR для сценариев из рабочего каталога. Выберите атаку, изучите схему и откройте любой этап, чтобы увидеть критерии, источники данных и ожидаемый результат.</p>
+      <div class="response-controls">
+        <label class="response-select-label" for="attack-select">Сценарий</label><select id="attack-select" aria-label="Выберите сценарий атаки"></select>
+        <div class="response-zoom" aria-label="Масштаб схемы"><button id="zoom-out" class="btn btn--quiet btn--sm" type="button" aria-label="Уменьшить">−</button><span id="zoom-value">100%</span><button id="zoom-in" class="btn btn--quiet btn--sm" type="button" aria-label="Увеличить">+</button><button id="zoom-fit" class="btn btn--quiet btn--sm" type="button">По ширине</button></div>
+      </div>
+      <p class="response-hint">Колесо мыши — масштаб · перетаскивание ЛКМ — перемещение · мини-карта — обзор и переход · ←/→ — предыдущий и следующий этап</p>
+    </section>
+    <section class="attack-summary" id="attack-summary" aria-label="Краткая сводка выбранного сценария">
+      <div class="attack-summary__head"><div><p class="eyebrow">Сводка инцидента</p><h2 id="summary-title">Выберите сценарий</h2></div><span id="summary-severity" class="summary-severity"></span></div>
+      <div class="attack-summary__grid">
+        <article><span>Ключевые признаки</span><p id="summary-signals"></p></article>
+        <article><span>Источники данных</span><p id="summary-sources"></p></article>
+        <article><span>Когда эскалировать</span><p id="summary-escalation"></p></article>
+      </div>
+    </section>
+    <section class="response-workspace" aria-label="Интерактивная схема реагирования">
+      <div class="flow-area">
+      <div class="flow-controls">
+        <div class="flow-step-nav"><button class="btn btn--quiet btn--sm" id="flow-prev" type="button" aria-label="Предыдущий этап">←</button><span id="flow-step-count">Этап 1 из 12</span><button class="btn btn--quiet btn--sm" id="flow-next" type="button" aria-label="Следующий этап">→</button></div>
+        <button class="btn btn--quiet btn--sm" id="flow-center" type="button">К выбранному этапу</button>
+      </div>
+      <div class="flow-viewport" id="flow-viewport" tabindex="0" aria-label="Полотно схемы. Перетаскивайте для перемещения."><div class="flow-world" id="flow-world"><svg class="flow-links" id="flow-links" aria-hidden="true"></svg><div id="flow-nodes"></div></div>
+        <div class="flow-empty" id="flow-empty">Загружаю сценарии из каталога…</div>
+        <div class="flow-minimap" id="flow-minimap" aria-label="Мини-карта схемы"><svg id="flow-minimap-svg" viewBox="0 0 3970 1000" role="img" aria-label="Обзор всех этапов схемы"><g id="minimap-nodes"></g><rect id="minimap-window" x="0" y="0" width="1" height="1" rx="18"></rect></svg></div>
+      </div>
+      </div>
+      <aside class="step-detail" id="step-detail" aria-live="polite"><p class="eyebrow">Подробности этапа</p><h2>Выберите блок схемы</h2><p>Здесь появятся действия аналитика, что проверить и что зафиксировать.</p></aside>
+    </section>
+    <section class="response-guide" id="response-guide" aria-labelledby="guide-title">
+      <div class="guide-heading"><div><p class="eyebrow">Runbook · инструкция SOC</p><h2 id="guide-title">Порядок реагирования</h2></div><span id="guide-scenario" class="guide-scenario"></span></div>
+      <div id="guide-content" class="guide-content"></div>
+      <p class="guide-source" id="guide-source"></p>
+    </section>
+    <section class="response-notes">
+      <div><p class="eyebrow">Рабочая заметка</p><h2>Фиксируйте проверяемые факты</h2></div>
+      <p>В карточке инцидента сохраните время в UTC и часовом поясе источника, идентификатор алерта, актив, учётную запись, исходный запрос/событие и ссылку на кейс. Отделяйте подтверждённые наблюдения от гипотез. Не закрывайте событие как ложное срабатывание только из-за отсутствия телеметрии: запросите данные у владельца источника и эскалируйте по регламенту.</p>
+    </section>
+  </main>
+  <script type="module" src="/static/js/response.js"></script>
+</body></html>

@@ -82,6 +82,15 @@ function initHeader() {
     toggle.setAttribute("aria-label", open ? "Открыть меню" : "Закрыть меню");
   });
 
+  document.addEventListener("click", (event) => {
+    document.querySelectorAll(".nav-more[open]").forEach((menu) => {
+      if (!menu.contains(event.target)) menu.removeAttribute("open");
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") document.querySelectorAll(".nav-more[open]").forEach((menu) => menu.removeAttribute("open"));
+  });
   nav?.addEventListener("click", (event) => {
     if (event.target.closest("a") && window.matchMedia("(max-width: 860px)").matches) {
       nav.dataset.open = "false";
