@@ -350,3 +350,47 @@ normalization
 correlation
 
 END
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+── АТАКА ─────────────────────────────────────────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════════
+ATTACK
+name: Timeroasting
+folder: Timeroasting
+cve: CVE-2023-31384
+severity: Высоко
+cvss: -
+platform: Windows
+surface: Сеть / NTP
+category: Кража учётных данных
+tagline: Получение криптографических ответов W32Time для офлайн-подбора пароля machine-аккаунта контроллера домена.
+vector: Серия NTP-запросов к Windows Time Service с изменяющимся Key ID позволяет получить ответы, связанные с учётной записью компьютера.
+focus: Повторяющиеся NTP-запросы Mode 3 к DC по UDP/123 с меняющимся Key ID; сопоставьте с ответами и ролью источника.
+techniques: T1110 = Credential Access
+  T1110.001 = Credential Access
+  T1110.002 = Credential Access
+
+LAB
+attacker :: 192.168.0.30 :: Kali Linux :: последовательные NTP-запросы с меняющимся Key ID
+target :: 192.168.0.10 :: контроллер домена dc01 :: Windows Time Service, UDP/123
+
+HOST IOC
+
+NETWORK IOC
+- ❗ Последовательный перебор Key Identifier :: Последовательное изменение значений поля Key Identifier в NTP-запросах, используемое для перебора RID учетных записей Active Directory.
+- ❗ NTP-запросы характерного формата к контроллеру домена (UDP/123) :: Пакеты с размером UDP payload 68 байт, содержащие последовательность DB 00 11 E9 00 00 00 00 00 01 00 00 00 00 00 00 в первых 16 байтах и 16 нулевых байт в области Crypto-Checksum (offset 52–67).
+- NTP-пакеты размером 68 байт с MD5 Authenticator :: В ходе Timeroasting отправлюятся NTP-запросы размером 68 байт, содержащие 48-байтовую основную часть NTP-пакета, 4-байтовый Key Identifier и 16-байтовую область Crypto-Checksum.
+
+REFERENCES
+MITRE ATT&CK :: https://attack.mitre.org/techniques/T1110/ :: T1110 Brute Force
+MITRE ATT&CK :: https://attack.mitre.org/techniques/T1110/001/ :: T1110.001 Password Guessing
+MITRE ATT&CK :: https://attack.mitre.org/techniques/T1110/002/ :: T1110.002 Password Cracking
+Secura :: https://cybersecurity.bureauveritas.com/uploads/whitepapers/Secura-WP-Timeroasting-v3.pdf :: Timeroasting: Stealing AD Computer Account Passwords via NTP
+Microsoft MS-SNTP :: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-sntp/3c344366-f8ad-44f9-adf6-0f636f1cdeac :: Message Syntax
+
+SKIP RULES
+normalization
+correlation
+
+END

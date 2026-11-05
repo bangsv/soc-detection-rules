@@ -1,6 +1,6 @@
 /* SOC Atlas · application shell: bootstrap, header behaviour, metrics, shortcuts. */
 
-import { $, $$, api, esc, formatDate, isTyping, onIdle, toast } from "./utils.js";
+import { $, $$, api, countLabel, esc, formatDate, isTyping, onIdle, toast } from "./utils.js";
 import { initTheme, toggleTheme } from "./theme.js";
 import { initTray } from "./tray.js";
 import { initSearch, focusSearch, setSearchQuery } from "./search.js";
@@ -52,6 +52,10 @@ async function renderMetrics(meta, items) {
   const host = $("#metrics-band");
   if (!host) return;
   const counts = meta.counts;
+  const attacksSummary = $("#attacks-summary");
+  if (attacksSummary) {
+    attacksSummary.textContent = `${countLabel(counts.attacks, ["сценарий", "сценария", "сценариев"])} в каталоге. Правила обнаружения, конфигурации, PCAP, журналы и IOC — состав материалов зависит от сценария.`;
+  }
   host.innerHTML = [
     metricTile(counts.attacks, "сценариев", `${counts.critical} критичных · ${meta.filters.platforms.length} платформ`),
     metricTile(counts.iocs, "индикаторов", `${counts.host_iocs} host · ${counts.network_iocs} network`, "stat--accent"),
