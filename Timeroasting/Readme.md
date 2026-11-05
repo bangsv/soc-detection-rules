@@ -1,4 +1,4 @@
-<img width="1916" height="322" alt="2695e9ad-52fc-4dc4-995a-9a160494d5a9" src="https://github.com/user-attachments/assets/7e20bf81-8ac4-411d-9564-5f1b407d5e41" /># Timeroasting (CVE-2023-31384)
+# Timeroasting
 
 ## Краткое описание техники:
 
