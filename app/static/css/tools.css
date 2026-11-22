@@ -1,5 +1,7 @@
 /* ==========================================================================
    SOC Atlas · страница «Инструменты»
+   Поиск и фильтры — в закреплённой колонке слева; результат виден сразу:
+   строка состояния под поиском, счётчик в липкой панели, чипы условий.
    ========================================================================== */
 
 .tools-hero {
@@ -27,28 +29,127 @@
   line-height: 1.7;
 }
 
-.tools-hero__actions {
+.tools-hero__meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+/* ------------------------------------------------------- колонка фильтров */
+
+.tools-workspace {
+  margin-bottom: var(--space-40);
+}
+
+.tools-side {
+  padding: var(--space-12) var(--space-12) var(--space-16);
+  border: 1px solid var(--border-1);
+  border-radius: var(--r-lg);
+  background: var(--surface-1);
+  backdrop-filter: blur(12px);
+  scrollbar-gutter: stable;
+}
+
+.tools-side__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  justify-content: space-between;
+}
+
+.tools-side__toggle {
+  display: none;
+  gap: 8px;
+}
+
+.tools-side__badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Счётчик показывается только при активных условиях. */
+.tools-side__badge[hidden] {
+  display: none;
+}
+
+.tools-side__state {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* На широком экране состояние показано под поиском — верхний счётчик не нужен. */
+@media (min-width: 1101px) {
+  .tools-side__state {
+    display: none;
+  }
+}
+
+/* При раскрытой колонке счётчик дублирует строку состояния под поиском. */
+.tools-side[data-collapsed="false"] .tools-side__state {
+  display: none;
+}
+
+.tools-side__body {
+  display: grid;
+  gap: var(--space-16);
+  padding-top: var(--space-12);
+}
+
+.tools-side__search {
+  display: grid;
+  gap: 8px;
+}
+
+.tools-side__foot {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-12);
+  justify-content: space-between;
+  gap: var(--space-8);
+  padding-top: var(--space-12);
+  border-top: 1px solid var(--border-1);
 }
+
+.tools-side__hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+/* ------------------------------------------------------------------ поиск */
 
 .tools-search {
   position: relative;
-  flex: 1 1 320px;
-  max-width: 520px;
+  display: block;
 }
 
 .tools-search input {
   width: 100%;
-  padding: 12px 44px 12px 16px;
+  padding: 11px 40px 11px 13px;
   border: 1px solid var(--border-1);
-  border-radius: var(--r-md);
-  background: var(--surface-1);
+  border-radius: var(--r-sm);
+  background: var(--color-bg, var(--bg));
   color: var(--text-1);
   font-family: var(--font-sans);
   font-size: var(--fs-sm);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+
+.tools-search input::placeholder {
+  color: var(--text-3);
 }
 
 .tools-search input:focus-visible {
@@ -56,10 +157,16 @@
   outline-offset: 1px;
 }
 
+/* Запрос без совпадений — рамка меняет цвет, чтобы это было видно сразу. */
+.tools-search input.is-empty {
+  border-color: color-mix(in oklab, var(--warn) 65%, transparent);
+  background: color-mix(in oklab, var(--warn) 7%, var(--bg));
+}
+
 .tools-search kbd {
   position: absolute;
   top: 50%;
-  right: 12px;
+  right: 10px;
   transform: translateY(-50%);
   padding: 2px 7px;
   border: 1px solid var(--border-1);
@@ -70,83 +177,209 @@
   font-size: var(--fs-2xs);
 }
 
-.tools-count {
+/* --------------------------------------------------------- строка состояния */
+
+.tools-status {
+  min-height: 1.2em;
   font-family: var(--font-mono);
   font-size: var(--fs-2xs);
+  line-height: 1.5;
   color: var(--text-3);
-  white-space: nowrap;
 }
 
-.tools-hero__meta {
-  font-family: var(--font-mono);
-  font-size: var(--fs-2xs);
-  color: var(--text-3);
-  letter-spacing: 0.02em;
+.tools-status[data-state="found"] {
+  color: var(--accent);
 }
 
-/* ------------------------------------------------------------------ фильтры */
+.tools-status[data-state="empty"] {
+  color: var(--warn);
+}
+
+/* ------------------------------------------------------------------ фасеты */
 
 .tools-filters {
   display: grid;
   gap: var(--space-12);
-  padding: var(--space-16);
-  border: 1px solid var(--border-1);
-  border-radius: var(--r-md);
-  background: color-mix(in oklab, var(--surface-solid) 45%, transparent);
 }
 
-.tools-filter-block {
+.tools-facet {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
-.tools-filter-label {
+.tools-facet__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  color: var(--text-3);
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-3);
+  cursor: pointer;
+  list-style: none;
+  transition: color var(--t-fast);
 }
 
-.tools-chips {
+.tools-facet__head::-webkit-details-marker {
+  display: none;
+}
+
+.tools-facet__head::after {
+  content: "▾";
+  margin-left: auto;
+  font-size: 9px;
+  transition: transform var(--t-fast);
+}
+
+.tools-facet[open] > .tools-facet__head::after {
+  transform: rotate(180deg);
+}
+
+.tools-facet__head:hover {
+  color: var(--text-1);
+}
+
+.tools-facet__picked {
+  padding: 0 6px;
+  border-radius: var(--r-pill);
+  background: var(--accent-dim, var(--surface-active));
+  color: var(--accent);
+  font-size: 10px;
+  letter-spacing: 0;
+}
+
+.tools-facet__list {
+  display: grid;
+  gap: 2px;
+}
+
+.tool-facet {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 9px;
+  border: 1px solid transparent;
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+
+.tool-facet:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text-1);
+}
+
+.tool-facet:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.tool-facet[aria-pressed="true"] {
+  border-color: var(--border-strong);
+  background: var(--surface-active);
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.tool-facet__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-facet__count {
+  margin-left: auto;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.tool-facet[aria-pressed="true"] .tool-facet__count {
+  color: var(--accent);
+}
+
+.tool-facet[aria-pressed="true"] .tool-facet__label::before {
+  content: "✓ ";
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------ панель списка */
+
+.tools-main {
+  min-width: 0;
+}
+
+.tools-toolbar {
+  position: sticky;
+  top: calc(var(--header-h) + 8px);
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--bg) 88%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.tools-toolbar__count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.tools-toolbar__chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.tool-chip {
+.tools-active-chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 6px 12px;
-  border: 1px solid var(--border-1);
+  gap: 6px;
+  padding: 3px 6px 3px 10px;
+  border: 1px solid var(--border-strong);
   border-radius: var(--r-pill);
-  background: var(--surface-1);
-  color: var(--text-2);
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  transition: border-color var(--t-fast), background var(--t-fast), color var(--t-fast);
-}
-
-.tool-chip small {
-  font-family: var(--font-mono);
-  font-size: var(--fs-2xs);
-  color: var(--text-3);
-}
-
-.tool-chip:hover {
-  border-color: var(--border-strong);
-  color: var(--text-1);
-}
-
-.tool-chip[aria-pressed="true"] {
-  border-color: var(--border-strong);
   background: var(--surface-active);
   color: var(--text-1);
+  font-size: var(--fs-2xs);
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast);
 }
 
-.tool-chip[aria-pressed="true"] small {
-  color: var(--accent);
+.tools-active-chip span {
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.tools-active-chip:hover {
+  border-color: var(--accent);
+}
+
+.tools-active-chip:hover span {
+  color: var(--danger);
+}
+
+/* Подсветка найденных фрагментов */
+.tools-list mark {
+  padding: 0 2px;
+  border-radius: 3px;
+  background: var(--accent-dim, rgba(75, 223, 198, 0.18));
+  color: var(--text-1);
 }
 
 /* ------------------------------------------------------------------ группы */
@@ -154,7 +387,7 @@
 .tools-list {
   display: grid;
   gap: var(--space-32);
-  padding-block: var(--space-32) var(--space-40);
+  padding-block: var(--space-20) var(--space-40);
 }
 
 .tools-group {
@@ -318,15 +551,38 @@
   line-height: 1.6;
 }
 
+/* ------------------------------------------------------------- пустой список */
+
 .tool-empty {
   display: grid;
   justify-items: center;
-  gap: var(--space-12);
-  padding: var(--space-40) var(--space-20);
-  border: 1px dashed var(--border-2);
+  gap: var(--space-8);
+  padding: var(--space-32) var(--space-20);
+  border: 1px dashed color-mix(in oklab, var(--warn) 40%, var(--border-2));
   border-radius: var(--r-md);
-  color: var(--text-3);
+  background: color-mix(in oklab, var(--warn) 5%, transparent);
   text-align: center;
+}
+
+.tool-empty__title {
+  color: var(--text-1);
+  font-size: var(--fs-md);
+  font-weight: 700;
+}
+
+.tool-empty__text {
+  max-width: 56ch;
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+}
+
+.tool-empty__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-8);
+  margin-top: var(--space-8);
 }
 
 /* ------------------------------------------------------------------ как пользоваться */
@@ -371,14 +627,33 @@
   line-height: 1.6;
 }
 
+/* ---------------------------------------------------------------- адаптивность */
+
+@media (max-width: 1100px) {
+  .tools-side__toggle {
+    display: inline-flex;
+  }
+
+  .tools-side__bar {
+    padding-bottom: 4px;
+  }
+
+  /* Свёрнутая колонка оставляет только кнопку и счётчик. */
+  .tools-side[data-collapsed="true"] .tools-side__body {
+    display: none;
+  }
+
+  .tools-side[data-collapsed="true"] {
+    padding-bottom: var(--space-12);
+  }
+}
+
 @media (max-width: 960px) {
   .tools-rows {
     grid-template-columns: minmax(0, 1fr);
   }
-}
 
-@media (max-width: 640px) {
-  .tools-search {
-    flex-basis: 100%;
+  .tools-toolbar {
+    top: calc(var(--header-h) + 4px);
   }
 }

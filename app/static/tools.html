@@ -62,24 +62,51 @@
         бенчмарки конфигураций, форензика памяти и хостов, порядок реагирования. Для каждой записи
         указаны назначение, место в процессе SOC и ссылка на первоисточник.
       </p>
-      <div class="tools-hero__actions reveal" style="--reveal-delay:180ms">
-        <label class="tools-search">
-          <span class="visually-hidden">Поиск по инструментам</span>
-          <input id="tools-search" type="search" autocomplete="off" spellcheck="false"
-                 placeholder="Поиск: auditd, память, AD CS, ELK…">
-          <kbd>/</kbd>
-        </label>
-        <span class="tools-count" id="tools-count" aria-live="polite"></span>
-      </div>
       <p class="tools-hero__meta reveal" style="--reveal-delay:210ms">
         <span data-tools-count>записей</span> · <span data-tools-groups>10</span> разделов ·
         <span data-tools-sources>9</span> источников
       </p>
     </section>
 
-    <section class="tools-filters reveal" id="tools-filters" aria-label="Фильтры"></section>
+    <div class="workspace tools-workspace reveal" id="tools-workspace">
+      <aside class="workspace__side tools-side" id="tools-side" aria-label="Поиск и фильтры">
+        <div class="tools-side__bar">
+          <button class="btn btn--quiet btn--sm tools-side__toggle" type="button"
+                  data-filters-toggle aria-expanded="false" aria-controls="tools-side-body">
+            <span aria-hidden="true">☰</span> Поиск и фильтры
+            <span class="tools-side__badge" data-active-filters hidden>0</span>
+          </button>
+          <span class="tools-side__state" id="tools-side-state" role="status" aria-live="polite"></span>
+        </div>
 
-    <div id="tools-list" class="tools-list" aria-live="polite"></div>
+        <div class="tools-side__body" id="tools-side-body">
+          <div class="tools-side__search">
+            <label class="tools-search">
+              <span class="visually-hidden">Поиск по инструментам</span>
+              <input id="tools-search" type="search" autocomplete="off" spellcheck="false"
+                     placeholder="auditd, память, ELK…" aria-describedby="tools-status">
+              <kbd>/</kbd>
+            </label>
+            <p class="tools-status" id="tools-status"></p>
+          </div>
+
+          <div class="tools-filters" id="tools-filters" aria-label="Фильтры"></div>
+
+          <div class="tools-side__foot">
+            <button class="btn btn--ghost btn--sm" type="button" data-tools-reset>Сбросить всё</button>
+            <span class="tools-side__hint">Esc — очистить поиск</span>
+          </div>
+        </div>
+      </aside>
+
+      <div class="workspace__main tools-main">
+        <div class="tools-toolbar">
+          <span class="tools-toolbar__count" id="tools-count" aria-live="polite"></span>
+          <span class="tools-toolbar__chips" id="tools-active"></span>
+        </div>
+        <div id="tools-list" class="tools-list" aria-live="polite"></div>
+      </div>
+    </div>
 
     <section class="tools-note reveal" aria-labelledby="tools-note-title">
       <h2 id="tools-note-title">Порядок работы с материалами</h2>

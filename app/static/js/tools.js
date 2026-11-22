@@ -1,28 +1,85 @@
-/* Страница «Инструменты»: единая база blue-team материалов с фильтрами и поиском. */
+/* Страница «Инструменты»: база blue-team материалов.
+   Поиск и фильтры вынесены в закреплённую колонку слева; результат виден
+   в трёх местах — строка состояния под поиском, счётчик в липкой панели
+   списка и активные условия отдельными чипами. */
 
-import { $, $$, esc, normalize } from "./utils.js";
+import { $, $$, esc, escapeRegExp, normalize } from "./utils.js";
 import { initTheme, toggleTheme } from "./theme.js";
 import { FORMATS, GROUPS, GROUP_ALIASES, PLATFORMS, SOURCES, TOOLS } from "./tools-data.js";
 
 const state = {
   query: "",
-  groups: new Set(),
-  formats: new Set(),
-  platforms: new Set(),
-  sources: new Set(),
+  group: new Set(),
+  format: new Set(),
+  platform: new Set(),
+  source: new Set(),
 };
 
+/* Фасеты фильтрации: порядок задаёт порядок блоков в колонке. */
+const FACETS = [
+  {
+    kind: "group",
+    label: "Задача",
+    open: true,
+    items: () => GROUPS.map((group) => ({ value: group.id, label: group.title })),
+    has: (tool, value) => tool.group === value,
+  },
+  {
+    kind: "format",
+    label: "Формат",
+    open: true,
+    items: () => FORMATS.map((format) => ({ value: format.id, label: format.title })),
+    has: (tool, value) => tool.format === value,
+  },
+  {
+    kind: "platform",
+    label: "Платформа",
+    open: true,
+    items: () => PLATFORMS.map((platform) => ({ value: platform, label: platform })),
+    has: (tool, value) => tool.platforms.includes(value),
+  },
+  {
+    kind: "source",
+    label: "Источник",
+    open: false,
+    items: () => Object.values(SOURCES).map((source) => ({ value: source.id, label: source.title })),
+    has: (tool, value) => tool.source === value,
+  },
+];
+
+const facetById = (kind) => FACETS.find((facet) => facet.kind === kind);
 const groupById = (id) => GROUPS.find((group) => group.id === id);
 const formatById = (id) => FORMATS.find((format) => format.id === id);
 
-function matches(tool) {
-  if (state.groups.size && !state.groups.has(tool.group)) return false;
-  if (state.formats.size && !state.formats.has(tool.format)) return false;
-  if (state.sources.size && !state.sources.has(tool.source)) return false;
-  if (state.platforms.size && !tool.platforms.some((platform) => state.platforms.has(platform))) return false;
-  if (!state.query) return true;
-  const haystack = normalize([tool.name, tool.summary, tool.why, tool.note, tool.url, ...tool.platforms].join(" "));
-  return haystack.includes(normalize(state.query));
+function haystack(tool) {
+  return normalize([tool.name, tool.summary, tool.why, tool.note, tool.url, ...tool.platforms].join(" "));
+}
+
+/** Проходит ли запись фильтры; `skip` исключает один фасет (для счётчиков). */
+function passes(tool, skip) {
+  for (const facet of FACETS) {
+    if (facet.kind === skip) continue;
+    const selected = state[facet.kind];
+    if (!selected.size) continue;
+    let hit = false;
+    for (const value of selected) {
+      if (facet.has(tool, value)) {
+        hit = true;
+        break;
+      }
+    }
+    if (!hit) return false;
+  }
+  if (skip !== "query" && state.query) return haystack(tool).includes(normalize(state.query));
+  return true;
+}
+
+const activeCount = () => FACETS.reduce((sum, facet) => sum + state[facet.kind].size, 0) + (state.query ? 1 : 0);
+const visibleTools = () => TOOLS.filter((tool) => passes(tool, null));
+
+/** Сколько записей даст значение фасета при текущих остальных условиях. */
+function facetCount(facet, value) {
+  return TOOLS.filter((tool) => passes(tool, facet.kind) && facet.has(tool, value)).length;
 }
 
 function toggleIn(set, value) {
@@ -30,46 +87,128 @@ function toggleIn(set, value) {
   else set.add(value);
 }
 
-function chip(kind, value, label, count, active) {
-  return `<button class="tool-chip" type="button" data-filter="${kind}" data-value="${esc(value)}" aria-pressed="${active}">
-    ${esc(label)}${count !== undefined ? ` <small>${count}</small>` : ""}
-  </button>`;
+/* ------------------------------------------------------------- подсветка */
+
+function queryTokens() {
+  return normalize(state.query)
+    .split(/\s+/)
+    .filter((token) => token.length >= 2)
+    .sort((a, b) => b.length - a.length);
+}
+
+/** Помечает найденные фрагменты; текст предварительно экранируется. */
+function mark(text) {
+  const value = esc(text);
+  const tokens = queryTokens();
+  if (!tokens.length) return value;
+  const pattern = new RegExp(`(${tokens.map(escapeRegExp).join("|")})`, "gi");
+  return value.replace(pattern, "<mark>$1</mark>");
+}
+
+/* ---------------------------------------------------------------- фильтры */
+
+function facetRow(facet, item, count) {
+  const active = state[facet.kind].has(item.value);
+  const empty = count === 0 && !active;
+  const hint = `${item.label}: ${count} ${pluralize(count)}`;
+  return `<button class="tool-facet" type="button"
+      data-filter="${facet.kind}" data-value="${esc(item.value)}"
+      aria-pressed="${active}" title="${esc(hint)}" ${empty ? "disabled" : ""}>
+      <span class="tool-facet__label">${esc(item.label)}</span>
+      <span class="tool-facet__count">${count}</span>
+    </button>`;
 }
 
 function renderFilters() {
   const host = $("#tools-filters");
   if (!host) return;
-  const byGroup = (id) => TOOLS.filter((tool) => tool.group === id).length;
-  const byFormat = (id) => TOOLS.filter((tool) => tool.format === id).length;
-  const byPlatform = (id) => TOOLS.filter((tool) => tool.platforms.includes(id)).length;
-  const bySource = (id) => TOOLS.filter((tool) => tool.source === id).length;
-
-  host.innerHTML = `
-    <div class="tools-filter-block">
-      <span class="tools-filter-label">Задача</span>
-      <div class="tools-chips">
-        ${GROUPS.filter((group) => byGroup(group.id)).map((group) => chip("group", group.id, group.title, byGroup(group.id), state.groups.has(group.id))).join("")}
-      </div>
-    </div>
-    <div class="tools-filter-block">
-      <span class="tools-filter-label">Формат</span>
-      <div class="tools-chips">
-        ${FORMATS.map((format) => chip("format", format.id, format.title, byFormat(format.id), state.formats.has(format.id))).join("")}
-      </div>
-    </div>
-    <div class="tools-filter-block">
-      <span class="tools-filter-label">Платформа</span>
-      <div class="tools-chips">
-        ${PLATFORMS.map((platform) => chip("platform", platform, platform, byPlatform(platform), state.platforms.has(platform))).join("")}
-      </div>
-    </div>
-    <div class="tools-filter-block">
-      <span class="tools-filter-label">Источник</span>
-      <div class="tools-chips">
-        ${Object.values(SOURCES).map((source) => chip("source", source.id, source.title, bySource(source.id), state.sources.has(source.id))).join("")}
-      </div>
-    </div>`;
+  host.innerHTML = FACETS.map((facet) => {
+    const rows = facet
+      .items()
+      .map((item) => ({ ...item, count: facetCount(facet, item.value) }))
+      .filter((item) => item.count > 0 || state[facet.kind].has(item.value));
+    if (!rows.length) return "";
+    const summary = `<summary class="tools-facet__head">${esc(facet.label)}${
+      state[facet.kind].size ? ` <span class="tools-facet__picked">${state[facet.kind].size}</span>` : ""
+    }</summary>`;
+    return `<details class="tools-facet" ${facet.open || state[facet.kind].size ? "open" : ""}>
+        ${summary}
+        <div class="tools-facet__list">${rows.map((item) => facetRow(facet, item, item.count)).join("")}</div>
+      </details>`;
+  }).join("");
 }
+
+/* ---------------------------------------------------------------- статусы */
+
+function setInputEmptyState(empty) {
+  const input = $("#tools-search");
+  if (!input) return;
+  input.toggleAttribute("aria-invalid", empty);
+  input.classList.toggle("is-empty", empty);
+}
+
+function renderStatus() {
+  const total = TOOLS.length;
+  const found = visibleTools().length;
+  const conditions = activeCount();
+  const query = state.query.trim();
+
+  const status = $("#tools-status");
+  if (status) {
+    if (!conditions) {
+      status.dataset.state = "all";
+      status.textContent = `Показаны все ${total} записи`;
+    } else if (found) {
+      status.dataset.state = "found";
+      status.textContent = `Найдено ${found} из ${total}`;
+    } else {
+      status.dataset.state = "empty";
+      status.textContent = query
+        ? `По запросу «${query}» ничего нет`
+        : "Под выбранные фильтры ничего нет";
+    }
+  }
+
+  const compact = $("#tools-side-state");
+  if (compact) compact.textContent = conditions ? `${found} из ${total}` : `${total}`;
+
+  const counter = $("#tools-count");
+  if (counter) counter.textContent = conditions ? `найдено ${found} из ${total}` : `все ${total}`;
+
+  const toolbar = $("#tools-toolbar-hint");
+  if (toolbar) toolbar.textContent = "";
+
+  const chips = $("#tools-active");
+  if (chips) {
+    const items = [];
+    if (query) items.push({ kind: "query", value: "", label: `поиск: «${query}»` });
+    for (const facet of FACETS) {
+      for (const value of state[facet.kind]) {
+        const label = facet.items().find((item) => item.value === value)?.label || value;
+        items.push({ kind: facet.kind, value, label });
+      }
+    }
+    chips.innerHTML = items.length
+      ? items
+          .map(
+            (item) => `<button class="tools-active-chip" type="button" data-chip-remove="${item.kind}" data-chip-value="${esc(
+              item.value,
+            )}" title="Снять условие">${esc(item.label)}<span aria-hidden="true">×</span></button>`,
+          )
+          .join("")
+      : "";
+  }
+
+  const badge = $("[data-active-filters]");
+  if (badge) {
+    badge.textContent = String(conditions);
+    badge.toggleAttribute("hidden", conditions === 0);
+  }
+
+  setInputEmptyState(Boolean(query) && found === 0);
+}
+
+/* ------------------------------------------------------------------ список */
 
 function toolRow(tool) {
   const format = formatById(tool.format);
@@ -77,35 +216,45 @@ function toolRow(tool) {
   return `
     <a class="tool-row" href="${esc(tool.url)}" target="_blank" rel="noreferrer" data-format="${esc(tool.format)}">
       <span class="tool-row__head">
-        <span class="tool-row__name">${esc(tool.name)}</span>
+        <span class="tool-row__name">${mark(tool.name)}</span>
         <span class="tool-row__format">${esc(format?.title || "")}</span>
         <span class="tool-row__arrow" aria-hidden="true">↗</span>
       </span>
-      <span class="tool-row__summary">${esc(tool.summary)}</span>
-      <span class="tool-row__why"><b>Зачем:</b> ${esc(tool.why)}</span>
+      <span class="tool-row__summary">${mark(tool.summary)}</span>
+      <span class="tool-row__why"><b>Зачем:</b> ${mark(tool.why)}</span>
       <span class="tool-row__tags">
-        ${tool.platforms.map((platform) => `<span class="tool-tag">${esc(platform)}</span>`).join("")}
+        ${tool.platforms.map((platform) => `<span class="tool-tag">${mark(platform)}</span>`).join("")}
         ${tool.source !== "mine" ? `<span class="tool-tag tool-tag--source">${esc(source.title)}</span>` : ""}
       </span>
       ${tool.note ? `<span class="tool-row__note">${esc(tool.note)}</span>` : ""}
     </a>`;
 }
 
+function emptyState() {
+  const query = state.query.trim();
+  const conditions = activeCount();
+  return `<div class="tool-empty">
+      <p class="tool-empty__title">Ничего не найдено</p>
+      <p class="tool-empty__text">${
+        query
+          ? `Запрос «${esc(query)}» не совпал ни с названием, ни с описанием, ни с платформой записи.`
+          : "Ни одна запись не отвечает всем выбранным условиям одновременно."
+      }</p>
+      <div class="tool-empty__actions">
+        ${query ? `<button class="btn btn--ghost btn--sm" type="button" data-clear-query>Очистить поиск</button>` : ""}
+        ${conditions ? `<button class="btn btn--ghost btn--sm" type="button" data-tools-reset>Сбросить фильтры</button>` : ""}
+      </div>
+    </div>`;
+}
+
 function renderList() {
   const host = $("#tools-list");
   if (!host) return;
-  const visible = TOOLS.filter(matches);
-  const counter = $("#tools-count");
-  if (counter) counter.textContent = visible.length === TOOLS.length ? `все ${TOOLS.length}` : `найдено ${visible.length}`;
-
+  const visible = visibleTools();
   if (!visible.length) {
-    host.innerHTML = `<div class="tool-empty">
-        <p>Под выбранные условия ничего нет.</p>
-        <button class="btn btn--ghost btn--sm" type="button" data-tools-reset>Сбросить фильтры</button>
-      </div>`;
+    host.innerHTML = emptyState();
     return;
   }
-
   host.innerHTML = GROUPS.map((group) => {
     const items = visible.filter((tool) => tool.group === group.id);
     if (!items.length) return "";
@@ -121,21 +270,32 @@ function renderList() {
   }).join("");
 }
 
+/* -------------------------------------------------------------- адресная строка */
+
 function syncHash() {
   const params = new URLSearchParams();
   if (state.query) params.set("q", state.query);
-  if (state.groups.size) params.set("task", [...state.groups].join(","));
-  if (state.formats.size) params.set("format", [...state.formats].join(","));
-  if (state.platforms.size) params.set("platform", [...state.platforms].join(","));
-  if (state.sources.size) params.set("source", [...state.sources].join(","));
+  if (state.group.size) params.set("task", [...state.group].join(","));
+  if (state.format.size) params.set("format", [...state.format].join(","));
+  if (state.platform.size) params.set("platform", [...state.platform].join(","));
+  if (state.source.size) params.set("source", [...state.source].join(","));
   const query = params.toString();
   history.replaceState(null, "", `${location.pathname}${query ? `?${query}` : ""}`);
 }
 
 function renderAll(withHash = true) {
   renderFilters();
+  renderStatus();
   renderList();
   if (withHash) syncHash();
+}
+
+function resetAll() {
+  state.query = "";
+  for (const facet of FACETS) state[facet.kind].clear();
+  const search = $("#tools-search");
+  if (search) search.value = "";
+  renderAll();
 }
 
 function readHash() {
@@ -143,44 +303,89 @@ function readHash() {
   const read = (key) => (params.get(key) || "").split(",").filter(Boolean);
   state.query = params.get("q") || "";
   // Старые ссылки хранят прежние id разделов — переводим их в новую таксономию.
-  state.groups = new Set(read("task").map((value) => GROUP_ALIASES[value] || value));
-  state.formats = new Set(read("format"));
-  state.platforms = new Set(read("platform"));
-  state.sources = new Set(read("source"));
+  state.group = new Set(read("task").map((value) => GROUP_ALIASES[value] || value));
+  state.format = new Set(read("format"));
+  state.platform = new Set(read("platform"));
+  state.source = new Set(read("source"));
   const search = $("#tools-search");
   if (search) search.value = state.query;
-}function initEvents() {
+}
+
+/* ------------------------------------------------------------------ события */
+
+function initEvents() {
   document.addEventListener("click", (event) => {
     if (event.target.closest("[data-tools-reset]")) {
+      resetAll();
+      return;
+    }
+    if (event.target.closest("[data-clear-query]")) {
       state.query = "";
-      state.groups.clear();
-      state.formats.clear();
-      state.platforms.clear();
-      state.sources.clear();
       const search = $("#tools-search");
-      if (search) search.value = "";
+      if (search) {
+        search.value = "";
+        search.focus();
+      }
+      renderAll();
+      return;
+    }
+    const remove = event.target.closest("[data-chip-remove]");
+    if (remove) {
+      const kind = remove.dataset.chipRemove;
+      const value = remove.dataset.chipValue;
+      if (kind === "query") {
+        state.query = "";
+        const search = $("#tools-search");
+        if (search) search.value = "";
+      } else if (kind === "group") state.group.delete(value);
+      else if (kind === "format") state.format.delete(value);
+      else if (kind === "platform") state.platform.delete(value);
+      else if (kind === "source") state.source.delete(value);
       renderAll();
       return;
     }
     const filter = event.target.closest("[data-filter]");
-    if (filter) {
-      const { filter: kind, value } = filter.dataset;
-      if (kind === "group") toggleIn(state.groups, value);
-      if (kind === "format") toggleIn(state.formats, value);
-      if (kind === "platform") toggleIn(state.platforms, value);
-      if (kind === "source") toggleIn(state.sources, value);
+    if (filter && !filter.disabled) {
+      const facet = facetById(filter.dataset.filter);
+      if (facet) toggleIn(state[facet.kind], filter.dataset.value);
       renderAll();
+      return;
+    }
+    const toggle = event.target.closest("[data-filters-toggle]");
+    if (toggle) {
+      const side = $("#tools-side");
+      const collapsed = side?.dataset.collapsed === "true";
+      if (side) side.dataset.collapsed = String(!collapsed);
+      toggle.setAttribute("aria-expanded", String(collapsed));
     }
   });
 
+  let timer;
   document.addEventListener("input", (event) => {
     const search = event.target.closest?.("#tools-search");
     if (!search) return;
     state.query = search.value;
-    renderList();
-    syncHash();
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      renderFilters();
+      renderStatus();
+      renderList();
+      syncHash();
+    }, 90);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.target?.id !== "tools-search") return;
+    if (event.key === "Escape" && state.query) {
+      event.preventDefault();
+      state.query = "";
+      event.target.value = "";
+      renderAll();
+    }
   });
 }
+
+/* -------------------------------------------------------------- оформление */
 
 function initReveal() {
   const nodes = $$(".reveal");
@@ -234,6 +439,23 @@ function initHeader() {
   });
 }
 
+/* На узких экранах колонка свёрнута: список виден сразу.
+   Состояние пересчитывается при изменении ширины окна. */
+function initSidebarState() {
+  const side = $("#tools-side");
+  const toggle = $("[data-filters-toggle]");
+  if (!side || !toggle) return;
+  const query = window.matchMedia("(max-width: 1100px)");
+  const apply = (narrow) => {
+    side.dataset.collapsed = String(narrow);
+    toggle.setAttribute("aria-expanded", String(!narrow));
+  };
+  apply(query.matches);
+  const onChange = (event) => apply(event.matches);
+  if (typeof query.addEventListener === "function") query.addEventListener("change", onChange);
+  else query.addListener?.(onChange);
+}
+
 document.addEventListener("keydown", (event) => {
   const typing = ["INPUT", "TEXTAREA"].includes(event.target?.tagName);
   if (typing || event.altKey || event.ctrlKey || event.metaKey) return;
@@ -263,6 +485,7 @@ function applyCounts() {
 
 initTheme();
 initHeader();
+initSidebarState();
 initReveal();
 readHash();
 applyCounts();
