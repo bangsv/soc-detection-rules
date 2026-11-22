@@ -39,28 +39,65 @@
 /* ------------------------------------------------------- колонка фильтров */
 
 .tools-workspace {
+  display: grid;
+  gap: var(--space-16);
   margin-bottom: var(--space-40);
 }
 
+/* Счётчик и поиск выровнены по колонке списка: та же сетка, что у колонок
+   ниже, содержимое — во второй колонке. Фон не рисуется: поле лежит прямо
+   на фоне страницы. */
+.tools-head {
+  display: grid;
+  grid-template-columns: minmax(240px, 268px) minmax(0, 1fr);
+  gap: clamp(1rem, 2.2vw, 1.75rem);
+}
+
+.tools-head__inner {
+  grid-column: 2;
+  display: grid;
+  gap: var(--space-8);
+  min-width: 0;
+  padding-top: var(--space-8);
+}
+
+.tools-columns {
+  display: grid;
+  grid-template-columns: minmax(240px, 268px) minmax(0, 1fr);
+  gap: clamp(1rem, 2.2vw, 1.75rem);
+  align-items: start;
+}
+
 .tools-side {
+  position: sticky;
+  top: calc(var(--header-h) + 16px);
+  display: grid;
+  gap: var(--space-12);
+  align-content: start;
+  max-height: calc(100dvh - var(--header-h) - 32px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
   padding: var(--space-12) var(--space-12) var(--space-16);
   border: 1px solid var(--border-1);
   border-radius: var(--r-lg);
   background: var(--surface-1);
   backdrop-filter: blur(12px);
-  scrollbar-gutter: stable;
 }
 
-.tools-side__bar {
+.tools-side__head {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
-  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: var(--space-8);
+  border-bottom: 1px solid var(--border-1);
 }
 
-.tools-side__toggle {
-  display: none;
-  gap: 8px;
+.tools-side__title {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .tools-side__badge {
@@ -82,51 +119,33 @@
   display: none;
 }
 
-.tools-side__state {
+.tools-side__reset {
   margin-left: auto;
-  font-family: var(--font-mono);
+  padding: 2px 0;
+  color: var(--text-3);
   font-size: var(--fs-2xs);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
+  text-underline-offset: 3px;
+  transition: color var(--t-fast);
+}
+
+.tools-side__reset:hover:not(:disabled) {
   color: var(--accent);
-  white-space: nowrap;
 }
 
-/* На широком экране состояние показано под поиском — верхний счётчик не нужен. */
-@media (min-width: 1101px) {
-  .tools-side__state {
-    display: none;
-  }
-}
-
-/* При раскрытой колонке счётчик дублирует строку состояния под поиском. */
-.tools-side[data-collapsed="false"] .tools-side__state {
-  display: none;
-}
-
-.tools-side__body {
-  display: grid;
-  gap: var(--space-16);
-  padding-top: var(--space-12);
-}
-
-.tools-side__search {
-  display: grid;
-  gap: 8px;
-}
-
-.tools-side__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-8);
-  padding-top: var(--space-12);
-  border-top: 1px solid var(--border-1);
+.tools-side__reset:disabled {
+  opacity: 0.4;
+  cursor: default;
+  text-decoration: none;
 }
 
 .tools-side__hint {
-  font-family: var(--font-mono);
-  font-size: 10px;
+  padding-top: var(--space-12);
+  border-top: 1px solid var(--border-1);
   color: var(--text-3);
+  font-size: 10px;
+  line-height: 1.6;
 }
 
 /* ------------------------------------------------------------------ поиск */
@@ -134,17 +153,18 @@
 .tools-search {
   position: relative;
   display: block;
+  max-width: 760px;
 }
 
 .tools-search input {
   width: 100%;
-  padding: 11px 40px 11px 13px;
+  padding: 13px 44px 13px 15px;
   border: 1px solid var(--border-1);
-  border-radius: var(--r-sm);
-  background: var(--color-bg, var(--bg));
+  border-radius: var(--r-md);
+  background: transparent;
   color: var(--text-1);
   font-family: var(--font-sans);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-md);
   transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
 
@@ -152,26 +172,31 @@
   color: var(--text-3);
 }
 
+.tools-search input:hover {
+  border-color: var(--border-strong);
+}
+
 .tools-search input:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
 }
 
 /* Запрос без совпадений — рамка меняет цвет, чтобы это было видно сразу. */
 .tools-search input.is-empty {
-  border-color: color-mix(in oklab, var(--warn) 65%, transparent);
-  background: color-mix(in oklab, var(--warn) 7%, var(--bg));
+  border-color: color-mix(in oklab, var(--warn) 70%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--warn) 12%, transparent);
 }
 
 .tools-search kbd {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 12px;
   transform: translateY(-50%);
   padding: 2px 7px;
   border: 1px solid var(--border-1);
   border-radius: 6px;
-  background: var(--surface-2);
+  background: transparent;
   color: var(--text-3);
   font-family: var(--font-mono);
   font-size: var(--fs-2xs);
@@ -313,30 +338,18 @@
 
 /* ------------------------------------------------------------ панель списка */
 
-.tools-main {
-  min-width: 0;
-}
-
 .tools-toolbar {
-  position: sticky;
-  top: calc(var(--header-h) + 8px);
-  z-index: 6;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  padding: 9px 14px;
-  border: 1px solid var(--border-1);
-  border-radius: var(--r-md);
-  background: color-mix(in oklab, var(--bg) 88%, transparent);
-  backdrop-filter: blur(14px);
 }
 
 .tools-toolbar__count {
   font-family: var(--font-mono);
   font-size: var(--fs-2xs);
   letter-spacing: 0.04em;
-  color: var(--text-2);
+  color: var(--text-3);
   white-space: nowrap;
 }
 
@@ -386,8 +399,9 @@
 
 .tools-list {
   display: grid;
+  min-width: 0;
   gap: var(--space-32);
-  padding-block: var(--space-20) var(--space-40);
+  padding-block: var(--space-8) var(--space-40);
 }
 
 .tools-group {
@@ -629,31 +643,43 @@
 
 /* ---------------------------------------------------------------- адаптивность */
 
-@media (max-width: 1100px) {
-  .tools-side__toggle {
-    display: inline-flex;
-  }
-
-  .tools-side__bar {
-    padding-bottom: 4px;
-  }
-
-  /* Свёрнутая колонка оставляет только кнопку и счётчик. */
-  .tools-side[data-collapsed="true"] .tools-side__body {
-    display: none;
-  }
-
-  .tools-side[data-collapsed="true"] {
-    padding-bottom: var(--space-12);
-  }
-}
-
 @media (max-width: 960px) {
   .tools-rows {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .tools-toolbar {
-    top: calc(var(--header-h) + 4px);
+  /* Одна колонка: поиск, затем фильтры, затем список. */
+  .tools-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tools-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tools-head__inner {
+    grid-column: 1;
+  }
+
+  .tools-side {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: var(--space-12);
+  }
+
+  .tools-head {
+    top: var(--header-h);
+  }
+
+  .tools-facet__list {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    display: grid;
+    gap: 2px 12px;
+  }
+
+  .tools-search input {
+    font-size: var(--fs-sm);
+    padding: 12px 40px 12px 13px;
   }
 }

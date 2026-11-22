@@ -13,7 +13,16 @@ const state = {
   format: new Set(),
   platform: new Set(),
   source: new Set(),
+  open: null,
 };
+
+/* Какие блоки фильтров раскрыты. На узком экране сначала только «Задача». */
+function ensureOpenState() {
+  if (state.open) return state.open;
+  const narrow = window.matchMedia("(max-width: 960px)").matches;
+  state.open = new Set(narrow ? ["group"] : ["group", "format", "platform"]);
+  return state.open;
+}
 
 /* Фасеты фильтрации: порядок задаёт порядок блоков в колонке. */
 const FACETS = [
@@ -122,20 +131,30 @@ function facetRow(facet, item, count) {
 function renderFilters() {
   const host = $("#tools-filters");
   if (!host) return;
+  const open = ensureOpenState();
   host.innerHTML = FACETS.map((facet) => {
-    const rows = facet
+    const items = facet
       .items()
       .map((item) => ({ ...item, count: facetCount(facet, item.value) }))
       .filter((item) => item.count > 0 || state[facet.kind].has(item.value));
-    if (!rows.length) return "";
-    const summary = `<summary class="tools-facet__head">${esc(facet.label)}${
-      state[facet.kind].size ? ` <span class="tools-facet__picked">${state[facet.kind].size}</span>` : ""
-    }</summary>`;
-    return `<details class="tools-facet" ${facet.open || state[facet.kind].size ? "open" : ""}>
-        ${summary}
-        <div class="tools-facet__list">${rows.map((item) => facetRow(facet, item, item.count)).join("")}</div>
+    if (!items.length) return "";
+    const isOpen = open.has(facet.kind) || state[facet.kind].size > 0;
+    return `<details class="tools-facet" data-facet="${facet.kind}" ${isOpen ? "open" : ""}>
+        <summary class="tools-facet__head">${esc(facet.label)}${
+          state[facet.kind].size ? ` <span class="tools-facet__picked">${state[facet.kind].size}</span>` : ""
+        }</summary>
+        <div class="tools-facet__list">${items.map((item) => facetRow(facet, item, item.count)).join("")}</div>
       </details>`;
   }).join("");
+
+  // Запоминаем, какие блоки пользователь раскрыл: перерисовка их не закрывает.
+  for (const details of host.querySelectorAll("details[data-facet]")) {
+    details.addEventListener("toggle", () => {
+      const kind = details.dataset.facet;
+      if (details.open) open.add(kind);
+      else open.delete(kind);
+    });
+  }
 }
 
 /* ---------------------------------------------------------------- статусы */
@@ -157,7 +176,7 @@ function renderStatus() {
   if (status) {
     if (!conditions) {
       status.dataset.state = "all";
-      status.textContent = `Показаны все ${total} записи`;
+      status.textContent = "Поиск по названию, описанию и платформе · Esc — очистить";
     } else if (found) {
       status.dataset.state = "found";
       status.textContent = `Найдено ${found} из ${total}`;
@@ -169,14 +188,8 @@ function renderStatus() {
     }
   }
 
-  const compact = $("#tools-side-state");
-  if (compact) compact.textContent = conditions ? `${found} из ${total}` : `${total}`;
-
   const counter = $("#tools-count");
   if (counter) counter.textContent = conditions ? `найдено ${found} из ${total}` : `все ${total}`;
-
-  const toolbar = $("#tools-toolbar-hint");
-  if (toolbar) toolbar.textContent = "";
 
   const chips = $("#tools-active");
   if (chips) {
@@ -204,6 +217,9 @@ function renderStatus() {
     badge.textContent = String(conditions);
     badge.toggleAttribute("hidden", conditions === 0);
   }
+
+  const reset = $("[data-tools-reset]");
+  if (reset) reset.disabled = conditions === 0;
 
   setInputEmptyState(Boolean(query) && found === 0);
 }
@@ -349,14 +365,6 @@ function initEvents() {
       const facet = facetById(filter.dataset.filter);
       if (facet) toggleIn(state[facet.kind], filter.dataset.value);
       renderAll();
-      return;
-    }
-    const toggle = event.target.closest("[data-filters-toggle]");
-    if (toggle) {
-      const side = $("#tools-side");
-      const collapsed = side?.dataset.collapsed === "true";
-      if (side) side.dataset.collapsed = String(!collapsed);
-      toggle.setAttribute("aria-expanded", String(collapsed));
     }
   });
 
@@ -439,22 +447,8 @@ function initHeader() {
   });
 }
 
-/* На узких экранах колонка свёрнута: список виден сразу.
-   Состояние пересчитывается при изменении ширины окна. */
-function initSidebarState() {
-  const side = $("#tools-side");
-  const toggle = $("[data-filters-toggle]");
-  if (!side || !toggle) return;
-  const query = window.matchMedia("(max-width: 1100px)");
-  const apply = (narrow) => {
-    side.dataset.collapsed = String(narrow);
-    toggle.setAttribute("aria-expanded", String(!narrow));
-  };
-  apply(query.matches);
-  const onChange = (event) => apply(event.matches);
-  if (typeof query.addEventListener === "function") query.addEventListener("change", onChange);
-  else query.addListener?.(onChange);
-}
+/* На узких экранах поиск и фильтры остаются на месте: они идут
+   обычным блоком над списком, без сворачивания. */
 
 document.addEventListener("keydown", (event) => {
   const typing = ["INPUT", "TEXTAREA"].includes(event.target?.tagName);
@@ -485,7 +479,6 @@ function applyCounts() {
 
 initTheme();
 initHeader();
-initSidebarState();
 initReveal();
 readHash();
 applyCounts();
